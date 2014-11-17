@@ -12,7 +12,7 @@ class BaseController extends Controller {
         if (C('USER_AUTH_ON') && !in_array(MODULE_NAME, explode(',', C('NOT_AUTH_MODULE')))) {
             if (!RBAC::AccessDecision()) {
                 //检查认证识别号
-                if (!$_SESSION['admin'][C('USER_AUTH_KEY')]) {
+                if (!$_SESSION[C('USER_AUTH_KEY')]) {
                     //跳转到认证网关
                     redirect(PHP_FILE . C('USER_AUTH_GATEWAY'));
                 }

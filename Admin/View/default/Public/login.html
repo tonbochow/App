@@ -1,8 +1,6 @@
 <extend name="Public:base" />
 
 <block name="content">
-
-
     <form class="form-signin" role="form">
         <h3 class="form-signin-heading" style="text-align: center;"><span class="icon-desktop"></span> baby管理系统</h3>
         <div class="form-group">
@@ -14,18 +12,19 @@
         <div class="form-group">
             <div class="input-group input-group-lg">
                 <span class="input-group-addon"><span class="icon-key"></span></span>
-                <input type="text" class="form-control" placeholder="密码">
+                <input type="password" class="form-control" placeholder="密码">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group input-group-lg">
-                <span class="input-group-addon"><span class="icon-login-verifycode"></span></span>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-font"></span></span>
                 <input type="text" class="form-control" placeholder="请输入验证码">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group input-group-lg">
                 <img onclick="this.src=this.src+'?'+Math.random()" src="{:U('/Admin/Public/createVerify')}" class="img-responsive" alt="Responsive image"> 
+           点击切换
             </div>
         </div>
         <div class="form-group">
@@ -36,7 +35,6 @@
             </div>
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
-
     </form>
 
 
@@ -50,6 +48,7 @@
 </block>
 
 <block name="header_script">
+    <link rel="stylesheet" type="text/css" href="__CSS__/public_login.css" media="all">
     <script type="text/javascript">
         function formController($scope) {
             $scope.master = {firstName: "John", lastName: "Doe"};

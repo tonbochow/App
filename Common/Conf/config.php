@@ -32,11 +32,4 @@ return array(
     'URL_CASE_INSENSITIVE' =>true,//url不区分大小写
     
     'DEFAULT_THEME' => 'default',//模版主题
-    /* 模板相关配置 */
-    'TMPL_PARSE_STRING' => array(
-        '__COMMON__' => __ROOT__ . '/Public/Common',
-        '__IMG__' => __ROOT__ . '/Public/' . MODULE_NAME . '/images',
-        '__CSS__' => __ROOT__ . '/Public/' . MODULE_NAME . '/css',
-        '__JS__' => __ROOT__ . '/Public/' . MODULE_NAME . '/js',
-    ),
 );

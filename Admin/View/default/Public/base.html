@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN" ng-app="baby">
+<html xmlns:ng="http://angularjs.org" lang="zh-CN" id="ng-app"  ng-app="baby">
     <head>
         <meta charset="UTF-8">
         <title>{:C('WEB_SITE_TITLE')}</title>
@@ -7,7 +7,21 @@
         <meta name="description" content="baby" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="renderer" content="webkit">
-
+        <!--[if lte IE 8]>
+                <script>
+                  document.createElement('ng-include');
+                  document.createElement('ng-pluralize');
+                  document.createElement('ng-view');
+        
+                  // Optionally these for CSS
+                  document.createElement('ng:include');
+                  document.createElement('ng:pluralize');
+                  document.createElement('ng:view');
+                </script>
+         <![endif]-->
+        <!--[if lte IE 7]>
+        <script type="text/javascript" src="__COMMON__/json2.js"></script>
+        <![endif]-->
     </head>
     <body>
         <div class="container">

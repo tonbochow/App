@@ -7,6 +7,10 @@
         <meta name="description" content="baby" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="renderer" content="webkit">
+        <!--[if lt IE 9]>
+        <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
         <!--[if lte IE 8]>
                 <script>
                   document.createElement('ng-include');
@@ -38,10 +42,13 @@
         <link rel="stylesheet" type="text/css" href="__COMMON__/bootstrap/css/bootstrap.min.css" media="all">
         <link rel="stylesheet" type="text/css" href="__COMMON__/bootstrap/css/font-awesome.min.css" media="all">
         <link rel="stylesheet" type="text/css" href="__COMMON__/bootstrap/css/bootstrap-theme.min.css" media="all">
+        <link rel="stylesheet" type="text/css" href="__CSS__/menu.css" media="all">
         <script type="text/javascript" src="__COMMON__/angularjs/angular.min.js"></script>
         <script type="text/javascript" src="__COMMON__/jquery-1.11.1.min.js"></script>
         <script type="text/javascript" src="__COMMON__/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="__COMMON__/common.js"></script>
-    <block name="header_script"></block>
+    <block name="header_script">
+
+    </block>
 </body>
 </html>

@@ -10,7 +10,7 @@ class BaseController extends Controller {
     public function _initialize() {
         // 用户权限检查
         if (C('USER_AUTH_ON') && !in_array(MODULE_NAME, explode(',', C('NOT_AUTH_MODULE')))) {
-            if (!RBAC::AccessDecision()) {
+            if (!Rbac::AccessDecision()) {
                 //检查认证识别号
                 if (!$_SESSION[C('USER_AUTH_KEY')]) {
                     //跳转到认证网关

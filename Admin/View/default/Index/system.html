@@ -1,0 +1,15 @@
+<extend name="Public:base" />
+<block name="content">
+    <div class="main" >
+        <div class="content">
+            <TABLE id="checkList" class="list" cellpadding=0 cellspacing=0 >
+                <tr><td height="3" colspan="2" class="topTd" ></td></tr>
+                <TR class="row" ><th colspan="2" class="space">系统信息</th></tr>
+                <volist name="info" id="v">
+                    <TR class="row" onmouseover="over()" onmouseout="out()" onclick="change()" ><TD width="15%">{$key}</TD><TD>{$v}</TD></TR>
+                </volist>
+                <tr><td height="3" colspan="2" class="bottomTd"></td></tr>
+            </TABLE>
+        </div>
+    </div>
+</block>

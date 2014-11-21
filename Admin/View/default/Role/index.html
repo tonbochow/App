@@ -1,0 +1,35 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <div class="table-responsive panel panel-primary">
+        <div class="panel-heading">
+            <B>角色管理列表</B>
+            <button type="button" class="btn btn-success">Success</button>
+            <button type="button" class="btn btn-danger">Danger</button>
+        </div>
+        <table class="table table-bordered table-hover table-striped">
+            <tr>
+                <th>ID</th>
+                <th>角色名称</th>
+                <th>PID</th>
+                <th>状态</th>
+                <th>备注</th>
+                <th>英文简拼</th>
+                <th>创建时间</th>
+                <th>更新时间</th>
+            </tr>
+            <volist name="roles" id="role">
+                <tr  <eq name="mod">class="info"</eq>>
+                    <td>{$role.id}</td>
+                    <td>{$role.name}</td>
+                    <td>{$role.pid}</td>
+                    <td>{$role.status}</td>
+                    <td>{$role.remark}</td>
+                    <td>{$role.ename}</td>
+                    <td>{$role.create_time}</td>
+                    <td>{$role.update_time}</td>
+                </tr>
+            </volist>
+        </table>
+    </div>
+</block>

@@ -48,3 +48,8 @@ Runtime/Cache/Admin/62de5677d4db9a2215cca5e66e9dcc2b.php
 Runtime/Cache/Admin/b02c9109d1ae55b517bddbb3adda3fcc.php
 Runtime/Cache/Admin/0ab9522a441786a4847e1ef43bb7abf9.php
 Runtime/*
+Runtime/Cache/Admin/*
+Runtime/Cache/Home/*
+Runtime/Data/*
+Runtime/Logs/*
+Runtime/Temp/*

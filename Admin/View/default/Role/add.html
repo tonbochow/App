@@ -1,6 +1,11 @@
 <extend name="Public:base" />
 
 <block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">权限首页</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
     <form class="form-horizontal" role="form" name="RoleForm" ng-controller="RoleAddController" ng-submit="submitForm()">
         <div class="alert alert-danger" role="alert" ng-show="message">{{message}}</div>
         <div class="alert alert-success" role="alert" ng-show="success">{{success}}</div>

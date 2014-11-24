@@ -1,6 +1,11 @@
 <extend name="Public:base" />
 
 <block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">权限首页</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
     <form class="form-horizontal" role="form" name="RoleForm" ng-controller="RoleEditController" ng-submit="submitForm()">
         <div class="alert alert-danger" role="alert" ng-show="message">{{message}}</div>
         <div class="alert alert-success" role="alert" ng-show="success">{{success}}</div>
@@ -30,7 +35,8 @@
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-success" ng-disabled="RoleForm.$invalid"><i class="icon-plus"></i> 添加</button>
+                <input type="hidden" name="id" ng-model="role.id" value="{$role.id}">
+                <button type="submit" class="btn btn-success" ng-disabled="RoleForm.$invalid"><i class="icon-save"></i> 保存标记</button>
             </div>
         </div>
 
@@ -39,20 +45,26 @@
 
 <block name="header_script">
     <script type="text/javascript">
+        var default_edit_id = "{$role.id}";
+        var default_edit_name = "{$role.name}";
+        var default_edit_remark = "{$role.remark}";
+        var default_edit_status = "{$role.status}";
         var RoleModule = angular.module("baby", []);
         RoleModule.controller("RoleEditController", function ($scope, $http) {
-            $scope.status = '';
-            $scope.statusModel = [{
-                    id: 1,
-                    statusName: '正常'
-                }, {
+            $scope.role = {id: default_edit_id, name: default_edit_name, remark: default_edit_remark};
+            $scope.statusModel = [
+                {
                     id: 0,
                     statusName: '禁用'
+                }, {
+                    id: 1,
+                    statusName: '正常'
                 }];
+            $scope.role.status = $scope.statusModel[default_edit_status];
             $scope.submitForm = function () {
                 $http({
                     method: "POST",
-                    url: "/Admin/Role/add",
+                    url: "/Admin/Role/edit",
                     data: $.param($scope.role),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).success(function (data) {

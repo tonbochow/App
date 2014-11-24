@@ -1,7 +1,12 @@
 <extend name="Public:base" />
 
 <block name="content">
-    <div class="table-responsive panel panel-primary">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">权限首页</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <div class="table-responsive panel panel-primary" ng-controller="RoleController">
         <div class="panel-heading">
             <B>权限管理|角色管理列表</B>
             <a href="/Admin/Role/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
@@ -18,42 +23,54 @@
                 <th>操作</th>
             </tr>
             <volist name="roles" id="role">
-                <tr  <eq name="mod">class="info"</eq>>
-                    <td>{$role.id}</td>
-                    <td>{$role.name}</td>
-                    <td>{$role.pid}</td>
-                    <td>{$role.status}</td>
-                    <td>{$role.remark}</td>
-                    <td>{$role.create_time|date="Y-m-d",###}</td>
-                    <td>{$role.update_time|date="Y-m-d",###}</td>
-                    <td>
-                        <a href="/Admin/Role/edit/id/{$role.id}" class="btn btn-info" role="button"><i class="icon-pencil"></i> 编辑</a>
-                        <a href="/Admin/Role/delete/id/{$role.id}" class="btn btn-danger" role="button"><i class="icon-trash icon-large"></i> 删除</a>
-                    </td>
+                <tr id="{$role.id}">
+                <td>{$role.id}</td>
+                <td>{$role.name}</td>
+                <td>{$role.pid}</td>
+                <td>{$role.status}</td>
+                <td>{$role.remark}</td>
+                <td>{$role.create_time|date="Y-m-d H:i:s",###}</td>
+                <td>{$role.update_time|date="Y-m-d H:i:s",###}</td>
+                <td>
+                    <a href="/Admin/Role/edit/id/{$role.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                    <a href="" class="btn btn-danger" role="button"  ng-click="del_role({$role.id})"><i class="icon-trash icon-large"></i> 删除</a>
+                </td>
                 </tr>
             </volist>
+<!--            <tr ng-repeat="role in roles">
+                <td>{{role.id}}</td>
+                <td>{{role.name}}</td>
+                <td>{{role.pid}}</td>
+                <td>{{role.status}}</td>
+                <td>{{role.remark}}</td>
+                <td>{{role.create_time}}</td>
+                <td>{{role.update_time}}</td>
+                <td>
+                    <a href="/Admin/Role/edit/id/{{role.id}}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                    <a href="" class="btn btn-danger" role="button" ng-model="role_id" ng-click="del_role({$role.id})"><i class="icon-trash icon-large"></i> 删除</a>
+                </td>
+            </tr>-->
         </table>
     </div>
+     <?php echo $page;?>
 </block>
 <block name="header_script">
     <script type="text/javascript">
-        var loginModule = angular.module("baby", []);
-        loginModule.controller("loginController", function ($scope, $http) {
-            $scope.submitForm = function () {
+        var RoleModule = angular.module("baby", []);
+        RoleModule.controller("RoleController", function ($scope, $http) {
+            //删除某角色
+            $scope.del_role = function(id) {
+                $scope.role = {role_id :id};
                 $http({
                     method: "POST",
-                    url: "/Admin/Public/Login",
-                    data: $.param($scope.user),
+                    url: "/Admin/Role/delete",
+                    data: $.param($scope.role),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).success(function (data) {
                     if (data.status) {
                         $scope.success = data.success;
-                        window.location.href = '/Admin/Index/index';
+                        $("#"+id).css('display','none');
                     } else {
-                        $('#verifycode').attr('src', '/Admin/Public/createVerify' + '?' + Math.random());
-                        $scope.errorVerifycode = data.errorVerifycode;
-                        $scope.errorName = data.errorName;
-                        $scope.errorPassword = data.errorPassword;
                         $scope.message = data.message;
                     }
                 });

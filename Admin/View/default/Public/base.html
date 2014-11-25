@@ -47,6 +47,18 @@
         <script type="text/javascript" src="__COMMON__/jquery-1.11.1.min.js"></script>
         <script type="text/javascript" src="__COMMON__/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="__COMMON__/common.js"></script>
+        <script type="text/javascript">
+            $(function(){
+                var controller_name = '<?php echo CONTROLLER_NAME;?>';
+                if(controller_name == 'Role' || controller_name == 'Node' || controller_name == 'App'){
+                    $('#power').attr('class','nav-header');
+                    $('#power').attr('aria-expanded','true');
+                    $('#powerSetting').attr('class','nav nav-list secondmenu collapse in');
+                    $('#powerSetting').attr('aria-expanded','true');
+                    $('#powerSetting').css('height','auto');
+                }
+            });
+        </script>
     <block name="header_script">
 
     </block>

@@ -1,0 +1,83 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">应用管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+
+    <div class="table-responsive panel panel-primary" ng-controller="RoleController">
+        <div class="panel-heading">
+            <B>应用管理|管理列表</B>
+            <a href="/Admin/App/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
+        </div>
+        <table class="table table-bordered table-hover table-striped">
+            <tr>
+                <th>ID</th>
+                <th>应用名称</th>
+                <th>URL</th>
+                <th>模块</th>
+                <th>模块名</th>
+                <th>控制器</th>
+                <th>控制器名</th>
+                <th>操作</th>
+                <th>操作名</th>
+            </tr>
+            <volist name="apps" id="role">
+                <tr id="{$role.id}">
+                    <td>{$role.id}</td>
+                    <td>{$role.name}</td>
+                    <td>{$role.pid}</td>
+                    <td>{$role.status}</td>
+                    <td>{$role.remark}</td>
+                    <td>{$role.create_time|date="Y-m-d H:i:s",###}</td>
+                    <td>{$role.update_time|date="Y-m-d H:i:s",###}</td>
+                    <td>
+                        <a href="/Admin/Role/edit/id/{$role.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                        <a href="" class="btn btn-danger" role="button"  ng-click="del_role({$role.id})"><i class="icon-trash icon-large"></i> 删除</a>
+                    </td>
+                </tr>
+            </volist>
+            <!--            <tr ng-repeat="role in roles">
+                            <td>{{role.id}}</td>
+                            <td>{{role.name}}</td>
+                            <td>{{role.pid}}</td>
+                            <td>{{role.status}}</td>
+                            <td>{{role.remark}}</td>
+                            <td>{{role.create_time}}</td>
+                            <td>{{role.update_time}}</td>
+                            <td>
+                                <a href="/Admin/Role/edit/id/{{role.id}}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                                <a href="" class="btn btn-danger" role="button" ng-model="role_id" ng-click="del_role({$role.id})"><i class="icon-trash icon-large"></i> 删除</a>
+                            </td>
+                        </tr>-->
+        </table>
+    </div>
+    <?php echo $page;?>
+</block>
+
+<block name="header_script">
+    <script type="text/javascript">
+        var RoleModule = angular.module("baby", []);
+        RoleModule.controller("RoleController", function ($scope, $http) {
+            //删除某角色
+            $scope.del_role = function (id) {
+                $scope.role = {role_id: id};
+                $http({
+                    method: "POST",
+                    url: "/Admin/Role/delete",
+                    data: $.param($scope.role),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        $("#" + id).css('display', 'none');
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

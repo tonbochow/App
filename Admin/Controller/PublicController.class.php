@@ -7,7 +7,7 @@ use Think\Controller;
 class PublicController extends Controller {
 
     //后台登录页面
-    public function Login() {
+    public function login() {
         if (null !== session(C('USER_AUTH_KEY'))) {
             $this->error('已登录','/Admin/Index/index');
         }
@@ -64,7 +64,7 @@ class PublicController extends Controller {
     }
 
     //用户退出
-    public function Logout() {
+    public function logout() {
         if (null !== (session(C('USER_AUTH_KEY')))) {
             session(null);
             $this->success('退出成功', __CONTROLLER__. '/login');

@@ -1,0 +1,112 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">应用管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+
+    <form class="form-horizontal" role="form" name="AppForm" ng-controller="AppAddController" ng-submit="submitForm()">
+        <div class="alert alert-danger" role="alert" ng-show="message">{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success">{{success}}</div>
+        <div class="form-group">
+            <label for="name" class="col-sm-2 control-label">应用名称</label>
+            <div class="col-sm-10">
+                <input type="text" name="name" ng-model="app.name" ng-minlength="1" ng-maxlength="30" required class="form-control" id="name" placeholder="应用名称">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="url" class="col-sm-2 control-label">URL</label>
+            <div class="col-sm-10">
+                <input type="text" name="url" ng-model="app.url" ng-minlength="1" ng-maxlength="256" required class="form-control" id="url" placeholder="URL">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="module" class="col-sm-2 control-label">模块</label>
+            <div class="col-sm-10">
+                <input type="text" name="module" ng-model="app.module" class="form-control" ng-minlength="1" ng-maxlength="50" id="module" placeholder="模块" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="module_title" class="col-sm-2 control-label">模块标题</label>
+            <div class="col-sm-10">
+                <input type="text" name="module_title" ng-model="app.module_title" class="form-control" ng-minlength="1" ng-maxlength="30" id="module_title" placeholder="模块标题" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="controller" class="col-sm-2 control-label">控制器</label>
+            <div class="col-sm-10">
+                <input type="text" name="controller" ng-model="app.controller" class="form-control" ng-minlength="1" ng-maxlength="50" id="controller" placeholder="控制器" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="controller_title" class="col-sm-2 control-label">控制器标题</label>
+            <div class="col-sm-10">
+                <input type="text" name="controller_title" ng-model="app.controller_title" class="form-control" ng-minlength="1" ng-maxlength="30" id="controller_title" placeholder="控制器标题" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="action" class="col-sm-2 control-label">操作</label>
+            <div class="col-sm-10">
+                <input type="text" name="action" ng-model="app.action" class="form-control" ng-minlength="1" ng-maxlength="50" id="action" placeholder="操作" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="action_title" class="col-sm-2 control-label">操作标题</label>
+            <div class="col-sm-10">
+                <input type="text" name="action_title" ng-model="app.action_title" class="form-control" ng-minlength="1" ng-maxlength="30" id="action_title" placeholder="操作标题" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="status" class="col-sm-2 control-label">应用状态</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="status" required ng-model="app.status" ng-options="option.id as option.statusName for option in statusModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="AppForm.$invalid"><i class="icon-plus"></i> 添加</button>
+            </div>
+        </div>
+
+    </form>
+
+</block>
+
+<block name="header_script">
+    <script type="text/javascript">
+        var AppModule = angular.module("baby", []);
+        AppModule.controller("AppAddController", function($scope, $http) {
+            $scope.statusModel = [{
+                    id: 1,
+                    statusName: '正常'
+                }, {
+                    id: 0,
+                    statusName: '禁用'
+                }];
+            $scope.submitForm = function() {
+                $http({
+                    method: "POST",
+                    url: "/Admin/App/add",
+                    data: $.param($scope.app),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function(data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/App/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

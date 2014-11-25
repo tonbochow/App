@@ -23,35 +23,24 @@
                 <th>控制器名</th>
                 <th>操作</th>
                 <th>操作名</th>
+                <th></th>
             </tr>
-            <volist name="apps" id="role">
-                <tr id="{$role.id}">
-                    <td>{$role.id}</td>
-                    <td>{$role.name}</td>
-                    <td>{$role.pid}</td>
-                    <td>{$role.status}</td>
-                    <td>{$role.remark}</td>
-                    <td>{$role.create_time|date="Y-m-d H:i:s",###}</td>
-                    <td>{$role.update_time|date="Y-m-d H:i:s",###}</td>
+            <volist name="apps" id="app">
+                <tr id="{$app.id}">
+                    <td>{$app.name}</td>
+                    <td>{$app.url}</td>
+                    <td>{$app.module}</td>
+                    <td>{$app.module_title}</td>
+                    <td>{$app.controller}</td>
+                    <td>{$app.controller_title}</td>
+                    <td>{$app.action}</td>
+                    <td>{$app.action_title}</td>
                     <td>
                         <a href="/Admin/Role/edit/id/{$role.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
                         <a href="" class="btn btn-danger" role="button"  ng-click="del_role({$role.id})"><i class="icon-trash icon-large"></i> 删除</a>
                     </td>
                 </tr>
             </volist>
-            <!--            <tr ng-repeat="role in roles">
-                            <td>{{role.id}}</td>
-                            <td>{{role.name}}</td>
-                            <td>{{role.pid}}</td>
-                            <td>{{role.status}}</td>
-                            <td>{{role.remark}}</td>
-                            <td>{{role.create_time}}</td>
-                            <td>{{role.update_time}}</td>
-                            <td>
-                                <a href="/Admin/Role/edit/id/{{role.id}}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
-                                <a href="" class="btn btn-danger" role="button" ng-model="role_id" ng-click="del_role({$role.id})"><i class="icon-trash icon-large"></i> 删除</a>
-                            </td>
-                        </tr>-->
         </table>
     </div>
     <?php echo $page;?>

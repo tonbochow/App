@@ -1,0 +1,43 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">角色应用管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+
+    <div class="table-responsive panel panel-primary" ng-controller="RoleAppController">
+        <div class="panel-heading">
+            <B>角色应用管理 | 角色应用列表</B>
+            <a href="/Admin/RoleApp/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
+        </div>
+        
+    </div>
+    <?php echo $page;?>
+</block>
+
+<block name="header_script">
+    <script type="text/javascript">
+        var RoleAppModule = angular.module("baby", []);
+        RoleAppModule.controller("RoleAppController", function ($scope, $http) {
+            //删除某角色
+            $scope.del_RoleApp = function (id) {
+                $scope.app = {app_id: id};
+                $http({
+                    method: "POST",
+                    url: "/Admin/RoleApp/delete",
+                    data: $.param($scope.app),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        $("#" + id).css('display', 'none');
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

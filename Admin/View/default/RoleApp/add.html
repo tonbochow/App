@@ -1,0 +1,77 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">角色应用管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+
+    <form class="form-horizontal" role="form" name="AppForm" ng-controller="AppAddController" ng-submit="submitForm()">
+        <div class="alert alert-danger" role="alert" ng-show="message">{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success">{{success}}</div>
+
+        <div class="form-group">
+            <label for="role_id" class="col-sm-2 control-label">角色选择</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="role_id" required ng-model="RoleApp.role_id" ng-options="option.id as option.role_name for option in roleModel">
+                    <option value="">请选择</option>
+                </select>              
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="role_id" class="col-sm-2 control-label">应用分配:</label>
+            <div class="col-sm-10">
+<!--                <volist name="apps" id="app">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="inlineCheckbox1" name="role_id[]" value="{$app.id}"> {$app.name}|{$app.url}
+                    </label>
+                </volist>-->
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="role_id" class="col-sm-2 control-label"></label>
+            <div class="col-sm-10">
+                <volist name="apps" id="app">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="inlineCheckbox1" name="role_id[]" value="{$app.id}"> {$app.name}|{$app.url}
+                    </label>
+                </volist>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="AppForm.$invalid"><i class="icon-plus"></i> 添加</button>
+            </div>
+        </div>
+
+    </form>
+
+</block>
+
+<block name="header_script">
+    <script type="text/javascript">
+        var AppModule = angular.module("baby", []);
+        AppModule.controller("AppAddController", function($scope, $http) {
+            $scope.roleModel = {$role_select};
+            $scope.submitForm = function() {
+                $http({
+                    method: "POST",
+                    url: "/Admin/App/add",
+                    data: $.param($scope.app),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function(data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/App/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

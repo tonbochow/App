@@ -31,7 +31,7 @@
             <label for="role_id" class="col-sm-2 control-label"></label>
             <div class="col-sm-10">
                 <label class="checkbox-inline"ng-repeat="app in apps">
-                    <input type="checkbox" ng-model="app.checked" ng-true-vlaue="app.app_id"  />{{app.app_content}}
+                    <input type="checkbox" ng-model="app.checked" ng-true-vlaue="app.app_id" />{{app.app_content}}
                 </label> 
                 <!--                <volist name="apps" id="app">
                                     <label class="checkbox-inline">
@@ -73,7 +73,7 @@
                         data: $.param($scope.RoleApp),
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     }).success(function (data) {
-//                        $scope.apps = eval(data);
+                        $scope.apps = eval(data);
                     });
                 }
             }

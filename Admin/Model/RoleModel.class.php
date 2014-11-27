@@ -14,6 +14,11 @@ Class RoleModel extends CommonModel {
         array('update_time', 'time', self::MODEL_UPDATE, 'function'),
     );
 
+    //通过role_id 获取name
+    public static function getRoleName($role_id){
+        $role = M('Role')->where(array('id'=>$role_id))->find();
+        return $role['name'];
+    }
 }
 
 ?>

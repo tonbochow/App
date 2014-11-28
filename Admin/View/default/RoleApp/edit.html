@@ -3,86 +3,43 @@
 <block name="content">
     <ol class="breadcrumb">
         <li><a href="/Admin">后台首页</a></li>
-        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">应用管理</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">角色应用管理</a></li>
         <li class="active">{$Think.ACTION_NAME}</li>
     </ol>
 
-    <form class="form-horizontal" role="form" name="AppForm" ng-controller="AppEditController" ng-submit="submitForm()">
+    <form class="form-horizontal" role="form" name="RoleAppForm" ng-controller="RoleAppEditController" ng-submit="submitForm()">
         <div class="alert alert-danger" role="alert" ng-show="message">{{message}}</div>
         <div class="alert alert-success" role="alert" ng-show="success">{{success}}</div>
         <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">应用名</label>
+            <label for="role_id" class="col-sm-2 control-label">角色:</label>
             <div class="col-sm-10">
-                <input type="text" name="name" value="{$app.name}" ng-model="app.name" ng-minlength="1" ng-maxlength="20" required class="form-control" id="name" placeholder="应用名">
-            </div>
-            <div class="has-error">
-                <span class="help-block" ng-show="errorName">{{errorName}}</span>
+                {$role_app.role_name}
             </div>
         </div>
         
         <div class="form-group">
-            <label for="url" class="col-sm-2 control-label">应用URL</label>
+            <label for="role_id" class="col-sm-2 control-label">应用分配:</label>
             <div class="col-sm-10">
-                <input type="text" name="url" value="{$app.url}" ng-model="app.url" ng-minlength="1" ng-maxlength="20" required class="form-control" id="url" placeholder="应用URL">
+                <label for="chkAll">全选|反选:</label><input id="chkAll" type="checkbox" ng-model="chkall" ng-click="chkAll(chkall)"/></label>
             </div>
         </div>
-        
+
         <div class="form-group">
-            <label for="module" class="col-sm-2 control-label">模块</label>
+            <label for="role_id" class="col-sm-2 control-label"></label>
             <div class="col-sm-10">
-                <input type="text" name="module" value="{$app.module}" ng-model="app.module" ng-minlength="1" ng-maxlength="20" required class="form-control" id="module" placeholder="模块">
+                <label class="checkbox-inline"ng-repeat="app in apps">
+                    <input type="checkbox" ng-model="app.checked" ng-true-vlaue="app.app_id" />{{app.app_content}}
+                </label>
             </div>
         </div>
         
-        <div class="form-group">
-            <label for="module_title" class="col-sm-2 control-label">模块标题</label>
-            <div class="col-sm-10">
-                <input type="text" name="module_title" value="{$app.module_title}" ng-model="app.module_title" ng-minlength="1" ng-maxlength="20" required class="form-control" id="module_title" placeholder="模块标题">
-            </div>
-        </div>
-        
-        <div class="form-group">
-            <label for="controller" class="col-sm-2 control-label">控制器</label>
-            <div class="col-sm-10">
-                <input type="text" name="controller" value="{$app.controller}" ng-model="app.controller" ng-minlength="1" ng-maxlength="20" required class="form-control" id="controller" placeholder="控制器">
-            </div>
-        </div>
-        
-        <div class="form-group">
-            <label for="controller_title" class="col-sm-2 control-label">控制器标题</label>
-            <div class="col-sm-10">
-                <input type="text" name="controller_title" value="{$app.controller_title}" ng-model="app.controller_title" ng-minlength="1" ng-maxlength="20" required class="form-control" id="controller_title" placeholder="控制器标题">
-            </div>
-        </div>
-        
-        <div class="form-group">
-            <label for="action" class="col-sm-2 control-label">操作</label>
-            <div class="col-sm-10">
-                <input type="text" name="action" value="{$app.action}" ng-model="app.action" ng-minlength="1" ng-maxlength="20" required class="form-control" id="action" placeholder="操作">
-            </div>
-        </div>
-        
-        <div class="form-group">
-            <label for="action_title" class="col-sm-2 control-label">操作标题</label>
-            <div class="col-sm-10">
-                <input type="text" name="action_title" value="{$app.action_title}" ng-model="app.action_title" ng-minlength="1" ng-maxlength="20" required class="form-control" id="action_title" placeholder="操作标题">
-            </div>
-        </div>
-        
-        
-        <div class="form-group">
-            <label for="status" class="col-sm-2 control-label">应用状态</label>
-            <div class="col-sm-10">
-                <select class="form-control" name="status" required ng-model="app.status" ng-options="m.statusName for m in statusModel">
-                    <option value="">请选择</option>
-                </select>
-            </div>
-        </div>
+        <input type="hidden" name="app_ids" ng-model="RoleApp.app_ids" value=""  />
+        <input type="hidden" name="role_id" ng-model="RoleApp.role_id" value=""  />
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <input type="hidden" name="id" ng-model="app.id" value="{$app.id}">
-                <button type="submit" class="btn btn-success" ng-disabled="AppForm.$invalid"><i class="icon-save"></i> 保存应用修改</button>
+                <button type="submit" class="btn btn-success" ng-disabled="RoleAppForm.$invalid"><i class="icon-save"></i> 保存角色应用修改</button>
             </div>
         </div>
 
@@ -92,29 +49,30 @@
 
 <block name="header_script">
     <script type="text/javascript">
-        var status = {$json_app}.status;
-        var AppModule = angular.module("baby", []);
-        AppModule.controller("AppEditController", function ($scope, $http) {
-            $scope.app = {$json_app};
-            $scope.statusModel = [
-                {
-                    id: 0,
-                    statusName: '禁用'
-                }, {
-                    id: 1,
-                    statusName: '正常'
-                }];
-            $scope.app.status = $scope.statusModel[status];
+        var RoleAppModule = angular.module("baby", []);
+        RoleAppModule.controller("RoleAppEditController", function ($scope, $http) {
+//            $scope.RoleApp.role_id ={$role_app.role_id};
+            $scope.apps = {$apps_json};//初始化应用
+            $scope.chkAll = function (checked) {
+                angular.forEach($scope.apps, function (value, key) {
+                    value.checked = checked;
+                });
+            }
+//            $scope.$watch('apps|filter:{checked:true}', function (nv) {
+//                $scope.RoleApp.app_ids = nv.map(function (apps) {
+//                   return apps.app_id;
+//                });
+//            }, true);
             $scope.submitForm = function () {
                 $http({
                     method: "POST",
-                    url: "/Admin/App/edit",
-                    data: $.param($scope.app),
+                    url: "/Admin/RoleApp/edit",
+                    data: $.param($scope.RoleApp),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).success(function (data) {
                     if (data.status) {
                         $scope.success = data.success;
-                        window.location.href = '/Admin/App/index';
+                        window.location.href = '/Admin/RoleApp/index';
                     } else {
                         $scope.message = data.message;
                     }

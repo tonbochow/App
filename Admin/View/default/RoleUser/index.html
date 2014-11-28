@@ -3,13 +3,13 @@
 <block name="content">
     <ol class="breadcrumb">
         <li><a href="/Admin">后台首页</a></li>
-        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">应用管理</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">角色用户管理</a></li>
         <li class="active">{$Think.ACTION_NAME}</li>
     </ol>
 
     <div class="table-responsive panel panel-primary" ng-controller="AppController">
         <div class="panel-heading">
-            <B>应用管理|管理列表</B>
+            <B>角色用户管理 | 角色用户列表</B>
             <a href="/Admin/App/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
         </div>
         <table class="table table-bordered table-hover table-striped">
@@ -18,12 +18,6 @@
                 <th>应用名称</th>
                 <th>URL</th>
                 <th>模块</th>
-                <!--<th>模块名</th>-->
-                <th>控制器</th>
-<!--                <th>控制器名</th>-->
-                <th>操作</th>
-                <!--<th>操作名</th>-->
-                <th>应用操作</th>
             </tr>
             <volist name="apps" id="app">
                 <tr id="{$app.id}">
@@ -31,12 +25,6 @@
                     <td>{$app.name}</td>
                     <td>{$app.url}</td>
                     <td>{$app.module}</td>
-                    <!--<td>{$app.module_title}</td>-->
-                    <td>{$app.controller}</td>
-                    <!--<td>{$app.controller_title}</td>-->
-                    <td>{$app.action}</td>
-                    <!--<td>{$app.action_title}</td>-->
-                    <td>
                         <a href="/Admin/App/edit/id/{$app.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
                         <a href="" class="btn btn-danger" role="button"  ng-click="del_app({$app.id})"><i class="icon-trash icon-large"></i> 删除</a>
                     </td>

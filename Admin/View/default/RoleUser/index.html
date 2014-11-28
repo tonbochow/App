@@ -7,26 +7,30 @@
         <li class="active">{$Think.ACTION_NAME}</li>
     </ol>
 
-    <div class="table-responsive panel panel-primary" ng-controller="AppController">
+    <div class="table-responsive panel panel-primary" ng-controller="RoleUserController">
         <div class="panel-heading">
             <B>角色用户管理 | 角色用户列表</B>
             <a href="/Admin/App/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
         </div>
         <table class="table table-bordered table-hover table-striped">
             <tr>
-                <th>ID</th>
-                <th>应用名称</th>
-                <th>URL</th>
-                <th>模块</th>
+                <th>用户ID</th>
+                <th>用户名</th>
+                <th>用户状态</th>
+                <th>用户角色ID</th>
+                <th>用户角色名称</th>
+                <th>操作</th>
             </tr>
-            <volist name="apps" id="app">
-                <tr id="{$app.id}">
-                    <td>{$app.id}</td>
-                    <td>{$app.name}</td>
-                    <td>{$app.url}</td>
-                    <td>{$app.module}</td>
-                        <a href="/Admin/App/edit/id/{$app.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
-                        <a href="" class="btn btn-danger" role="button"  ng-click="del_app({$app.id})"><i class="icon-trash icon-large"></i> 删除</a>
+            <volist name="users" id="user">
+                <tr id="{$user.id}">
+                    <td>{$user.id}</td>
+                    <td>{$user.name}</td>
+                    <td>{$user.status}</td>
+                    <td>{$user.role_ids}</td>
+                    <td>{$user.role_names}</td>
+                    <td>
+                        <a href="/Admin/RoleUser/edit/id/{$user.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                        <a href="" class="btn btn-danger" role="button"  ng-click="del_app({$user.id})"><i class="icon-trash icon-large"></i> 删除</a>
                     </td>
                 </tr>
             </volist>
@@ -37,14 +41,14 @@
 
 <block name="header_script">
     <script type="text/javascript">
-        var AppModule = angular.module("baby", []);
-        AppModule.controller("AppController", function ($scope, $http) {
+        var RoleUserModule = angular.module("baby", []);
+        RoleUserModule.controller("RoleUserController", function ($scope, $http) {
             //删除某角色
             $scope.del_app = function (id) {
                 $scope.app = {app_id: id};
                 $http({
                     method: "POST",
-                    url: "/Admin/App/delete",
+                    url: "/Admin/RoleUser/delete",
                     data: $.param($scope.app),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).success(function (data) {

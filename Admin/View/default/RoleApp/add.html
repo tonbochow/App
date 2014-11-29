@@ -36,8 +36,6 @@
             </div>
         </div>
         
-        <input type="hidden" name="app_ids" ng-model="RoleApp.app_ids" value="" required />
-        
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-success" ng-disabled="RoleAppForm.$invalid"><i class="icon-plus"></i> 添加</button>
@@ -51,9 +49,10 @@
 <block name="header_script">
     <script type="text/javascript">
         var RoleAppModule = angular.module("baby", []);
-        RoleAppModule.controller("RoleAppAddController", function ($scope, $http) {
+        RoleAppModule.controller("RoleAppAddController", function ($scope, $http,$filter) {
             $scope.roleModel = {$role_select};//初始化角色列表
             $scope.apps = {$apps_json};//初始化应用
+            $scope.chkall = false;
             $scope.chkAll = function (checked) {
                 angular.forEach($scope.apps, function (value, key) {
                     value.checked = checked;
@@ -73,25 +72,32 @@
                 }
             }
             
-//            $scope.add_appids = function(){
-//                $scope.$watch('apps|filter:{checked:true}', function (nv) {
-//                    $scope.RoleApp.app_ids = nv.map(function (apps) {
-//                       return apps.app_id;
-//                    });
-//                }, true);
-//            }
-
-            $scope.$watch('apps|filter:{checked:true}', function (nv) {
-                $scope.RoleApp.app_ids = nv.map(function (apps) {
-                   return apps.app_id;
-                });
+            $scope.$watch('apps', function (nv, ov) {
+                if (nv == ov) {
+                    $scope.choseArr = [];
+                    angular.forEach(
+                        $filter('filter')(nv, {checked: true}), function (v) {
+                            $scope.choseArr.push(v.app_id);
+                        }
+                    );
+                    return;
+                }
+                $scope.choseArr = [];
+                angular.forEach(
+                        $filter('filter')(nv, {checked: true}), function (v) {
+                    $scope.choseArr.push(v.app_id);
+                }
+                );
+                $scope.chkall = $scope.choseArr.length == $scope.apps.length;
             }, true);
             
+            
             $scope.submitForm = function () {
+                $scope.form_data = {'role_id': $scope.RoleApp.role_id, 'app_ids': $scope.choseArr};
                 $http({
                     method: "POST",
                     url: "/Admin/RoleApp/add",
-                    data: $.param($scope.RoleApp),
+                    data: $.param($scope.form_data),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).success(function (data) {
                     if (data.status) {

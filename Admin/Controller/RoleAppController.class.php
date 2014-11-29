@@ -78,6 +78,55 @@ class RoleAppController extends BaseController {
         }
     }
 
+    //给角色删除权限
+    private function _delAccess($roleAppModel, $app_ids, $role_id) { //删除时有bug
+        $appModel = M('App');
+        $cond['id'] = array('in', $app_ids);
+        $apps = $appModel->where($cond)->select();
+        foreach ($apps as $app) {
+            $module_arr[] = $app['module_node_id'];
+            $controller_arr[] = $app['controller_node_id'];
+            $action_arr[] = $app['action_node_id'];
+        }
+        $module_node_arr = array_unique($module_arr);
+        $controller_node_arr = array_unique($controller_arr);
+        $action_node_arr = array_unique($action_arr);
+        //删除node表中module
+        $accessModel = M('Access');
+        $access_module['role_id'] = $role_id;
+        $access_module['node_id'] = array('in', $module_node_arr);
+        $access_module['level'] = 1;
+        $access_module_del = $accessModel->where($access_module)->delete();
+        if ($access_module_del === false) {
+            $roleAppModel->rollback();
+            $data['status'] = false;
+            $data['message'] = '删除模块权限失败';
+            $this->ajaxReturn($data);
+        }
+        //删除node表controller
+        $access_controller['role_id'] = $role_id;
+        $access_controller['node_id'] = array('in', $controller_node_arr);
+        $access_controller['level'] = 2;
+        $access_controller_del = $accessModel->where($access_controller)->delete();
+        if ($access_controller_del === false) {
+            $roleAppModel->rollback();
+            $data['status'] = false;
+            $data['message'] = '删除控制器权限失败';
+            $this->ajaxReturn($data);
+        }
+        //删除node表action
+        $access_action['role_id'] = $role_id;
+        $access_action['node_id'] = array('in', $action_node_arr);
+        $access_action['level'] = 3;
+        $access_action_del = $accessModel->where($access_action)->delete();
+        if ($access_action_del === false) {
+            $roleAppModel->rollback();
+            $data['status'] = false;
+            $data['message'] = '删除操作权限时失败';
+            $this->ajaxReturn($data);
+        }
+    }
+
     //添加角色应用
     public function add() {
         if (IS_POST) {
@@ -97,7 +146,12 @@ class RoleAppController extends BaseController {
                     // 更新access表中权限
                     $roleApp = $roleAppModel->where(array('role_id' => $role_id))->find();
                     $exist_app_ids = json_decode($roleApp['app_ids'], true);
-                    $diff_app_ids = array_diff($app_ids,$exist_app_ids);
+                    $diff_app_ids = array_diff($app_ids, $exist_app_ids);
+                    $del_app_ids = array_diff($exist_app_ids, $app_ids);
+                     //原权限删除
+                    if (!empty($del_app_ids)) {
+                        $this->_delAccess($roleAppModel, $del_app_ids, $role_id);
+                    }
                     //新权限添加
                     if (!empty($diff_app_ids)) {
                         $this->_addAccess($roleAppModel, $diff_app_ids, $role_id);

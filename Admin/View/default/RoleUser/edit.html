@@ -1,0 +1,99 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">用户角色管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+
+    <form class="form-horizontal" role="form" name="RoleUserForm" ng-controller="RoleUserEditController" ng-submit="submitForm()">
+        <div class="alert alert-danger" role="alert" ng-show="message">{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success">{{success}}</div>
+        <div class="form-group">
+            <label for="role_id" class="col-sm-2 control-label">用户名:</label>
+            <div class="col-sm-10">
+                {$user.name}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="role_id" class="col-sm-2 control-label">角色分配:</label>
+            <div class="col-sm-10">
+                <label for="chkAll">全选|反选:</label><input id="chkAll" type="checkbox" ng-model="chkall" ng-click="chkAll(chkall)"/></label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="role_id" class="col-sm-2 control-label"></label>
+            <div class="col-sm-10">
+                <label class="checkbox-inline"ng-repeat="role in roles">
+                    <!--<input type="checkbox" ng-model="role.checked" ng-true-vlaue="role.id" />{{role.name}}-->
+                    <input type="checkbox" ng-model="role.checked" ng-true-vlaue="role.id" value="role.id" />{{role.name}}
+                </label>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="RoleUserForm.$invalid"><i class="icon-save"></i> 保存用户角色分配修改</button>
+            </div>
+        </div>
+
+    </form>
+
+</block>
+
+<block name="header_script">
+    <script type="text/javascript">
+        var RoleUserModule = angular.module("baby", []);
+        RoleUserModule.controller("RoleUserEditController", function ($scope, $http, $filter) {
+            $scope.chkall = false;
+            $scope.user_id = {$user.id};
+            $scope.roles = {$roles};//初始化角色
+            $scope.chkAll = function (checked) {
+                angular.forEach($scope.roles, function (value, key) {
+                    value.checked = checked;
+                });
+            }
+
+            $scope.$watch('roles', function (nv, ov) {
+                if (nv == ov) {
+                    $scope.choseArr = [];
+                    angular.forEach(
+                        $filter('filter')(nv, {checked: true}), function (v) {
+                            $scope.choseArr.push(v.id);
+                        }
+                    );
+                    return;
+                }
+                $scope.choseArr = [];
+                angular.forEach(
+                        $filter('filter')(nv, {checked: true}), function (v) {
+                    $scope.choseArr.push(v.id);
+                }
+                );
+                $scope.chkall = $scope.choseArr.length == $scope.roles.length;
+            }, true);
+
+
+            $scope.submitForm = function () {
+                $scope.form_data = {'role_ids': $scope.choseArr, 'user_id': $scope.user_id};
+                $http({
+                    method: "POST",
+                    url: "/Admin/RoleUser/edit",
+                    data: $.param($scope.form_data),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/RoleUser/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

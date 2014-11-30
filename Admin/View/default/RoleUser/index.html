@@ -7,6 +7,35 @@
         <li class="active">{$Think.ACTION_NAME}</li>
     </ol>
 
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-info">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="icon-search"></i> 检索条件
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <form role="form">
+                        <div class="form-group">
+                            <label for="name">用户名</label>
+                            <input type="name" class="form-control" id="name" placeholder="用户名">
+                        </div>
+                        <div class="form-group">
+                            <label for="role_name">角色名</label>
+                            <input type="text" class="form-control" id="role_name" placeholder="角色名">
+                        </div>
+                        <div class="form-group" style="text-align: center;">
+                            <button  type="submit" class="btn btn-success">检索</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="table-responsive panel panel-primary" ng-controller="RoleUserController">
         <div class="panel-heading">
             <B>角色用户管理 | 角色用户列表</B>
@@ -41,16 +70,16 @@
 <block name="header_script">
     <script type="text/javascript">
         var RoleUserModule = angular.module("baby", []);
-        RoleUserModule.controller("RoleUserController", function ($scope, $http) {
+        RoleUserModule.controller("RoleUserController", function($scope, $http) {
             //删除某角色
-            $scope.del_app = function (id) {
+            $scope.del_app = function(id) {
                 $scope.app = {app_id: id};
                 $http({
                     method: "POST",
                     url: "/Admin/RoleUser/delete",
                     data: $.param($scope.app),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                }).success(function (data) {
+                }).success(function(data) {
                     if (data.status) {
                         $scope.success = data.success;
                         $("#" + id).css('display', 'none');

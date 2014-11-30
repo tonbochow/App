@@ -145,17 +145,21 @@ class RoleAppController extends BaseController {
                 if ($exist) {//更新角色应用  
                     // 更新access表中权限
                     $roleApp = $roleAppModel->where(array('role_id' => $role_id))->find();
-                    $exist_app_ids = json_decode($roleApp['app_ids'], true);
-                    $diff_app_ids = array_diff($app_ids, $exist_app_ids);
-                    $del_app_ids = array_diff($exist_app_ids, $app_ids);
-                     //原权限删除
-                    if (!empty($del_app_ids)) {
-                        $this->_delAccess($roleAppModel, $del_app_ids, $role_id);
-                    }
-                    //新权限添加
-                    if (!empty($diff_app_ids)) {
-                        $this->_addAccess($roleAppModel, $diff_app_ids, $role_id);
-                    }
+//                    $exist_app_ids = json_decode($roleApp['app_ids'], true);
+//                    $diff_app_ids = array_diff($app_ids, $exist_app_ids);
+//                    $del_app_ids = array_diff($exist_app_ids, $app_ids);
+//                     //原权限删除
+//                    if (!empty($del_app_ids)) {
+//                        $this->_delAccess($roleAppModel, $del_app_ids, $role_id);
+//                    }
+//                    //新权限添加
+//                    if (!empty($diff_app_ids)) {
+//                        $this->_addAccess($roleAppModel, $diff_app_ids, $role_id);
+//                    }
+                    //删除原来所有权限
+                    $del_access = M('Access')->where(array('role_id' => $role_id))->delete();
+                    //添加新的权限
+                    $this->_addAccess($roleAppModel, $app_ids, $role_id);
                     $role_app = $roleAppModel->where($cond)->save($data);
                     if ($role_app === false) {
                         $data['status'] = false;
@@ -232,11 +236,31 @@ class RoleAppController extends BaseController {
     //编辑角色应用
     public function edit() {
         if (IS_POST) {
-            dump(I('post.'));
-            exit;
             $role_id = I('post.role_id');
             $app_ids = I('post.app_ids');
             $roleAppModel = M('RoleApp');
+            $roleAppModel->startTrans();
+            if (empty($app_ids)) {//删除角色所有权限
+                $access_del = M('Access')->where(array('role_id' => $role_id))->delete();
+                if ($access_del === false) {
+                    $data['status'] = false;
+                    $data['message'] = '删除角色所有权限失败';
+                    $roleAppModel->rollback();
+                    $this->ajaxReturn($data);
+                }
+                //删除角色应用
+                $roleApp_del = $roleAppModel->where(array('role_id' => $role_id))->delete();
+                if ($roleApp_del === false) {
+                    $data['status'] = false;
+                    $data['message'] = '删除角色所有应用失败';
+                    $roleAppModel->rollback();
+                    $this->ajaxReturn($data);
+                }
+            }
+            //删除原来所有权限
+            $del_access = M('Access')->where(array('role_id' => $role_id))->delete();
+            //添加新的权限
+            $this->_addAccess($roleAppModel, $app_ids, $role_id);
             $cond['role_id'] = $role_id;
             $data['app_ids'] = json_encode($app_ids);
             $data['update_time'] = time();
@@ -244,10 +268,12 @@ class RoleAppController extends BaseController {
             if ($role_app === false) {
                 $data['status'] = false;
                 $data['message'] = $roleAppModel->getError();
+                $roleAppModel->rollback();
                 $this->ajaxReturn($data);
             }
             $data['status'] = true;
             $data['success'] = '编辑角色应用成功';
+            $roleAppModel->commit();
             $this->ajaxReturn($data);
         }
         $role_id = I('get.id');

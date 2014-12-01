@@ -2,14 +2,18 @@
 <block name="content">
     <div class="main" >
         <div class="content">
-            <TABLE id="checkList" class="list" cellpadding=0 cellspacing=0 >
-                <tr><td height="3" colspan="2" class="topTd" ></td></tr>
-                <TR class="row" ><th colspan="2" class="space">系统信息</th></tr>
-                <volist name="info" id="v">
-                    <TR class="row" onmouseover="over()" onmouseout="out()" onclick="change()" ><TD width="15%">{$key}</TD><TD>{$v}</TD></TR>
-                </volist>
-                <tr><td height="3" colspan="2" class="bottomTd"></td></tr>
-            </TABLE>
+            <div class="panel panel-primary">
+                <div class="panel-heading">系统信息</div>
+
+                <table id="checkList" class="table table-hover" cellpadding=0 cellspacing=0 >
+                    <volist name="info" id="v">
+                        <tr class="row" onmouseover="over()" onmouseout="out()" onclick="change()" ><td width="15%">{$key}</td><td>{$v}</td></tr>
+                    </volist>
+                    <tr><td height="3" colspan="2" class="bottomTd"></td></tr>
+                </table>
+
+            </div>
         </div>
     </div>
+</div>
 </block>

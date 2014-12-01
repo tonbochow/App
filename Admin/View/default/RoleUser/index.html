@@ -18,15 +18,23 @@
             </div>
             <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                 <div class="panel-body">
-                    <form role="form">
+                    <form role="form" action="/Admin/{$Think.CONTROLLER_NAME}/{$Think.ACTION_NAME}" method="get">
                         <div class="form-group">
                             <label for="name">用户名</label>
-                            <input type="name" class="form-control" id="name" placeholder="用户名">
+                            <input type="name" class="form-control" name="name" id="name" value="{$name}" placeholder="用户名">
                         </div>
-                        <div class="form-group">
-                            <label for="role_name">角色名</label>
-                            <input type="text" class="form-control" id="role_name" placeholder="角色名">
-                        </div>
+                        <!--                        <div class="form-group">
+                                                    <label for="role_name">角色名</label>
+                                                    <select class="form-control" name="role_id">
+                                                        <foreach name="roles" item="role">
+                                                            <if condition="$role_id eq $key">
+                                                                <option value="{$key}" selected="selected">{$role}</option>
+                                                                <else />
+                                                                <option value="{$key}">{$role}</option>
+                                                            </if>
+                                                        </foreach>
+                                                    </select>
+                                                </div>-->
                         <div class="form-group" style="text-align: center;">
                             <button  type="submit" class="btn btn-success">检索</button>
                         </div>
@@ -35,59 +43,69 @@
             </div>
         </div>
     </div>
-
-    <div class="table-responsive panel panel-primary" ng-controller="RoleUserController">
-        <div class="panel-heading">
-            <B>角色用户管理 | 角色用户列表</B>
-        </div>
-        <table class="table table-bordered table-hover table-striped">
-            <tr>
-                <th>用户ID</th>
-                <th>用户名</th>
-                <th>用户状态</th>
-                <th>用户角色ID</th>
-                <th>用户角色名称</th>
-                <th>操作</th>
-            </tr>
-            <volist name="users" id="user">
-                <tr id="{$user.id}">
-                    <td>{$user.id}</td>
-                    <td>{$user.name}</td>
-                    <td>{$user.status}</td>
-                    <td>{$user.role_ids}</td>
-                    <td>{$user.role_names}</td>
-                    <td>
-                        <a href="/Admin/RoleUser/edit/id/{$user.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
-                        <!--<a href="" class="btn btn-danger" role="button"  ng-click="del_app({$user.id})"><i class="icon-trash icon-large"></i> 删除</a>-->
-                    </td>
+    <if condition="$users neq ''">
+        <div class="table-responsive panel panel-primary" ng-controller="RoleUserController">
+            <div class="panel-heading">
+                <B>角色用户管理 | 角色用户列表</B>
+            </div>
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <th>用户ID</th>
+                    <th>用户名</th>
+                    <th>用户状态</th>
+                    <th>用户角色ID</th>
+                    <th>用户角色名称</th>
+                    <th>操作</th>
                 </tr>
-            </volist>
-        </table>
-    </div>
-    <?php echo $page;?>
+                <volist name="users" id="user">
+                    <tr id="{$user.id}">
+                        <td>{$user.id}</td>
+                        <td>{$user.name}</td>
+                        <td>{$user.status}</td>
+                        <td>{$user.role_ids}</td>
+                        <td>{$user.role_names}</td>
+                        <td>
+                            <a href="/Admin/RoleUser/edit/id/{$user.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                            <!--<a href="" class="btn btn-danger" role="button"  ng-click="del_app({$user.id})"><i class="icon-trash icon-large"></i> 删除</a>-->
+                        </td>
+                    </tr>
+                </volist>
+            </table>
+        </div>
+        <?php echo $page;?>
+        <else />
+        <div class="table-responsive panel panel-danger" ng-controller="RoleUserController">
+            <div class="panel-heading">
+                <B>角色用户管理 | 角色用户列表</B>
+            </div>
+            <div class="panel-body">
+                未检索到数据
+            </div>
+        </div>
+    </if>
 </block>
 
 <block name="header_script">
     <script type="text/javascript">
-        var RoleUserModule = angular.module("baby", []);
-        RoleUserModule.controller("RoleUserController", function($scope, $http) {
-            //删除某角色
-            $scope.del_app = function(id) {
+                var RoleUserModule = angular.module("baby", []);
+                RoleUserModule.controller("RoleUserController", function ($scope, $http) {
+                //删除某角色
+                $scope.del_app = function (id) {
                 $scope.app = {app_id: id};
-                $http({
-                    method: "POST",
-                    url: "/Admin/RoleUser/delete",
-                    data: $.param($scope.app),
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                }).success(function(data) {
-                    if (data.status) {
-                        $scope.success = data.success;
+                        $http({
+                        method: "POST",
+                                url: "/Admin/RoleUser/delete",
+                                data: $.param($scope.app),
+                                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                        }).success(function (data) {
+                if (data.status) {
+                $scope.success = data.success;
                         $("#" + id).css('display', 'none');
-                    } else {
-                        $scope.message = data.message;
-                    }
+                } else {
+                $scope.message = data.message;
+                }
                 });
-            };
-        });
+                };
+                });
     </script>
 </block>

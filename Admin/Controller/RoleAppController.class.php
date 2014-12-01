@@ -8,12 +8,23 @@ class RoleAppController extends BaseController {
 
     //角色权限管理列表
     public function index() {
+        $role_id = I('get.role_id');
         $roleAppModel = M('RoleApp');
-        $role_app = $roleAppModel->select();
-        $role_app_count = $roleAppModel->count();
+        $roles = \Admin\Model\RoleModel::getRoles();
+        if (!empty($role_id)) {
+            $role_app = $roleAppModel->where(array('role_id' => $role_id))->select();
+            $role_app_count = $roleAppModel->where(array('role_id' => $role_id))->count();
+        } else {
+            $role_app = $roleAppModel->select();
+            $role_app_count = $roleAppModel->count();
+        }
         import('Common.Extends.Page.BootstrapPage');
         $Page = new \BootstrapPage($role_app_count, 1);
-        $role_app = $roleAppModel->limit($Page->firstRow . ',' . $Page->listRows)->select();
+        if (!empty($role_id)) {
+            $role_app = $roleAppModel->limit($Page->firstRow . ',' . $Page->listRows)->where(array('role_id'=>$role_id))->select();
+        } else {
+            $role_app = $roleAppModel->limit($Page->firstRow . ',' . $Page->listRows)->select();
+        }
         if (!empty($role_app)) {
             foreach ($role_app as $key => $val) {
                 $app_ids = implode(',', json_decode($val['app_ids'], true));
@@ -22,6 +33,8 @@ class RoleAppController extends BaseController {
         }
 
         $show = $Page->show(); // 分页显示输出
+        $this->assign('roles', $roles);
+        $this->assign('role_id',$role_id);
         $this->assign('page', $show);
         $this->assign('role_app', $role_app);
         $this->display('index');

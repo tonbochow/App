@@ -19,6 +19,19 @@ Class RoleModel extends CommonModel {
         $role = M('Role')->where(array('id'=>$role_id))->find();
         return $role['name'];
     }
+    
+    //角色下拉列表
+    public static  function getRoles($role_id =null){
+        $roles = M('Role')->select();
+        $role_arr = array(''=>'请选择');
+        foreach ($roles as $role){
+            $role_arr[$role['id']] = $role['name'];
+        }
+        if(!empty($role_id)){
+            return $role_arr[$role_id];
+        }
+        return $role_arr;
+    }
 }
 
 ?>

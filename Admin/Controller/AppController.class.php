@@ -8,14 +8,25 @@ class AppController extends BaseController {
 
     //应用管理
     public function index() {
+        $name = I('get.name');
         $appModel = M('App');
-        $apps = $appModel->select();
-        $app_count = $appModel->count();
+        if (empty($name)) {
+            $apps = $appModel->select();
+            $app_count = $appModel->count();
+        } else {
+            $cond['name'] = array('like', "%$name%");
+            $apps = $appModel->where($cond)->select();
+            $app_count = $appModel->where($cond)->count();
+        }
         import('Common.Extends.Page.BootstrapPage');
         $Page = new \BootstrapPage($app_count, 1);
-        $apps = $appModel->limit($Page->firstRow . ',' . $Page->listRows)->select();
-
+        if (!empty($name)) {
+            $apps = $appModel->limit($Page->firstRow . ',' . $Page->listRows)->where($cond)->select();
+        } else {
+            $apps = $appModel->limit($Page->firstRow . ',' . $Page->listRows)->select();
+        }
         $show = $Page->show(); // 分页显示输出
+        $this->assign('name', $name);
         $this->assign('page', $show);
         $this->assign('apps', $apps);
         $this->display('index');

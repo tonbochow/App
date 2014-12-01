@@ -8,12 +8,24 @@ class RoleUserController extends BaseController {
 
     //用户角色管理列表
     public function index() {
+        $name = I('get.name');
         $userModel = M('User');
-        $users = $userModel->select();
-        $user_count = $userModel->count();
+        if (!empty($name)) {
+            $cond['name'] = $name;
+            $users = $userModel->where($cond)->select();
+            $user_count = $userModel->where($cond)->count();
+        } else {
+            $users = $userModel->select();
+            $user_count = $userModel->count();
+        }
+
         import('Common.Extends.Page.BootstrapPage');
         $Page = new \BootstrapPage($user_count, 1);
-        $users = $userModel->limit($Page->firstRow . ',' . $Page->listRows)->select();
+        if (!empty($name)) {
+            $users = $userModel->limit($Page->firstRow . ',' . $Page->listRows)->where(array('name' => $name))->select();
+        } else {
+            $users = $userModel->limit($Page->firstRow . ',' . $Page->listRows)->select();
+        }
         if (!empty($users)) {
             foreach ($users as $user) {
                 $user_ids[] = $user['id'];
@@ -41,6 +53,7 @@ class RoleUserController extends BaseController {
         }
 
         $show = $Page->show(); // 分页显示输出
+        $this->assign('name', $name);
         $this->assign('users', $users);
         $this->assign('page', $show);
         $this->display('index');
@@ -75,7 +88,7 @@ class RoleUserController extends BaseController {
                 if (!empty($del_roleids)) {
                     $userRoleModel = M('RoleUser');
                     $del_cond['user_id'] = $user_id;
-                    $del_cond['role_id'] = array('in',$del_roleids);
+                    $del_cond['role_id'] = array('in', $del_roleids);
                     $user_role_del = $userRoleModel->where($del_cond)->delete();
                     if ($user_role_del === false) {
                         $data['status'] = false;

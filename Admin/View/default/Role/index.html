@@ -6,75 +6,115 @@
         <li><a href="/Admin/{$Think.CONTROLLER_NAME}">角色管理</a></li>
         <li class="active">{$Think.ACTION_NAME}</li>
     </ol>
-    <div class="table-responsive panel panel-primary" ng-controller="RoleController">
-        <div class="panel-heading">
-            <B>权限管理 | 角色管理列表</B>
-            <a href="/Admin/Role/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
+
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-info">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="icon-search"></i> 检索条件
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <form role="form" action="/Admin/{$Think.CONTROLLER_NAME}/{$Think.ACTION_NAME}" method="get">
+                        <div class="form-group">
+                            <label for="role_name">角色名</label>
+                            <select class="form-control" name="role_id">
+                                <foreach name="roles_arr" item="role">
+                                    <if condition="$role_id eq $key">
+                                        <option value="{$key}" selected="selected">{$role}</option>
+                                        <else />
+                                        <option value="{$key}">{$role}</option>
+                                    </if>
+                                </foreach>
+                            </select>
+                        </div>
+                        <div class="form-group" style="text-align: center;">
+                            <button  type="submit" class="btn btn-success">检索</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <table class="table table-bordered table-hover table-striped">
-            <tr>
-                <th>ID</th>
-                <th>角色名称</th>
-                <th>PID</th>
-                <th>状态</th>
-                <th>备注</th>
-                <th>创建时间</th>
-                <th>更新时间</th>
-                <th>操作</th>
-            </tr>
-            <volist name="roles" id="role">
-                <tr id="{$role.id}">
-                <td>{$role.id}</td>
-                <td>{$role.name}</td>
-                <td>{$role.pid}</td>
-                <td>{$role.status}</td>
-                <td>{$role.remark}</td>
-                <td>{$role.create_time|date="Y-m-d H:i:s",###}</td>
-                <td>{$role.update_time|date="Y-m-d H:i:s",###}</td>
-                <td>
-                    <a href="/Admin/Role/edit/id/{$role.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
-                    <a href="" class="btn btn-danger" role="button"  ng-click="del_role({$role.id})"><i class="icon-trash icon-large"></i> 删除</a>
-                </td>
-                </tr>
-            </volist>
-<!--            <tr ng-repeat="role in roles">
-                <td>{{role.id}}</td>
-                <td>{{role.name}}</td>
-                <td>{{role.pid}}</td>
-                <td>{{role.status}}</td>
-                <td>{{role.remark}}</td>
-                <td>{{role.create_time}}</td>
-                <td>{{role.update_time}}</td>
-                <td>
-                    <a href="/Admin/Role/edit/id/{{role.id}}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
-                    <a href="" class="btn btn-danger" role="button" ng-model="role_id" ng-click="del_role({$role.id})"><i class="icon-trash icon-large"></i> 删除</a>
-                </td>
-            </tr>-->
-        </table>
     </div>
-     <?php echo $page;?>
+    <if condition="$roles neq ''">
+        <div class="table-responsive panel panel-primary" ng-controller="RoleController">
+            <div class="panel-heading">
+                <B>权限管理 | 角色管理列表</B>
+                <a href="/Admin/Role/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
+            </div>
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <th>ID</th>
+                    <th>角色名称</th>
+                    <th>PID</th>
+                    <th>状态</th>
+                    <th>备注</th>
+                    <th>创建时间</th>
+                    <th>更新时间</th>
+                    <th>操作</th>
+                </tr>
+                <volist name="roles" id="role">
+                    <tr id="{$role.id}">
+                        <td>{$role.id}</td>
+                        <td>{$role.name}</td>
+                        <td>{$role.pid}</td>
+                        <td>{$role.status}</td>
+                        <td>{$role.remark}</td>
+                    <if condition="$role.create_time eq 0">
+                        <td></td>
+                        <else />
+                        <td>{$role.create_time|date="Y-m-d H:i:s",###}</td>
+                    </if>
+                    <if condition="$role.update_time eq 0">
+                        <td></td>
+                        <else />
+                        <td>{$role.update_time|date="Y-m-d H:i:s",###}</td>
+                    </if>
+                        <td>
+                            <a href="/Admin/Role/edit/id/{$role.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                            <a href="" class="btn btn-danger" role="button"  ng-click="del_role({$role.id})"><i class="icon-trash icon-large"></i> 删除</a>
+                        </td>
+                    </tr>
+                </volist>
+            </table>
+        </div>
+        <?php echo $page;?>
+        <else />
+        <div class="table-responsive panel panel-primary" ng-controller="RoleController">
+            <div class="panel-heading">
+                <B>权限管理 | 角色管理列表</B>
+                <a href="/Admin/Role/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
+            </div>
+            <div class="panel-body">
+                未检索到数据
+            </div>
+        </div>
+    </if>
 </block>
 <block name="header_script">
     <script type="text/javascript">
-        var RoleModule = angular.module("baby", []);
-        RoleModule.controller("RoleController", function ($scope, $http) {
-            //删除某角色
-            $scope.del_role = function(id) {
+                var RoleModule = angular.module("baby", []);
+                RoleModule.controller("RoleController", function ($scope, $http) {
+                //删除某角色
+                $scope.del_role = function(id) {
                 $scope.role = {role_id :id};
-                $http({
-                    method: "POST",
-                    url: "/Admin/Role/delete",
-                    data: $.param($scope.role),
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                }).success(function (data) {
-                    if (data.status) {
-                        $scope.success = data.success;
-                        $("#"+id).css('display','none');
-                    } else {
-                        $scope.message = data.message;
-                    }
+                        $http({
+                        method: "POST",
+                                url: "/Admin/Role/delete",
+                                data: $.param($scope.role),
+                                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                        }).success(function (data) {
+                if (data.status) {
+                $scope.success = data.success;
+                        $("#" + id).css('display', 'none');
+                } else {
+                $scope.message = data.message;
+                }
                 });
-            };
-        });
+                };
+                });
     </script>
 </block>

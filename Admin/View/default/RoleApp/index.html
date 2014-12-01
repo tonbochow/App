@@ -7,38 +7,90 @@
         <li class="active">{$Think.ACTION_NAME}</li>
     </ol>
 
-    <div class="table-responsive panel panel-primary" ng-controller="RoleAppController">
-        <div class="panel-heading">
-            <B>角色应用管理 | 角色应用列表</B>
-            <a href="/Admin/RoleApp/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-info">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="icon-search"></i> 检索条件
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <form role="form" action="/Admin/{$Think.CONTROLLER_NAME}/{$Think.ACTION_NAME}" method="get">
+                        <div class="form-group">
+                            <label for="role_name">角色名</label>
+                            <select class="form-control" name="role_id">
+                                <foreach name="roles" item="role">
+                                    <if condition="$role_id eq $key">
+                                        <option value="{$key}" selected="selected">{$role}</option>
+                                        <else />
+                                        <option value="{$key}">{$role}</option>
+                                    </if>
+                                </foreach>
+                            </select>
+                        </div>
+                        <div class="form-group" style="text-align: center;">
+                            <button  type="submit" class="btn btn-success">检索</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <table class="table table-bordered table-hover table-striped">
-            <tr>
-                <th>角色ID</th>
-                <th>角色名称</th>
-                <th>应用ids</th>
-                <th>状态</th>
-                <th>创建时间</th>
-                <th>更新时间</th>
-                <th>操作</th>
-            </tr>
-            <volist name="role_app" id="role">
-                <tr id="{$role.id}">
-                <td>{$role.role_id}</td>
-                <td>{$role.role_name}</td>
-                <td>{$role.app_ids}</td>
-                <td>{$role.status}</td>
-                <td>{$role.create_time|date="Y-m-d H:i:s",###}</td>
-                <td>{$role.update_time|date="Y-m-d H:i:s",###}</td>
-                <td>
-                    <a href="/Admin/RoleApp/edit/id/{$role.role_id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
-                    <a href="" class="btn btn-danger" role="button"  ng-click="del_RoleApp({$role.role_id})"><i class="icon-trash icon-large"></i> 删除</a>
-                </td>
-                </tr>
-            </volist>
-        </table>
     </div>
-    <?php echo $page;?>
+    <if condition="$role_app neq ''">
+        <div class="table-responsive panel panel-primary" ng-controller="RoleAppController">
+            <div class="panel-heading">
+                <B>角色应用管理 | 角色应用列表</B>
+                <a href="/Admin/RoleApp/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
+            </div>
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <th>角色ID</th>
+                    <th>角色名称</th>
+                    <th>应用ids</th>
+                    <th>状态</th>
+                    <th>创建时间</th>
+                    <th>更新时间</th>
+                    <th>操作</th>
+                </tr>
+                <volist name="role_app" id="role">
+                    <tr id="{$role.id}">
+                        <td>{$role.role_id}</td>
+                        <td>{$role.role_name}</td>
+                        <td>{$role.app_ids}</td>
+                        <td>{$role.status}</td>
+                    <if condition="$role.create_time eq 0">
+                        <td></td>
+                        <else />
+                        <td>{$role.create_time|date="Y-m-d H:i:s",###}</td>
+                    </if>
+                    <if condition="$role.update_time neq 0">
+                        <td>{$role.update_time|date="Y-m-d H:i:s",###}</td>
+                        <else/>
+                        <td></td>
+                    </if>
+                        <td>
+                            <a href="/Admin/RoleApp/edit/id/{$role.role_id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                            <a href="" class="btn btn-danger" role="button"  ng-click="del_RoleApp({$role.role_id})"><i class="icon-trash icon-large"></i> 删除</a>
+                        </td>
+                    </tr>
+                </volist>
+            </table>
+        </div>
+        <?php echo $page;?>
+        <else />
+        <div class="table-responsive panel panel-primary" ng-controller="RoleAppController">
+            <div class="panel-heading">
+                <B>角色应用管理 | 角色应用列表</B>
+                <a href="/Admin/RoleApp/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
+            </div>
+            <div class="panel-body">
+                未检索到数据
+            </div>
+        </div>
+    </if>
 </block>
 
 <block name="header_script">

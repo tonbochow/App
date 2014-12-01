@@ -8,14 +8,27 @@ class RoleController extends BaseController {
 
     //角色列表
     public function index() {
+        $role_id = I('get.role_id');
+        $roles_arr = \Admin\Model\RoleModel::getRoles();
         $roleModel = M('Role');
-        $roles = $roleModel->select();
-        $role_count = $roleModel->count();
+        if (!empty($role_id)) {
+            $roles = $roleModel->where(array('id' => $role_id))->select();
+            $role_count = $roleModel->where(array('id' => $role_id))->count();
+        } else {
+            $roles = $roleModel->select();
+            $role_count = $roleModel->count();
+        }
         import('Common.Extends.Page.BootstrapPage');
         $Page = new \BootstrapPage($role_count, 1);
-        $roles = $roleModel->limit($Page->firstRow . ',' . $Page->listRows)->select();
+        if (!empty($role_id)) {
+            $roles = $roleModel->limit($Page->firstRow . ',' . $Page->listRows)->where(array('id' => $role_id))->select();
+        } else {
+            $roles = $roleModel->limit($Page->firstRow . ',' . $Page->listRows)->select();
+        }
 
         $show = $Page->show(); // 分页显示输出
+        $this->assign('roles_arr', $roles_arr);
+        $this->assign('role_id', $role_id);
         $this->assign('page', $show);
         $this->assign('roles', $roles);
         $this->display('index');

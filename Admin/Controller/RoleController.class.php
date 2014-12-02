@@ -49,6 +49,9 @@ class RoleController extends BaseController {
             }
             $this->ajaxReturn($data);
         }
+        $backendLogin_arr[] = array('id'=>  \Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN,'backend'=>  \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN));
+        $backendLogin_arr[] = array('id'=>  \Admin\Model\RoleModel::$DENY_BACKEND_LOGIN,'backend'=>  \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$DENY_BACKEND_LOGIN));
+        $this->assign('backendLogin_arr',json_encode($backendLogin_arr));
         $this->display('add');
     }
 
@@ -74,6 +77,9 @@ class RoleController extends BaseController {
         if (empty($role)) {
             $this->error('未检索到该角色');
         }
+        $backendLogin_arr[] = array('id'=>  \Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN,'backend'=>  \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN));
+        $backendLogin_arr[] = array('id'=>  \Admin\Model\RoleModel::$DENY_BACKEND_LOGIN,'backend'=>  \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$DENY_BACKEND_LOGIN));
+        $this->assign('backendLogin_arr',json_encode($backendLogin_arr));
         $this->assign('role', $role);
         $this->display('edit');
     }

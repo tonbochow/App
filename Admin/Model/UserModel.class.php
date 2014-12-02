@@ -5,6 +5,11 @@ namespace Admin\Model;
 use Think\Model;
 
 Class UserModel extends CommonModel {
+    public static $AVAILABLE = 1;
+    public static $UNAVAILABLE = 0;
+    
+    public static $ALLOW_BACKEND_LOGIN = 1;
+    public static $DENY_BACKEND_LOGIN = 0;
 
     public $_validate = array(
         array('name', '/^[a-z]\w{3,}$/i', '帐号格式错误'),
@@ -20,8 +25,9 @@ Class UserModel extends CommonModel {
     );
 
     protected function pwdHash() {
-        if (isset(I('post.password'))) {
-            return pwdHash(I('post.password'));
+        $password = I('post.password');
+        if (!empty($password)) {
+            return pwdHash($password);
         } else {
             return false;
         }

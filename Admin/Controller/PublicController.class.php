@@ -26,9 +26,10 @@ class PublicController extends Controller {
             $map = array();
             $map['name'] = $name;
             $map['password'] = md5($password);
-            $map["status"] = array('eq', 1);
+            $map["status"] = array('eq', \Admin\Model\UserModel::$AVAILABLE);
+            $map["backend_login"] = \Admin\Model\UserModel::$ALLOW_BACKEND_LOGIN;
             $authInfo = \Org\Util\Rbac::authenticate($map);
-            if ($authInfo === false) {
+            if ($authInfo == false) {
                 $data['status'] = false;
                 $data['message'] = '帐号或密码不正确或帐号已禁用';
                 $this->ajaxReturn($data);
@@ -45,7 +46,7 @@ class PublicController extends Controller {
                 $time = time();
                 $data = array();
                 $data['id'] = $authInfo['id'];
-                $data['updatetime'] = $time;
+                $data['update_time'] = $time;
 //                $data['last_login_time'] = $time;
 //                $data['last_login_ip'] = $ip;
                 $User->save($data);

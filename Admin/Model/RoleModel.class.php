@@ -5,6 +5,8 @@ namespace Admin\Model;
 use Think\Model;
 
 Class RoleModel extends CommonModel {
+    public static $ALLOW_BACKEND_LOGIN = 1;
+    public static $DENY_BACKEND_LOGIN = 0;
 
     public $_validate = array(
         array('name', '', '角色名已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_INSERT),
@@ -31,6 +33,17 @@ Class RoleModel extends CommonModel {
             return $role_arr[$role_id];
         }
         return $role_arr;
+    }
+    
+    //后台登陆
+    public static function getBackendLogin($backend_login = null){
+        $backend_arr = array(''=>'请选择');
+        $backend_arr[self::$ALLOW_BACKEND_LOGIN] ='允许';
+        $backend_arr[self::$DENY_BACKEND_LOGIN] = '禁止';
+        if($backend_login !== null){
+            return $backend_arr[$backend_login];
+        }
+        return $backend_arr;
     }
 }
 

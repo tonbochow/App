@@ -52,6 +52,7 @@
                     <th>PID</th>
                     <th>状态</th>
                     <th>备注</th>
+                    <th>后台登陆</th>
                     <th>创建时间</th>
                     <th>更新时间</th>
                     <th>操作</th>
@@ -63,6 +64,7 @@
                         <td>{$role.pid}</td>
                         <td>{$role.status}</td>
                         <td>{$role.remark}</td>
+                        <td><?php echo \Admin\Model\RoleModel::getBackendLogin($role['backend_login']);?></td>
                     <if condition="$role.create_time eq 0">
                         <td></td>
                         <else />

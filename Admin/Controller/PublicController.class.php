@@ -9,7 +9,7 @@ class PublicController extends Controller {
     //后台登录页面
     public function login() {
         if (null !== session(C('USER_AUTH_KEY'))) {
-            $this->error('已登录','/Admin/Index/index');
+            $this->error('已登录', '/Admin/Index/index');
         }
         if (IS_POST) {
             $name = I('post.name');
@@ -27,15 +27,20 @@ class PublicController extends Controller {
             $map['name'] = $name;
             $map['password'] = md5($password);
             $map["status"] = array('eq', \Admin\Model\UserModel::$AVAILABLE);
-            $map["backend_login"] = \Admin\Model\UserModel::$ALLOW_BACKEND_LOGIN;
+//            $map["backend_login"] = \Admin\Model\UserModel::$ALLOW_BACKEND_LOGIN;
             $authInfo = \Org\Util\Rbac::authenticate($map);
             if ($authInfo == false) {
                 $data['status'] = false;
                 $data['message'] = '帐号或密码不正确或帐号已禁用';
                 $this->ajaxReturn($data);
             } else {
+                if (!$authInfo['backend_login']) {
+                    $data['status'] = false;
+                    $data['message'] = '您的帐号不允许后台登录';
+                    $this->ajaxReturn($data);
+                }
                 session(C('USER_AUTH_KEY'), $authInfo['id']);
-                session('name',$authInfo['name']);
+                session('name', $authInfo['name']);
                 session('email', $authInfo['email']);
                 if ($authInfo['name'] == 'admin') {//超级管理员登录后台
                     session(C('ADMIN_AUTH_KEY'), true);
@@ -68,7 +73,7 @@ class PublicController extends Controller {
     public function logout() {
         if (null !== (session(C('USER_AUTH_KEY')))) {
             session(null);
-            $this->success('退出成功', __CONTROLLER__. '/login');
+            $this->success('退出成功', __CONTROLLER__ . '/login');
         } else {
             $this->error('已经退出');
         }

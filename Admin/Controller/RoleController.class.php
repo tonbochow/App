@@ -49,37 +49,71 @@ class RoleController extends BaseController {
             }
             $this->ajaxReturn($data);
         }
-        $backendLogin_arr[] = array('id'=>  \Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN,'backend'=>  \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN));
-        $backendLogin_arr[] = array('id'=>  \Admin\Model\RoleModel::$DENY_BACKEND_LOGIN,'backend'=>  \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$DENY_BACKEND_LOGIN));
-        $this->assign('backendLogin_arr',json_encode($backendLogin_arr));
+        $backendLogin_arr[] = array('id' => \Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN, 'backend' => \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN));
+        $backendLogin_arr[] = array('id' => \Admin\Model\RoleModel::$DENY_BACKEND_LOGIN, 'backend' => \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$DENY_BACKEND_LOGIN));
+        $this->assign('backendLogin_arr', json_encode($backendLogin_arr));
         $this->display('add');
     }
 
     //角色编辑
     public function edit() {
         if (IS_POST) {
+            $role_id = I('post.id');
+            $model = M('Role');
+            $model->startTrans();
+            $role = $model->where(array('id' => $role_id))->find();
+            if ($role['backend_login'] != I('post.backend_login')['id']) {//更新用户表backend_login
+                $roleUserModel = M('RoleUser');
+                $role_user = $roleUserModel->field('user_id')->where(array('role_id' => $role_id))->select();
+                if (!empty($role_user)) {
+                    foreach ($role_user as $val) {
+                        $user_ids[] = $val['user_id'];
+                    }
+                }
+                $userModel = M('User');
+                $cond['id'] = array('in', $user_ids);
+                $user_data['backend_login'] = I('post.backend_login')['id'];
+                $user_data['update_time'] = time();
+                $user_save = $userModel->where($cond)->save($user_data);
+                if ($user_save === false) {
+                    $data['status'] = false;
+                    $data['message'] = '更新用户后台登录状态失败';
+                    $model->rollback();
+                    $this->ajaxReturn($data);
+                }
+            }
             $roleModel = D('Role');
             $data = I('post.');
             $data['status'] = I('post.status')['id'];
+            $data['backend_login'] = I('post.backend_login')['id'];
             $res = $roleModel->create($data);
             if ($res) {
-                $roleModel->save();
+                $role_save = $roleModel->save();
+                if ($role_save === false) {
+                    $data['message'] = '角色更新失败';
+                    $data['status'] = false;
+                    $model->rollback();
+                    $this->ajaxReturn($data);
+                }
                 $data['status'] = true;
                 $data['success'] = '编辑成功';
+                $model->commit();
+                $this->ajaxReturn($data);
             } else {
                 $data['message'] = $roleModel->getError();
                 $data['status'] = false;
+                $model->rollback();
+                $this->ajaxReturn($data);
             }
-            $this->ajaxReturn($data);
         }
         $role_id = I('get.id');
         $role = M('Role')->where(array('id' => $role_id))->find();
         if (empty($role)) {
             $this->error('未检索到该角色');
         }
-        $backendLogin_arr[] = array('id'=>  \Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN,'backend'=>  \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN));
-        $backendLogin_arr[] = array('id'=>  \Admin\Model\RoleModel::$DENY_BACKEND_LOGIN,'backend'=>  \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$DENY_BACKEND_LOGIN));
-        $this->assign('backendLogin_arr',json_encode($backendLogin_arr));
+        $backendLogin_arr[] = array('id' => \Admin\Model\RoleModel::$DENY_BACKEND_LOGIN, 'backend' => \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$DENY_BACKEND_LOGIN));
+        $backendLogin_arr[] = array('id' => \Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN, 'backend' => \Admin\Model\RoleModel::getBackendLogin(\Admin\Model\RoleModel::$ALLOW_BACKEND_LOGIN));
+        $this->assign('backendLogin_arr', json_encode($backendLogin_arr));
         $this->assign('role', $role);
         $this->display('edit');
     }

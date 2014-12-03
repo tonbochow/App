@@ -77,6 +77,16 @@ class RoleUserController extends BaseController {
                     $userModel->rollback();
                     $this->ajaxReturn($data);
                 }
+                //更新user表backend_login 为不可登录后台
+                $user_data['backend_login'] = \Admin\Model\UserModel::$DENY_BACKEND_LOGIN;
+                $user_data['update_time'] = time();
+                $user_save = $userModel->where(array('id' => $user_id))->save($user_data);
+                if ($user_save === false) {
+                    $data['status'] = false;
+                    $data['message'] = '更新用户禁登录后台失败';
+                    $userModel->rollback();
+                    $this->ajaxReturn($data);
+                }
                 $data['status'] = true;
                 $data['success'] = '删除用户所有角色成功';
                 $userModel->commit();
@@ -113,6 +123,33 @@ class RoleUserController extends BaseController {
                         $userModel->rollback();
                         $this->ajaxReturn($data);
                     }
+                }
+            }
+            $roleModel = M('Role');
+            $role_cond['id'] = array('in', $role_ids);
+            $roles = $roleModel->field('backend_login')->where($role_cond)->select();
+            foreach ($roles as $role) {
+                $backed_login_arr[] = $role['backend_login'];
+            }
+            if (in_array(\Admin\Model\UserModel::$ALLOW_BACKEND_LOGIN, $backed_login_arr)) {
+                $user_data['backend_login'] = \Admin\Model\UserModel::$ALLOW_BACKEND_LOGIN;
+                $user_data['update_time'] = time();
+                $user_save = $userModel->where(array('id' => $user_id))->save($user_data);
+                if ($user_save === false) {
+                    $data['status'] = false;
+                    $data['message'] = '更新用户允许登录后台失败';
+                    $userModel->rollback();
+                    $this->ajaxReturn($data);
+                }
+            } else {
+                $user_data['backend_login'] = \Admin\Model\UserModel::$DENY_BACKEND_LOGIN;
+                $user_data['update_time'] = time();
+                $user_save = $userModel->where(array('id' => $user_id))->save($user_data);
+                if ($user_save === false) {
+                    $data['status'] = false;
+                    $data['message'] = '更新用户禁登录后台失败';
+                    $userModel->rollback();
+                    $this->ajaxReturn($data);
                 }
             }
             $data['status'] = true;

@@ -29,7 +29,7 @@
         <div class="form-group">
             <label for="backend_login" class="col-sm-2 control-label">后台登陆</label>
             <div class="col-sm-10">
-                <select class="form-control" name="backend_login" required ng-model="role.backend_login" ng-options="option.id as option.backend for option in backendLogin">
+                <select class="form-control" name="backend_login" required ng-model="role.backend_login" ng-options="m.backend for m in backendLogin">
                     <option value="">请选择</option>
                 </select>
             </div>
@@ -57,9 +57,9 @@
         var default_edit_name = "{$role.name}";
         var default_edit_remark = "{$role.remark}";
         var default_edit_status = "{$role.status}";
+        var default_backend_login = "{$role.backend_login}";
         var RoleModule = angular.module("baby", []);
         RoleModule.controller("RoleEditController", function ($scope, $http) {
-            $scope.backendLogin = {$backendLogin_arr};
             $scope.role = {id: default_edit_id, name: default_edit_name, remark: default_edit_remark};
             $scope.statusModel = [
                 {
@@ -70,6 +70,8 @@
                     statusName: '正常'
                 }];
             $scope.role.status = $scope.statusModel[default_edit_status];
+            $scope.backendLogin = {$backendLogin_arr};
+            $scope.role.backend_login = $scope.backendLogin[default_backend_login];
             $scope.submitForm = function () {
                 $http({
                     method: "POST",

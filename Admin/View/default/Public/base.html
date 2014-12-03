@@ -57,6 +57,14 @@
                     $('#powerSetting').attr('aria-expanded','true');
                     $('#powerSetting').css('height','auto');
                 }
+                
+                if(controller_name == 'Master'){
+                    $('#system').attr('class','nav-header');
+                    $('#system').attr('aria-expanded','true');
+                    $('#systemSetting').attr('class','nav nav-list secondmenu collapse in');
+                    $('#systemSetting').attr('aria-expanded','true');
+                    $('#systemSetting').css('height','auto');
+                }
             });
         </script>
     <block name="header_script">

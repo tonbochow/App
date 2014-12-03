@@ -1,0 +1,193 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">站长信息</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+
+    <form class="form-horizontal" role="form" name="MasterForm" ng-controller="MasterController" ng-submit="submitForm()">
+        <div class="alert alert-danger" role="alert" ng-show="message">{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success">{{success}}</div>
+        <div class="form-group">
+            <label for="name" class="col-sm-2 control-label">站长真实姓名:</label>
+            <div class="col-sm-10">
+                <input type="text" name="name" value="{$master.name}" ng-model="master.name" ng-minlength="1" ng-maxlength="20" required class="form-control" id="name" placeholder="站长真实姓名">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="nickname" class="col-sm-2 control-label">昵称:</label>
+            <div class="col-sm-10">
+                <input type="text" name="nickname" value="{$master.nickname}" ng-model="master.nickname" ng-minlength="1" ng-maxlength="30" required class="form-control" id="name" placeholder="昵称">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="sex" class="col-sm-2 control-label">性别:</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="sex" required ng-model="master.sex" ng-options="m.Name for m in sexModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="birthday" class="col-sm-2 control-label">出生日期:</label>
+            <div class="col-sm-10">
+                <input type="text" ui-date ng-model="aDate">
+                <input id="birthday"  size="16" type="text" class="form-control" mg-model="master.birthday" value="<?php echo date('Y-m-d',$master['birthday']);?>" name="birthday" readonly  placeholder="请选择">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="qq" class="col-sm-2 control-label">QQ</label>
+            <div class="col-sm-10">
+                <input type="text" name="qq" value="{$master.qq}" ng-model="master.qq" ng-minlength="1" ng-maxlength="15" required class="form-control" id="qq" placeholder="QQ">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="weixin" class="col-sm-2 control-label">微信:</label>
+            <div class="col-sm-10">
+                <input type="text" name="weixin" value="{$master.weixin}" ng-model="master.weixin" ng-minlength="1" ng-maxlength="20"  class="form-control" id="weixin" placeholder="微信">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="mobile" class="col-sm-2 control-label">手机:</label>
+            <div class="col-sm-10">
+                <input type="text" name="mobile" value="{$master.mobile}" ng-model="master.mobile" ng-minlength="1" ng-maxlength="11" class="form-control" id="name" placeholder="手机">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="province" class="col-sm-2 control-label">省:</label>
+            <div class="col-sm-10">
+                <input type="text" name="province" value="{$master.birthday}" ng-model="master.birthday" ng-minlength="1" ng-maxlength="20" required class="form-control" id="name" placeholder="性别">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="city" class="col-sm-2 control-label">市:</label>
+            <div class="col-sm-10">
+                <input type="text" name="birthday" value="{$master.birthday}" ng-model="master.birthday" ng-minlength="1" ng-maxlength="20" required class="form-control" id="name" placeholder="性别">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="town" class="col-sm-2 control-label">县:</label>
+            <div class="col-sm-10">
+                <input type="text" name="birthday" value="{$master.birthday}" ng-model="master.birthday" ng-minlength="1" ng-maxlength="20" required class="form-control" id="name" placeholder="性别">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="address" class="col-sm-2 control-label">详细地址:</label>
+            <div class="col-sm-10">
+                <input type="text" name="address" value="{$master.address}" ng-model="master.address" ng-minlength="1" ng-maxlength="20" class="form-control" id="address" placeholder="详细地址">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="photo" class="col-sm-2 control-label">头像:</label>
+            <div class="col-sm-10">
+                <input type="text" name="birthday" value="{$master.birthday}" ng-model="master.birthday" ng-minlength="1" ng-maxlength="20" required class="form-control" id="name" placeholder="性别">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="remark" class="col-sm-2 control-label">备注:</label>
+            <div class="col-sm-10">
+                <input type="text" name="birthday" value="{$master.birthday}" ng-model="master.birthday" ng-minlength="1" ng-maxlength="20" required class="form-control" id="name" placeholder="性别">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="show_flag" class="col-sm-2 control-label">是否显示:</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="show_flag" required ng-model="master.show_flag" ng-options="m.Name for m in showModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="MasterForm.$invalid"><i class="icon-save"></i> 保存站长信息</button>
+            </div>
+        </div>
+
+    </form>
+</block>
+
+<block name="header_script">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/datetimepicker/css/bootstrap-datetimepicker.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/jquery_ui/jquery-ui.min.css" media="all">
+    <script type="text/javascript" src="__COMMON__/jquery_ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/date/date.js"></script>
+    <script type="text/javascript" src="__COMMON__/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="__COMMON__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            //生日日期插件
+            $("#birthday").datetimepicker({
+                language: 'zh-CN',
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayBtn: false,
+                startView: 4,
+                minView: 2,
+                minuteStep: 1,
+            });
+            var date = new Date();
+            var year = date.getFullYear();
+            var month = date.getMonth();
+            var day = date.getDate();
+            $('#birthday').datetimepicker('setEndDate', year + '-' + month + '-' + day);
+        });
+    </script>
+    <script type="text/javascript">
+        var MasterModule = angular.module("baby", []);
+        MasterModule.controller("MasterController", function($scope, $http, $filter) {
+            //性别下拉列表
+            $scope.sexModel = [
+                {
+                    id: 0,
+                    Name: '女'
+                }, {
+                    id: 1,
+                    Name: '男'
+                }];
+            $scope.master = {'sex': $scope.sexModel["{$master.sex}"]};
+            //是否显示下拉列表
+            $scope.showModel = [{
+                    id: 0,
+                    Name: '不显示'
+                }, {
+                    id: 1,
+                    Name: '显示'
+                }];
+            $scope.master = {'show_flag': $scope.showModel["{$master.show_flag}"]}
+            //删除某角色
+            $scope.del_app = function(id) {
+                $scope.app = {app_id: id};
+                $http({
+                    method: "POST",
+                    url: "/Admin/Master/index",
+                    data: $.param($scope.app),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function(data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        $("#" + id).css('display', 'none');
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

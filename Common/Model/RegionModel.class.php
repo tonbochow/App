@@ -7,7 +7,7 @@
  */
 
 
-namespace Admin\Model;
+namespace Common\Model;
 use Think\Model;
 class RegionModel extends Model{
     // 获取区域方法

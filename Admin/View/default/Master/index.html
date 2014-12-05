@@ -7,24 +7,26 @@
         <li class="active">{$Think.ACTION_NAME}</li>
     </ol>
 
-    <form class="form-horizontal" role="form" name="MasterForm" ng-controller="MasterController" ng-submit="submitForm()">
+    <form class="form-horizontal" role="form" name="MasterForm" ng-controller="MasterController" ng-submit="submitForm()" novalidate>
         <div class="alert alert-danger" role="alert" ng-show="message">{{message}}</div>
         <div class="alert alert-success" role="alert" ng-show="success">{{success}}</div>
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : MasterForm.name.$invalid && !MasterForm.name.$pristine}">
             <label for="name" class="col-sm-2 control-label">站长真实姓名:</label>
             <div class="col-sm-10">
                 <input type="text" name="name" value="{$master.name}" ng-model="master.name" ng-minlength="1" ng-maxlength="20" required class="form-control" id="name" placeholder="站长真实姓名">
+                <p ng-show="MasterForm.name.$invalid && !MasterForm.name.$pristine" class="help-block">真实姓名不符要求(长度1-20)</p>
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : MasterForm.nickname.$invalid && !MasterForm.nickname.$pristine}">
             <label for="nickname" class="col-sm-2 control-label">昵称:</label>
             <div class="col-sm-10">
                 <input type="text" name="nickname" value="{$master.nickname}" ng-model="master.nickname" ng-minlength="1" ng-maxlength="30" required class="form-control" id="name" placeholder="昵称">
+                <p ng-show="MasterForm.nickname.$invalid && !MasterForm.nickname.$pristine" class="help-block">昵称不符要求(长度1-30)</p>
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : MasterForm.sex.$invalid && !MasterForm.sex.$pristine}">
             <label for="sex" class="col-sm-2 control-label">性别:</label>
             <div class="col-sm-10">
                 <select class="form-control" name="sex" required ng-model="master.sex" ng-options="m.Name for m in sexModel">
@@ -36,70 +38,119 @@
         <div class="form-group">
             <label for="birthday" class="col-sm-2 control-label">出生日期:</label>
             <div class="col-sm-10">
-                <input id="birthday"  size="16" type="text" class="form-control" mg-model="master.birthday" value="<?php echo date('Y-m-d',$master['birthday']);?>" name="birthday" readonly  placeholder="请选择">
+                <input type="text" ui-date="dateOptions" ui-date-format="" name="birthday" ng-model="master.birthday">               
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : MasterForm.qq.$invalid && MasterForm.qq.$dirty}">
             <label for="qq" class="col-sm-2 control-label">QQ</label>
             <div class="col-sm-10">
-                <input type="text" name="qq" value="{$master.qq}" ng-model="master.qq" ng-minlength="1" ng-maxlength="15" required class="form-control" id="qq" placeholder="QQ">
+                <input type="number" name="qq" value="{$master.qq}" ng-model="master.qq" ng-minlength="1" ng-maxlength="15" required class="form-control" id="qq" placeholder="QQ">
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : MasterForm.weixin.$invalid && MasterForm.weixin.$dirty}">
             <label for="weixin" class="col-sm-2 control-label">微信:</label>
             <div class="col-sm-10">
-                <input type="text" name="weixin" value="{$master.weixin}" ng-model="master.weixin" ng-minlength="1" ng-maxlength="20"  class="form-control" id="weixin" placeholder="微信">
+                <input type="text" name="weixin" value="{$master.weixin}" ng-model="master.weixin" ng-pattern="/([a-zA-Z_]+\w*){1,20}/" ng-minlength="1" ng-maxlength="20"  class="form-control" id="weixin" placeholder="微信">
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : MasterForm.mobile.$invalid && MasterForm.mobile.$dirty}">
             <label for="mobile" class="col-sm-2 control-label">手机:</label>
             <div class="col-sm-10">
-                <input type="text" name="mobile" value="{$master.mobile}" ng-model="master.mobile" ng-minlength="1" ng-maxlength="11" class="form-control" id="name" placeholder="手机">
+                <input type="number" name="mobile" value="{$master.mobile}" ng-model="master.mobile" ng-minlength="1" ng-maxlength="11" class="form-control" id="mobile" placeholder="手机">
             </div>
         </div>
 
         <div class="form-group">
             <label for="province" class="col-sm-2 control-label">省:</label>
             <div class="col-sm-10">
-                <input type="text" name="province" value="{$master.province}" ng-model="master.province" ng-minlength="1" ng-maxlength="20" required class="form-control" id="name" placeholder="性别">
+                <select class="form-control" id="province" name="province" ng-model="master.province" onchange="loadRegion('province', 2, 'city', '/admin/master/getRegion');"> 
+                    <option value="" selected>省份/直辖市</option>
+                    <volist name="province" id="vo"> 
+                        <?php 
+                        if($master['province'] == $vo['id']){
+                        ?>
+                        <option value="{$vo.id}" selected="selected">{$vo.name}</option>
+                        <?php
+                        }else{
+                        ?>
+                        <option value="{$vo.id}" >{$vo.name}</option>
+                        <?php
+                        }
+                        ?>
+                    </volist>
+                </select>
             </div>
         </div>
 
         <div class="form-group">
             <label for="city" class="col-sm-2 control-label">市:</label>
             <div class="col-sm-10">
-                <input type="text" name="city" value="{$master.city}" ng-model="master.city" ng-minlength="1" ng-maxlength="20" required class="form-control" id="city" placeholder="性别">
+                <select class="form-control" id="city" name="city" ng-model="master.city" onchange="loadRegion('city', 3, 'town', '/admin/master/getRegion');"> 
+                    <option value="">市/县</option>
+                    <volist name="citys" id="vo">   
+                        <?php 
+                        if($master['city'] == $vo['id']){
+                        ?>
+                        <option value="{$vo.id}" selected="selected">{$vo.name}</option>
+                        <?php
+                        }else{
+                        ?>
+                        <option value="{$vo.id}" >{$vo.name}</option>
+                        <?php
+                        }
+                        ?>
+                    </volist>
+                </select>
             </div>
         </div>
 
         <div class="form-group">
             <label for="town" class="col-sm-2 control-label">县:</label>
             <div class="col-sm-10">
-                <input type="text" name="town" value="{$master.town}" ng-model="master.town" ng-minlength="1" ng-maxlength="20" required class="form-control" id="town" placeholder="性别">
+                <select class="form-control" id="town" ng-model="master.town" name="town"> 
+                    <option value="">镇/区</option>
+                    <volist name="towns" id="vo">     
+                        <?php 
+                        if($master['town'] == $vo['id']){
+                        ?>
+                        <option value="{$vo.id}" selected="selected">{$vo.name}</option>
+                        <?php
+                        }else{
+                        ?>
+                        <option value="{$vo.id}" >{$vo.name}</option>
+                        <?php
+                        }
+                        ?>
+                    </volist>
+                </select>
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : MasterForm.address.$invalid && MasterForm.address.$dirty}">
             <label for="address" class="col-sm-2 control-label">详细地址:</label>
             <div class="col-sm-10">
-                <input type="text" name="address" value="{$master.address}" ng-model="master.address" ng-minlength="1" ng-maxlength="20" class="form-control" id="address" placeholder="详细地址">
+                <input type="text" name="address" value="{$master.address}" ng-model="master.address" ng-minlength="1" ng-maxlength="100" class="form-control" id="address" placeholder="详细地址">
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : MasterForm.photo.$invalid && MasterForm.photo.$dirty}">
             <label for="photo" class="col-sm-2 control-label">头像:</label>
             <div class="col-sm-10">
-                <input type="text" name="photo" value="{$master.photo}" ng-model="master.photo" ng-minlength="1" ng-maxlength="20" required class="form-control" id="photo" placeholder="性别">
+                <div id="queue"></div>
+		<input id="file_upload" name="photo" type="file"  multiple="true">
+                <input type="hidden" name="photo" value="" ng-model="master.photo" />
+                
+                <input type="text" name="photo" value="{$master.photo}" ng-model="master.photo" ng-minlength="1" ng-maxlength="20" required class="form-control" id="photo" placeholder="头像">
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : MasterForm.remark.$invalid && MasterForm.remark.$dirty}">
             <label for="remark" class="col-sm-2 control-label">备注:</label>
             <div class="col-sm-10">
-                <input type="text" name="remark" value="{$master.remark}" ng-model="master.remark" ng-minlength="1" ng-maxlength="20" required class="form-control" id="remark" placeholder="性别">
+                <input type="text" name="remark" value="{$master.remark}" ng-model="master.remark" ng-minlength="1" ng-maxlength="20"  class="form-control" id="remark" placeholder="备注">
             </div>
         </div>
 
@@ -123,33 +174,22 @@
 </block>
 
 <block name="header_script">
-    <link rel="stylesheet" type="text/css" href="__COMMON__/datetimepicker/css/bootstrap-datetimepicker.css" media="all">
-<!--    <link rel="stylesheet" type="text/css" href="__COMMON__/jquery_ui/jquery-ui.min.css" media="all">
-    <script type="text/javascript" src="__COMMON__/jquery_ui/jquery-ui.min.js"></script>-->
-    <script type="text/javascript" src="__COMMON__/datetimepicker/js/bootstrap-datetimepicker.js"></script>
-    <script type="text/javascript" src="__COMMON__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <style type="text/css">
+        select{color:#333}
+    </style>
+    <link rel="stylesheet" type="text/css" href="__COMMON__/uploadify/uploadify.css" media="all">
+    <script type="text/javascript" src="__COMMON__/uploadify/jquery.uploadify.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/region/region.js"></script>
+    <script type="text/javascript" src="__COMMON__/angular-ui/date.js"></script>
     <script type="text/javascript">
-        $(function() {
-            //生日日期插件
-            $("#birthday").datetimepicker({
-                language: 'zh-CN',
-                format: 'yyyy-mm-dd',
-                autoclose: true,
-                todayBtn: false,
-                startView: 4,
-                minView: 2,
-                minuteStep: 1,
-            });
-            var date = new Date();
-            var year = date.getFullYear();
-            var month = date.getMonth();
-            var day = date.getDate();
-            $('#birthday').datetimepicker('setEndDate', year + '-' + month + '-' + day);
-        });
-    </script>
-    <script type="text/javascript">
-        var MasterModule = angular.module("baby", []);
-        MasterModule.controller("MasterController", function($scope, $http, $filter) {
+        var MasterModule = angular.module("baby", ['ui.date']);
+        MasterModule.controller("MasterController", function ($scope, $http, $filter) {
+            $scope.birthday = "{$master.birthday}";
+            $scope.dateOptions = {
+                changeYear: true,
+                changeMonth: true,
+                yearRange: '1900:-0'
+            };
             //性别下拉列表
             $scope.sexModel = [
                 {
@@ -170,14 +210,13 @@
                 }];
             $scope.master = {'show_flag': $scope.showModel["{$master.show_flag}"]}
             //删除某角色
-            $scope.del_app = function(id) {
-                $scope.app = {app_id: id};
+            $scope.submitForm = function (id) {
                 $http({
                     method: "POST",
                     url: "/Admin/Master/index",
-                    data: $.param($scope.app),
+                    data: $.param($scope.master),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                }).success(function(data) {
+                }).success(function (data) {
                     if (data.status) {
                         $scope.success = data.success;
                         $("#" + id).css('display', 'none');
@@ -186,6 +225,25 @@
                     }
                 });
             };
+        });
+        
+        function complete(){
+            
+        }
+        
+        <?php $timestamp = time();?>
+        $(function() {
+            $('#file_upload').uploadify({
+                'formData'     : {
+                    'timestamp' : '<?php echo $timestamp;?>',
+                    'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
+                },
+                'buttonText':'选择图片',
+                'swf'      : '__COMMON__/uploadify/uploadify.swf',
+                'cancelImg': '__COMMON__/uploadify/uploadify-cancel.png',
+                'onComplete': complete,
+                'uploader' : '/Admin/Master/upload'
+            });
         });
     </script>
 </block>

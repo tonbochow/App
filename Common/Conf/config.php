@@ -32,4 +32,5 @@ return array(
     'URL_CASE_INSENSITIVE' =>true,//url不区分大小写
     
     'DEFAULT_THEME' => 'default',//模版主题
+    'ROOT_PATH' => $_SERVER['DOCUMENT_ROOT'],
 );

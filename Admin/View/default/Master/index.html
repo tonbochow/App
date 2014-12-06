@@ -8,8 +8,8 @@
     </ol>
 
     <form class="form-horizontal" role="form" name="MasterForm" ng-controller="MasterController" ng-submit="submitForm()" novalidate>
-        <div class="alert alert-danger" role="alert" ng-show="message">{{message}}</div>
-        <div class="alert alert-success" role="alert" ng-show="success">{{success}}</div>
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
         <div class="form-group" ng-class="{'has-error' : MasterForm.name.$invalid && !MasterForm.name.$pristine}">
             <label for="name" class="col-sm-2 control-label">站长真实姓名:</label>
             <div class="col-sm-10">
@@ -38,14 +38,14 @@
         <div class="form-group">
             <label for="birthday" class="col-sm-2 control-label">出生日期:</label>
             <div class="col-sm-10">
-                <input type="text" ui-date="dateOptions" ui-date-format="" name="birthday" ng-model="master.birthday">               
+                <input type="text" ui-date="dateOptions" ui-date-format="yy-mm-dd" name="birthday" ng-model="master.birthday">               
             </div>
         </div>
 
         <div class="form-group" ng-class="{'has-error' : MasterForm.qq.$invalid && MasterForm.qq.$dirty}">
             <label for="qq" class="col-sm-2 control-label">QQ</label>
             <div class="col-sm-10">
-                <input type="number" name="qq" value="{$master.qq}" ng-model="master.qq" ng-minlength="1" ng-maxlength="15" required class="form-control" id="qq" placeholder="QQ">
+                <input type="text" name="qq" value="{$master.qq}" ng-model="master.qq" ng-minlength="1" ng-maxlength="15" required class="form-control" ng-pattern="/^[1-9]*[1-9][0-9]*$/" id="qq" placeholder="QQ">
             </div>
         </div>
 
@@ -59,7 +59,7 @@
         <div class="form-group" ng-class="{'has-error' : MasterForm.mobile.$invalid && MasterForm.mobile.$dirty}">
             <label for="mobile" class="col-sm-2 control-label">手机:</label>
             <div class="col-sm-10">
-                <input type="number" name="mobile" value="{$master.mobile}" ng-model="master.mobile" ng-minlength="1" ng-maxlength="11" class="form-control" id="mobile" placeholder="手机">
+                <input type="text" name="mobile" value="{$master.mobile}" ng-model="master.mobile"  ng-pattern="/^(13\d{9})|(15\d{9})|(18\d{9})|(17\d{9})$/" ng-minlength="1" ng-maxlength="11" class="form-control" id="mobile" placeholder="手机">
             </div>
         </div>
 
@@ -140,10 +140,17 @@
             <label for="photo" class="col-sm-2 control-label">头像:</label>
             <div class="col-sm-10">
                 <div id="queue"></div>
-		<input id="file_upload" name="photo" type="file"  multiple="true">
-                <input type="hidden" name="photo" value="" ng-model="master.photo" />
-                
-                <input type="text" name="photo" value="{$master.photo}" ng-model="master.photo" ng-minlength="1" ng-maxlength="20" required class="form-control" id="photo" placeholder="头像">
+                <img id="previmg" src="{$master.photo}" />
+                <input id="file_upload" name="photo" type="file"  multiple="true">
+                <input type="hidden" name="photo" id="photo" value="{{master.photo}}" ng-model="master.photo" />
+
+<!--                <div class='preview' style="border:0px;"> 
+                    <img id="photo_prev" class='imghead' src="{$master.photo}" border="0" />  
+                </div>
+                <div class="fileUpload btn btn-primary">
+                    <span class="glyphicon glyphicon-picture"> 选择图片</span>
+                    <input type="file" name="photo" id="photo" class="upload" onchange="previewImage(this)"/>
+                </div>-->
             </div>
         </div>
 
@@ -179,11 +186,31 @@
     </style>
     <link rel="stylesheet" type="text/css" href="__COMMON__/uploadify/uploadify.css" media="all">
     <script type="text/javascript" src="__COMMON__/uploadify/jquery.uploadify.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="__COMMON__/image-preview/img_upload.css" media="all">-->
+    <!--<script type="text/javascript" src="__COMMON__/image-preview/img_privew.js"></script>-->
     <script type="text/javascript" src="__COMMON__/region/region.js"></script>
     <script type="text/javascript" src="__COMMON__/angular-ui/date.js"></script>
     <script type="text/javascript">
         var MasterModule = angular.module("baby", ['ui.date']);
-        MasterModule.controller("MasterController", function ($scope, $http, $filter) {
+        MasterModule.controller("MasterController", function ($scope, $http) {
+            $scope.master = {$json_master};
+            <?php $timestamp = time(); ?>
+            $(function() {
+                $('#file_upload').uploadify({
+                    'formData'     : {
+                        'timestamp' : '<?php echo $timestamp;?>',
+                        'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
+                    },
+                    'buttonText':'选择图片',
+                    'swf'      : '__COMMON__/uploadify/uploadify.swf',
+                    'onUploadSuccess' : function(file, data, response) {
+                        $('#previmg').attr('src',data);
+                        $scope.master.photo = data;
+                   },
+                   'uploader' : '/Admin/Master/upload'
+                });
+            });
+            
             $scope.birthday = "{$master.birthday}";
             $scope.dateOptions = {
                 changeYear: true,
@@ -199,7 +226,8 @@
                     id: 1,
                     Name: '男'
                 }];
-            $scope.master = {'sex': $scope.sexModel["{$master.sex}"]};
+//            $scope.master = {'sex': $scope.sexModel["{$master.sex}"]};
+            $scope.master.sex = $scope.sexModel["{$master.sex}"];
             //是否显示下拉列表
             $scope.showModel = [{
                     id: 0,
@@ -208,8 +236,8 @@
                     id: 1,
                     Name: '显示'
                 }];
-            $scope.master = {'show_flag': $scope.showModel["{$master.show_flag}"]}
-            //删除某角色
+//            $scope.master = {'show_flag': $scope.showModel["{$master.show_flag}"]};
+            $scope.master.show_flag = $scope.showModel["{$master.show_flag}"];
             $scope.submitForm = function (id) {
                 $http({
                     method: "POST",
@@ -219,31 +247,12 @@
                 }).success(function (data) {
                     if (data.status) {
                         $scope.success = data.success;
-                        $("#" + id).css('display', 'none');
                     } else {
                         $scope.message = data.message;
                     }
                 });
             };
         });
-        
-        function complete(){
-            
-        }
-        
-        <?php $timestamp = time();?>
-        $(function() {
-            $('#file_upload').uploadify({
-                'formData'     : {
-                    'timestamp' : '<?php echo $timestamp;?>',
-                    'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
-                },
-                'buttonText':'选择图片',
-                'swf'      : '__COMMON__/uploadify/uploadify.swf',
-                'cancelImg': '__COMMON__/uploadify/uploadify-cancel.png',
-                'onComplete': complete,
-                'uploader' : '/Admin/Master/upload'
-            });
-        });
+
     </script>
 </block>

@@ -15,38 +15,44 @@ class MasterController extends BaseController {
             $masterModel = M('Master');
             $master = $masterModel->find();
             if (empty($master)) {
-                $add_res = $masterModel->add($master_data);
-                if ($add_res) {
-                    if (!empty($master_data['photo'])) {
-                        delFileUnderDir(C('ROOT_PATH') . '/upload/master', C('ROOT_PATH') . $master_data['photo']);
+                $mod = D('Master');
+                if ($mod->create($master_data, \Think\Model::MODEL_INSERT)) {
+                    $add_res = $mod->add();
+                    if ($add_res) {
+                        if (!empty($master_data['photo'])) {
+                            delFileUnderDir(C('ROOT_PATH') . '/upload/master', C('ROOT_PATH') . $master_data['photo']);
+                        }
+                        $data['status'] = true;
+                        $data['success'] = "保存站长信息成功";
+                        $this->ajaxReturn($data);
                     }
-                    $data['status'] = true;
-                    $data['success'] = "保存站长信息成功";
-                    $this->ajaxReturn($data);
                 }
             } else {
-                $update_res = $masterModel->where(array('name' => $master['name']))->save($master_data);
-                if ($update_res) {
-                    if (!empty($master_data['photo'])) {
-                        delFileUnderDir(C('ROOT_PATH') . '/upload/master', C('ROOT_PATH') . $master_data['photo']);
+                $mod = D('Master');
+                if ($mod->create($master_data, \Think\Model::MODEL_UPDATE)) {
+                    $update_res = $mod->save();
+                    if ($update_res) {
+                        if (!empty($master_data['photo'])) {
+                            delFileUnderDir(C('ROOT_PATH') . '/upload/master', C('ROOT_PATH') . $master_data['photo']);
+                        }
+                        $data['status'] = true;
+                        $data['success'] = "保存站长信息成功";
+                        $this->ajaxReturn($data);
                     }
-                    $data['status'] = true;
-                    $data['success'] = "保存站长信息成功";
-                    $this->ajaxReturn($data);
                 }
             }
             $data['status'] = false;
-            $data['message'] = "保存站长信息失败";
+            $data['message'] = $mod->getError();
             $this->ajaxReturn($data);
         }
         $masterModel = M('Master');
         $master = $masterModel->find();
-        if(empty($master)){
-            $master['sex'] ='';
-            $master['show_flag'] ='';
+        if (empty($master)) {
+            $master['sex'] = '';
+            $master['show_flag'] = '';
         }
-        if(!empty($master)){
-            $master['birthday'] = date('Y-m-d',$master['birthday']);
+        if (!empty($master)) {
+            $master['birthday'] = date('Y-m-d', $master['birthday']);
         }
         $region = D('Common/Region');
         $province = $region->getRegion(86);

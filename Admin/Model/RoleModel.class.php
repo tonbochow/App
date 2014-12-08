@@ -8,10 +8,10 @@ Class RoleModel extends CommonModel {
     public static $ALLOW_BACKEND_LOGIN = 1;
     public static $DENY_BACKEND_LOGIN = 0;
 
-    public $_validate = array(
+    protected $_validate = array(
         array('name', '', '角色名已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_INSERT),
     );
-    public $_auto = array(
+    protected $_auto = array(
         array('create_time', 'time', self::MODEL_INSERT, 'function'),
         array('update_time', 'time', self::MODEL_UPDATE, 'function'),
     );

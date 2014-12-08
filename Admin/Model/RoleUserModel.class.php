@@ -17,6 +17,18 @@ Class RoleUserModel extends CommonModel {
         }
         return false;
     }
+    
+    //通过role_id 获取user_id
+    public static function getRoleUserIds($role_id){
+        $role_user  = M('RoleUser')->where(array('role_id'=>$role_id))->select();
+        if(!empty($role_user)){
+            foreach($role_user as $roleUser){
+                $userId_arr[] = $roleUser['user_id'];
+            }
+            return array_unique($userId_arr);
+        }
+        return false;
+    }
 }
 
 ?>

@@ -1,0 +1,143 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">用户管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-info">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="icon-search"></i> 检索条件
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <form role="form" action="/Admin/{$Think.CONTROLLER_NAME}/{$Think.ACTION_NAME}" method="get">
+                        <div class="form-group">
+                            <label for="role_name">角色名</label>
+                            <select class="form-control" name="role_id">
+                                <foreach name="roles_arr" item="role">
+                                    <if condition="$role_id eq $key">
+                                        <option value="{$key}" selected="selected">{$role}</option>
+                                        <else />
+                                        <option value="{$key}">{$role}</option>
+                                    </if>
+                                </foreach>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="is_superuser">超级用户</label>
+                            <select class="form-control" name="is_superuser">
+                                <foreach name="superuser_arr" item="superuser">
+                                    <if condition="$is_superuser eq $key">
+                                        <option value="{$key}" selected="selected">{$superuser}</option>
+                                        <else />
+                                        <option value="{$key}">{$superuser}</option>
+                                    </if>
+                                </foreach>
+                            </select>
+                        </div>
+                        <div class="form-group" style="text-align: center;">
+                            <button  type="submit" class="btn btn-success">检索</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <if condition="$users neq ''">
+        <div class="table-responsive panel panel-primary" ng-controller="UserController">
+            <div class="panel-heading">
+                <B>用户管理 | 用户列表</B>
+                <a href="/Admin/User/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
+            </div>
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <th>ID</th>
+                    <th>用户名</th>
+                    <th>昵称</th>
+                    <th>邮箱</th>
+                    <th>QQ</th>
+                    <th>手机</th>
+                    <th>超级用户</th>
+                    <th>后台登录</th>
+                    <th>最近登录</th>
+                    <th>登录地点</th>
+                    <th>注册时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                <volist name="users" id="user">
+                    <tr id="{$user.id}">
+                        <td>{$user.id}</td>
+                        <td>{$user.name}</td>
+                        <td>{$user.nickname}</td>
+                        <td>{$user.email}</td>
+                        <td>{$user.qq}</td>
+                        <td>{$user.mobile}</td>
+                        <td><?php echo \Admin\Model\UserModel::checkSuperUser($user['is_superuser']);?></td>
+                        <td><?php echo \Admin\Model\RoleModel::getBackendLogin($user['backend_login']);?></td>
+                    <if condition="$user.lastlogin_date eq 0">
+                        <td></td>
+                        <else />
+                        <td>{$user.lastlogin_date|date="Y-m-d H:i:s",###}</td>
+                    </if>
+                    <td>{$user.lastlogin_ip}</td>
+                    <if condition="$user.regtime eq 0">
+                        <td></td>
+                        <else />
+                        <td>{$user.regtime|date="Y-m-d H:i:s",###}</td>
+                    </if>
+                    <td><?php echo \Admin\Model\UserModel::getStatus($user['status']);?></td>
+                    <td>
+                        <a href="/Admin/User/edit/id/{$user.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                        <a href="" class="btn btn-danger" role="button"  ng-click="del_role({$role.id})"><i class="icon-trash icon-large"></i> 删除</a>
+                    </td>
+                    </tr>
+                </volist>
+            </table>
+        </div>
+        <?php echo $page;?>
+        <else />
+        <div class="table-responsive panel panel-primary" ng-controller="UserController">
+            <div class="panel-heading">
+                <B>用户管理 | 用户列表</B>
+                <a href="/Admin/User/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加</a>
+            </div>
+            <div class="panel-body">
+                未检索到数据
+            </div>
+        </div>
+    </if>
+</block>
+<block name="header_script">
+    <script type="text/javascript">
+        var UserModule = angular.module("baby", []);
+        UserModule.controller("UserController", function ($scope, $http) {
+            //删除某角色
+            $scope.del_role = function (id) {
+                $scope.role = {role_id: id};
+                $http({
+                    method: "POST",
+                    url: "/Admin/Role/delete",
+                    data: $.param($scope.role),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        $("#" + id).css('display', 'none');
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

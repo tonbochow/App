@@ -67,6 +67,14 @@
                     $('#systemSetting').attr('aria-expanded','true');
                     $('#systemSetting').css('height','auto');
                 }
+                
+                if(controller_name == 'User'){
+                    $('#user').attr('class','nav-header');
+                    $('#user').attr('aria-expanded','true');
+                    $('#userSetting').attr('class','nav nav-list secondmenu collapse in');
+                    $('#userSetting').attr('aria-expanded','true');
+                    $('#userSetting').css('height','auto');
+                }
             });
         </script>
     <block name="header_script">

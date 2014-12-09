@@ -97,8 +97,11 @@
                     </if>
                     <td><?php echo \Admin\Model\UserModel::getStatus($user['status']);?></td>
                     <td>
+                    <if condition="$user.is_superuser neq \Admin\Model\UserModel::$IS_SUPERUSER">
                         <a href="/Admin/User/edit/id/{$user.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
-                        <a href="" class="btn btn-danger" role="button"  ng-click="del_role({$role.id})"><i class="icon-trash icon-large"></i> 删除</a>
+                        <a href="" ng-show="{$user.status eq \Admin\Model\UserModel::$AVAILABLE}"  ng-model="user.status" class="btn btn-danger" role="button"  ng-click="disable_user({$user.id})"><i class="icon-remove-circle"></i> 禁用</a>
+                        <a href="" ng-show="{$user.status eq \Admin\Model\UserModel::$UNAVAILABLE}"  ng-model="user.status" class="btn btn-success" role="button"  ng-click="enable_user({$user.id})"><i class="icon-ok"></i> 启用</a>
+                    </if>
                     </td>
                     </tr>
                 </volist>
@@ -121,23 +124,38 @@
     <script type="text/javascript">
         var UserModule = angular.module("baby", []);
         UserModule.controller("UserController", function ($scope, $http) {
-            //删除某角色
-            $scope.del_role = function (id) {
-                $scope.role = {role_id: id};
+            //禁用用户
+            $scope.disable_user = function(user_id){
+                $scope.user  = {'user_id':user_id};
                 $http({
-                    method: "POST",
-                    url: "/Admin/Role/delete",
-                    data: $.param($scope.role),
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                }).success(function (data) {
+                    method:"POST",
+                    url:"/Admin/User/disable",
+                    data:$.param($scope.user),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
                     if (data.status) {
                         $scope.success = data.success;
-                        $("#" + id).css('display', 'none');
                     } else {
                         $scope.message = data.message;
                     }
                 });
-            };
+            }
+            //启用用用户
+            $scope.enable_user = function(user_id){
+                $scope.user  = {"user_id":user_id};
+                $http({
+                    method:"POST",
+                    url:"/Admin/User/enable",
+                    data:$.param($scope.user),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
+                    if (data.status) {
+                        $scope.success = data.success;
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
         });
     </script>
 </block>

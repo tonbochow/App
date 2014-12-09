@@ -15,16 +15,21 @@ Class UserModel extends CommonModel {
     public static $NOT_SUPERUSER = 0;
 
     protected $_validate = array(
-        array('name', '/^[a-z]\w{3,}$/i', '帐号格式错误'),
+        array('name', '', '帐号已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_INSERT),
+        array('name', 'checkName', '用户名格式不正确', self::EXISTS_VALIDATE, 'callback',self::MODEL_BOTH),
         array('password', 'require', '密码必须'),
         array('repassword', 'require', '确认密码必须'),
         array('repassword', 'password', '确认密码不一致', self::EXISTS_VALIDATE, 'confirm'),
-        array('name', '', '帐号已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_INSERT),
+        array('email', '', '邮箱已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_BOTH),
+        array('email', 'checkEmail', '邮箱格式不正确', self::EXISTS_VALIDATE, 'callback',self::MODEL_BOTH),
+        array('mobile', 'checkMobile', '手机号码不正确', self::EXISTS_VALIDATE, 'callback',self::MODEL_BOTH),
+        array('mobile', '', '手机已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_BOTH),
+        array('qq', 'checkQq', 'QQ号不正确', self::EXISTS_VALIDATE, 'callback',self::MODEL_BOTH),
     );
     protected $_auto = array(
         array('password', 'pwdHash', self::MODEL_BOTH, 'callback'),
         array('regtime', 'time', self::MODEL_INSERT, 'function'),
-        array('updatetime', 'time', self::MODEL_UPDATE, 'function'),
+        array('update_time', 'time', self::MODEL_UPDATE, 'function'),
     );
 
     protected function pwdHash() {
@@ -34,6 +39,62 @@ Class UserModel extends CommonModel {
         } else {
             return false;
         }
+    }
+    
+    //验证用户名是否符合规则
+    public static function checkName($name) {
+        $match = '/^[a-z][a-zA-Z\d_]{3,20}$/';
+        $v = trim($name);
+        if (empty($v)) {
+            return false;
+        }
+        $matches = preg_match($match, $v);
+        if(empty($matches)){
+            return false;
+        }
+        return true;
+    }
+    
+    //验证邮箱是否符合规则
+    public static function checkEmail($email) {
+        $match = '/^[\w\d]+[\w\d-.]*@[\w\d-.]+\.[\w\d]{2,10}$/i';
+        $v = trim($email);
+        if (empty($v)) {
+            return false;
+        }
+        $matches = preg_match($match, $v);
+        if(empty($matches)){
+            return false;
+        }
+        return true;
+    }
+    
+    //验证手机号是否符合规则
+    public static function checkMobile($mobile) {
+        $match = '/^[(86)|0]?(13\d{9})|(15\d{9})|(17\d{9})|(18\d{9})$/';
+        $v = trim($mobile);
+        if (empty($v)) {
+            return false;
+        }
+        $matches = preg_match($match, $v);
+        if(empty($matches)){
+            return false;
+        }
+        return true;
+    }
+    
+    //验证手机号是否符合规则
+    public static function checkQq($qq) {
+        $match = '/^[1-9]*[1-9][0-9]*$/';
+        $v = trim($qq);
+        if (empty($v)) {
+            return false;
+        }
+        $matches = preg_match($match, $v);
+        if(empty($matches)){
+            return false;
+        }
+        return true;
     }
     
     //获取用户状态

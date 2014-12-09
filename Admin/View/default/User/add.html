@@ -7,51 +7,51 @@
         <li class="active">{$Think.ACTION_NAME}</li>
     </ol>
     <form class="form-horizontal" role="form" name="UserForm" ng-controller="UserAddController" ng-submit="submitForm()">
-        <div class="alert alert-danger" role="alert" ng-show="message">{{message}}</div>
-        <div class="alert alert-success" role="alert" ng-show="success">{{success}}</div>
-        <div class="form-group">
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+        <div class="form-group" ng-class="{'has-error' : UserForm.name.$invalid && !UserForm.name.$pristine}">
             <label for="name" class="col-sm-2 control-label">用户名</label>
             <div class="col-sm-10">
-                <input type="text" name="name" ng-model="user.name" ng-minlength="1" ng-maxlength="20" required class="form-control" id="name" placeholder="用户名">
+                <input type="text" name="name" ng-model="user.name" ng-pattern="/^[a-z][a-z\d_]{3,20}$/" ng-minlength="3" ng-maxlength="20" required class="form-control" id="name" placeholder="用户名">
             </div>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : UserForm.password.$invalid && !UserForm.password.$pristine}">
             <label for="password" class="col-sm-2 control-label">密码</label>
             <div class="col-sm-10">
-                <input type="password" name="password" ng-model="user.password" ng-minlength="1" ng-maxlength="20" required class="form-control" id="password" placeholder="密码">
+                <input type="password" name="password" ng-model="user.password" ng-minlength="4" ng-maxlength="20" required class="form-control" id="password" placeholder="密码">
             </div>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : UserForm.email.$invalid && !UserForm.email.$pristine}">
             <label for="email" class="col-sm-2 control-label">邮箱</label>
             <div class="col-sm-10">
-                <input type="text" name="email" ng-model="user.email" ng-minlength="1" ng-maxlength="40" required class="form-control" id="email" placeholder="邮箱">
+                <input type="email" name="email" ng-model="user.email" ng-minlength="4" ng-maxlength="40" required class="form-control" id="email" placeholder="邮箱">
             </div>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : UserForm.nickname.$invalid && !UserForm.nickname.$pristine}">
             <label for="nickname" class="col-sm-2 control-label">昵称</label>
             <div class="col-sm-10">
-                <input type="text" name="nickname" ng-model="user.nickname" ng-minlength="1" ng-maxlength="30" required class="form-control" id="nickname" placeholder="昵称">
+                <input type="text" name="nickname" ng-model="user.nickname" ng-minlength="4" ng-maxlength="30" required class="form-control" id="nickname" placeholder="昵称">
             </div>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : UserForm.qq.$invalid && !UserForm.qq.$pristine}">
             <label for="qq" class="col-sm-2 control-label">QQ</label>
             <div class="col-sm-10">
-                <input type="text" name="qq" ng-model="user.qq" ng-minlength="1" ng-maxlength="15"  class="form-control" id="qq" placeholder="QQ">
+                <input type="number" name="qq" ng-model="user.qq" ng-pattern="/^[1-9]*[1-9][0-9]*$/" ng-minlength="1" ng-maxlength="15"  class="form-control" id="qq" placeholder="QQ">
             </div>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : UserForm.mobile.$invalid && !UserForm.mobile.$pristine}">
             <label for="mobile" class="col-sm-2 control-label">手机</label>
             <div class="col-sm-10">
-                <input type="text" name="mobile" ng-model="user.mobile" ng-minlength="1" ng-maxlength="11"  class="form-control" id="mobile" placeholder="手机">
+                <input type="number" name="mobile" ng-model="user.mobile"  ng-pattern="/^(13\d{9})|(15\d{9})|(18\d{9})|(17\d{9})$/" ng-minlength="11" ng-maxlength="11"  class="form-control" id="mobile" placeholder="手机">
             </div>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : UserForm.role_id.$invalid && !UserForm.role_id.$pristine}">
             <label for="role_id" class="col-sm-2 control-label">角色</label>
             <div class="col-sm-10">
                 <select class="form-control" name="role_id" required ng-model="user.role_id" ng-options="option.id as option.role_name for option in roleModel">
@@ -60,7 +60,7 @@
             </div>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : UserForm.is_superuser.$invalid && !UserForm.is_superuser.$pristine}">
             <label for="is_superuser" class="col-sm-2 control-label">超级用户</label>
             <div class="col-sm-10">
                 <select class="form-control" name="is_superuser" required ng-model="user.is_superuser" ng-options="option.id as option.superStatus for option in superModel">
@@ -69,7 +69,7 @@
             </div>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : UserForm.backend_login.$invalid && !UserForm.backend_login.$pristine}">
             <label for="backend_login" class="col-sm-2 control-label">后台登陆</label>
             <div class="col-sm-10">
                 <select class="form-control" name="backend_login" required ng-model="user.backend_login" ng-options="option.id as option.backend for option in backendLogin">
@@ -78,7 +78,7 @@
             </div>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" ng-class="{'has-error' : UserForm.status.$invalid && !UserForm.status.$pristine}">
             <label for="status" class="col-sm-2 control-label">用户状态</label>
             <div class="col-sm-10">
                 <select class="form-control" name="status" required ng-model="user.status" ng-options="option.id as option.statusName for option in statusModel">
@@ -86,32 +86,22 @@
                 </select>
             </div>
         </div>
-        
-        <div class="form-group" ng-class="{'has-error' : UserForm.headimg.$invalid && UserForm.headimg.$dirty}">
-            <label for="headimg" class="col-sm-2 control-label">头像:</label>
-            <div class="col-sm-10">
-                <div id="queue"></div>
-                <!--<img id="previmg" src="{$user.headimg}" />-->
-                <input id="file_upload" name="headimg" type="file"  multiple="true">
-                <input type="hidden" name="headimg" id="headimg" value="{{user.headimg}}" ng-model="user.headimg" />
-            </div>
-        </div>
+       
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-success" ng-disabled="UserForm.$invalid"><i class="icon-plus"></i> 添加</button>
+                <button type="submit" class="btn btn-success" ng-disabled="UserForm.$invalid"><i class="icon-plus-sign"></i> 添加用户</button>
             </div>
         </div>
+        
 
     </form>
 </block>
 
 <block name="header_script">
-    <link rel="stylesheet" type="text/css" href="__COMMON__/uploadify/uploadify.css" media="all">
-    <script type="text/javascript" src="__COMMON__/uploadify/jquery.uploadify.min.js"></script>
     <script type="text/javascript">
         var UserModule = angular.module("baby", []);
-        UserModule.controller("UserAddController", function ($scope, $http) { 
+        UserModule.controller("UserAddController", function ($scope, $http) {
             $scope.superModel =[{
                     id: 1,
                     superStatus: '是'

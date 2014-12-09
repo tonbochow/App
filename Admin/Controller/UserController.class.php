@@ -121,12 +121,12 @@ class UserController extends BaseController {
         $user_id = I('post.user_id');
         $verifyToken = md5('unique_salt' . I('post.timestamp'));
         $config = C('ADMIN_HEADIMG_UPLOAD');
-        $config['savePath'] = '/upload/user/' . $user_id . '/';
+        $config['savePath'] = '/user/'.$user_id.'/headimg/';
         if (!empty($_FILES) && I('post.token') == $verifyToken) {
             $upload = new \Think\Upload($config);
             $res = $upload->upload($_FILES);
             if ($res !== false) {
-                $photo_url = '/upload/user/'.$user_id.'/' .  $res['Filedata']['savename'];
+                $photo_url = '/upload/user/'.$user_id.'/headimg/' .  $res['Filedata']['savename'];
                 $image = new \Think\Image();
                 $image->open(C('ROOT_PATH') . $photo_url);
                 @unlink(C('ROOT_PATH') . $photo_url);
@@ -141,7 +141,6 @@ class UserController extends BaseController {
     //用户编辑
     public function edit() {
         if(IS_POST){
-//            dump(I('post.'));exit;
             $user_data = I('post.');
             $user_data['status'] = I('post.status')['id'];
             $user_data['backend_login'] = I('post.backend_login')['id'];
@@ -150,6 +149,9 @@ class UserController extends BaseController {
             if($userModel->create($user_data)){
                 $update_res = $userModel->save();
                 if($update_res){
+                    if(!empty($user_data['headimg'])){
+                        delFileUnderDir(C('ROOT_PATH') . '/upload/user/'.$user_data['id'].'/headimg', C('ROOT_PATH') . $user_data['headimg']);
+                    }
                     $data['status'] = true;
                     $data['success'] = '编辑用户成功';
                     $this->ajaxReturn($data);

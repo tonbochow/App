@@ -1,0 +1,154 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">用户管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="UserForm" ng-controller="UserEditController" ng-submit="submitForm()" novalidate>
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+        <div class="form-group" ng-class="{'has-error' : UserForm.name.$invalid && !UserForm.name.$pristine}">
+            <label for="name" class="col-sm-2 control-label">用户名</label>
+            <div class="col-sm-10">
+                    {$user.name}
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : UserForm.email.$invalid && !UserForm.email.$pristine}">
+            <label for="email" class="col-sm-2 control-label">邮箱</label>
+            <div class="col-sm-10">
+                <input type="email" name="email" value="{$user.email}" ng-model="user.email" ng-minlength="4" ng-maxlength="40" required class="form-control" id="email" placeholder="邮箱">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : UserForm.nickname.$invalid && !UserForm.nickname.$pristine}">
+            <label for="nickname" class="col-sm-2 control-label">昵称</label>
+            <div class="col-sm-10">
+                <input type="text" name="nickname" value="{$user.nickname}" ng-model="user.nickname" ng-minlength="4" ng-maxlength="30" required class="form-control" id="nickname" placeholder="昵称">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : UserForm.qq.$invalid && !UserForm.qq.$pristine}">
+            <label for="qq" class="col-sm-2 control-label">QQ</label>
+            <div class="col-sm-10">
+                <input type="num" name="qq" value="{$user.qq}" ng-model="user.qq" ng-pattern="/^[1-9]*[1-9][0-9]*$/" ng-minlength="1" ng-maxlength="15"  class="form-control" id="qq" placeholder="QQ">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : UserForm.mobile.$invalid && !UserForm.mobile.$pristine}">
+            <label for="mobile" class="col-sm-2 control-label">手机</label>
+            <div class="col-sm-10">
+                <input type="num" name="mobile" value="{$user.mobile}" ng-model="user.mobile"  ng-pattern="/^(13\d{9})|(15\d{9})|(18\d{9})|(17\d{9})$/" ng-minlength="11" ng-maxlength="11"  class="form-control" id="mobile" placeholder="手机">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : UserForm.is_superuser.$invalid && !UserForm.is_superuser.$pristine}">
+            <label for="is_superuser" class="col-sm-2 control-label">超级用户</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="is_superuser" required ng-model="user.is_superuser" ng-options="option.superStatus for option in superModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : UserForm.backend_login.$invalid && !UserForm.backend_login.$pristine}">
+            <label for="backend_login" class="col-sm-2 control-label">后台登陆</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="backend_login" required ng-model="user.backend_login" ng-options="option.backend for option in backendLogin">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : UserForm.status.$invalid && !UserForm.status.$pristine}">
+            <label for="status" class="col-sm-2 control-label">用户状态</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="status" required ng-model="user.status" ng-options="option.statusName for option in statusModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : UserForm.headimg.$invalid && UserForm.headimg.$dirty}">
+            <label for="headimg" class="col-sm-2 control-label">头像:</label>
+            <div class="col-sm-10">
+                <div id="queue"></div>
+                <img id="previmg" src="{$user.headimg}" />
+                <input id="file_upload" name="headimg" type="file"  multiple="true">
+                <input type="hidden" name="headimg" id="photo" value="{{user.headimg}}" ng-model="user.headimg" />
+            </div>
+        </div>
+       
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="UserForm.$invalid"><i class="icon-save"></i> 编辑用户</button>
+            </div>
+        </div>
+        
+
+    </form>
+</block>
+
+<block name="header_script">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/uploadify/uploadify.css" media="all">
+    <script type="text/javascript" src="__COMMON__/uploadify/jquery.uploadify.min.js"></script>
+    <script type="text/javascript">
+        var UserModule = angular.module("baby", []);
+        UserModule.controller("UserEditController", function ($scope, $http) {
+            <?php $timestamp = time(); ?>
+            $(function() {
+                $('#file_upload').uploadify({
+                    'formData'     : {
+                        'user_id'   : '{$user.id}',
+                        'timestamp' : '<?php echo $timestamp;?>',
+                        'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
+                    },
+                    'buttonText':'选择图片',
+                    'swf'      : '__COMMON__/uploadify/uploadify.swf',
+                    'onUploadSuccess' : function(file, data, response) {
+                        $('#previmg').attr('src',data);
+                        $scope.user.headimg = data;
+                   },
+                   'uploader' : '/Admin/User/uploadHeadimg'
+                });
+            });
+            $scope.user = {$json_user};
+            $scope.superModel =[{
+                    id: 0,
+                    superStatus: '否'
+                }, {
+                    id: 1,
+                    superStatus: '是'
+                }];
+            $scope.user.is_superuser = $scope.superModel["{$user.is_superuser}"];
+            $scope.statusModel = [{
+                    id: 0,
+                    statusName: '禁用'
+                }, {
+                    id: 1,
+                    statusName: '正常'
+                }];
+            $scope.user.status = $scope.statusModel["{$user.status}"];
+            $scope.backendLogin = {$backendLogin_arr};
+            $scope.user.backend_login = $scope.backendLogin["{$user.backend_login}"];
+            $scope.submitForm = function () {
+                $http({
+                    method: "POST",
+                    url: "/Admin/User/edit",
+                    data: $.param($scope.user),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/User/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

@@ -1,0 +1,152 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">日志分类管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+        <div class="panel panel-info">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="icon-search"></i> 检索条件
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <form role="form" action="/Admin/{$Think.CONTROLLER_NAME}/{$Think.ACTION_NAME}" method="get">
+                        <div class="form-group">
+                            <label for="cate_name">分类名</label>
+                            <input type="text" class="form-control" name="cate_name" id="cate_name" value="{$cate_name}" placeholder="分类名">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="status">状态</label>
+                            <select class="form-control" name="status">
+                                <foreach name="roles_arr" item="role">
+                                    <if condition="$role_id eq $key">
+                                        <option value="{$key}" selected="selected">{$role}</option>
+                                        <else />
+                                        <option value="{$key}">{$role}</option>
+                                    </if>
+                                </foreach>
+                            </select>
+                        </div>
+                        <div class="form-group" style="text-align: center;">
+                            <button  type="submit" class="btn btn-success">检索</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <if condition="$users neq ''">
+        <div class="table-responsive panel panel-primary" ng-controller="CateController">
+            <div class="panel-heading">
+                <B>日志分类管理 | 分类列表</B>
+                <a href="/Admin/ArticleCategory/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加分类</a>
+            </div>
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <th>ID</th>
+                    <th>分类名</th>
+                    <th>分类关键字</th>
+                    <th>分类描述</th>
+                    <th>顺序</th>
+                    <th>状态</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+                <volist name="articleCategory" id="cate">
+                    <tr id="{$cate.id}">
+                        <td>{$cate.id}</td>
+                        <td>{$cate.cate_name}</td>
+                        <td>{$cate.key}</td>
+                        <td>{$cate.description}</td>
+                        <td>{$cate.order}</td>
+                        <td><?php echo \Admin\Model\UserModel::checkSuperUser($user['status']);?></td>
+                        <td><?php echo \Admin\Model\RoleModel::getBackendLogin($user['backend_login']);?></td>
+                    <if condition="$cate.create_time eq 0">
+                        <td></td>
+                        <else />
+                        <td>{$cate.create_time|date="Y-m-d H:i:s",###}</td>
+                    </if>
+                    <td>
+                    <if condition="$user.is_superuser neq \Admin\Model\UserModel::$IS_SUPERUSER">
+                        <a href="/Admin/User/edit/id/{$user.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                        <a href="" ng-show="show({$user.status})"  ng-model="user.status" class="btn btn-danger" role="button"  ng-click="disable_user({$user.id})"><i class="icon-remove-circle"></i> 禁用</a>
+                        <a href="" ng-show="show(!{$user.status})"  ng-model="user.status" class="btn btn-success" role="button"  ng-click="enable_user({$user.id})"><i class="icon-ok"></i> 启用</a>
+                    </if>
+                    </td>
+                    </tr>
+                </volist>
+            </table>
+        </div>
+        <?php echo $page;?>
+        <else />
+        <div class="table-responsive panel panel-primary" ng-controller="CateController">
+            <div class="panel-heading">
+                <B>日志分类管理 | 分类列表</B>
+                <a href="/Admin/ArticleCategory/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加分类</a>
+            </div>
+            <div class="panel-body">
+                未检索到数据
+            </div>
+        </div>
+    </if>
+</block>
+<block name="header_script">
+    <script type="text/javascript">
+        var CateModule = angular.module("baby", []);
+        CateModule.controller("CateController", function ($scope, $http) {
+            $scope.user_status = {};
+            $scope.show = function(user_status){
+                if(user_status == 1){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            //禁用用户
+            $scope.disable_user = function(user_id){
+                $scope.user  = {'user_id':user_id};
+                $http({
+                    method:"POST",
+                    url:"/Admin/User/disable",
+                    data:$.param($scope.user),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
+                    if (data.status) {     
+                        $scope.success = data.success;
+                        window.location.reload();
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+            //启用用用户
+            $scope.enable_user = function(user_id){
+                $scope.user  = {"user_id":user_id};
+                $http({
+                    method:"POST",
+                    url:"/Admin/User/enable",
+                    data:$.param($scope.user),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
+                    if (data.status) {  
+                        $scope.success = data.success;
+                        window.location.reload();
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+        });
+    </script>
+</block>

@@ -15,7 +15,7 @@ Class UserModel extends CommonModel {
     public static $NOT_SUPERUSER = 0;
 
     protected $_validate = array(
-        array('name', '', '帐号已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_INSERT),
+        array('name', '', '用户名已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_INSERT),
         array('name', 'checkName', '用户名格式不正确', self::EXISTS_VALIDATE, 'callback',self::MODEL_BOTH),
         array('password', 'require', '密码必须'),
         array('repassword', 'require', '确认密码必须'),

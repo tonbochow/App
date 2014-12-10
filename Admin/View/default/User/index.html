@@ -8,6 +8,8 @@
     </ol>
 
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
         <div class="panel panel-info">
             <div class="panel-heading" role="tab" id="headingOne">
                 <h4 class="panel-title">
@@ -19,6 +21,11 @@
             <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                 <div class="panel-body">
                     <form role="form" action="/Admin/{$Think.CONTROLLER_NAME}/{$Think.ACTION_NAME}" method="get">
+                        <div class="form-group">
+                            <label for="name">用户名</label>
+                            <input type="name" class="form-control" name="name" id="name" value="{$name}" placeholder="用户名">
+                        </div>
+                        
                         <div class="form-group">
                             <label for="role_name">角色名</label>
                             <select class="form-control" name="role_id">
@@ -35,8 +42,8 @@
                         <div class="form-group">
                             <label for="is_superuser">超级用户</label>
                             <select class="form-control" name="is_superuser">
-                                <foreach name="superuser_arr" item="superuser">
-                                    <if condition="$is_superuser eq $key">
+                                <foreach name="superuser_arr" item="superuser" key="key">
+                                    <if condition="$is_superuser heq $key">
                                         <option value="{$key}" selected="selected">{$superuser}</option>
                                         <else />
                                         <option value="{$key}">{$superuser}</option>
@@ -99,8 +106,8 @@
                     <td>
                     <if condition="$user.is_superuser neq \Admin\Model\UserModel::$IS_SUPERUSER">
                         <a href="/Admin/User/edit/id/{$user.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
-                        <a href="" ng-show="{$user.status eq \Admin\Model\UserModel::$AVAILABLE}"  ng-model="user.status" class="btn btn-danger" role="button"  ng-click="disable_user({$user.id})"><i class="icon-remove-circle"></i> 禁用</a>
-                        <a href="" ng-show="{$user.status eq \Admin\Model\UserModel::$UNAVAILABLE}"  ng-model="user.status" class="btn btn-success" role="button"  ng-click="enable_user({$user.id})"><i class="icon-ok"></i> 启用</a>
+                        <a href="" ng-show="show({$user.status})"  ng-model="user.status" class="btn btn-danger" role="button"  ng-click="disable_user({$user.id})"><i class="icon-remove-circle"></i> 禁用</a>
+                        <a href="" ng-show="show(!{$user.status})"  ng-model="user.status" class="btn btn-success" role="button"  ng-click="enable_user({$user.id})"><i class="icon-ok"></i> 启用</a>
                     </if>
                     </td>
                     </tr>
@@ -124,6 +131,14 @@
     <script type="text/javascript">
         var UserModule = angular.module("baby", []);
         UserModule.controller("UserController", function ($scope, $http) {
+            $scope.user_status = {};
+            $scope.show = function(user_status){
+                if(user_status == 1){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
             //禁用用户
             $scope.disable_user = function(user_id){
                 $scope.user  = {'user_id':user_id};
@@ -133,8 +148,9 @@
                     data:$.param($scope.user),
                     headers:{'Content-Type':'application/x-www-form-urlencoded'}
                 }).success(function(data){
-                    if (data.status) {
+                    if (data.status) {     
                         $scope.success = data.success;
+                        window.location.reload();
                     } else {
                         $scope.message = data.message;
                     }
@@ -149,8 +165,9 @@
                     data:$.param($scope.user),
                     headers:{'Content-Type':'application/x-www-form-urlencoded'}
                 }).success(function(data){
-                    if (data.status) {
+                    if (data.status) {  
                         $scope.success = data.success;
+                        window.location.reload();
                     } else {
                         $scope.message = data.message;
                     }

@@ -1,0 +1,89 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">日志分类管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="CateForm" ng-controller="CateEditController" ng-submit="submitForm()" novalidate>
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+        <div class="form-group" ng-class="{'has-error' : CateForm.cate_name.$invalid && !CateForm.cate_name.$pristine}">
+            <label for="cate_name" class="col-sm-2 control-label">分类名</label>
+            <div class="col-sm-10">
+                   <input type="text" name="cate_name" value="{$article_category.cate_name}" ng-model="cate.cate_name"  ng-minlength="1" ng-maxlength="80" required class="form-control" id="cate_name" placeholder="分类名"> 
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : CateForm.keyword.$invalid && !CateForm.keyword.$pristine}">
+            <label for="keyword" class="col-sm-2 control-label">分类关键字</label>
+            <div class="col-sm-10">
+                <input type="text" name="keyword" value="{$article_category.keyword}" ng-model="cate.keyword" ng-minlength="1" ng-maxlength="40"  class="form-control" id="keyword" placeholder="分类关键字">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : CateForm.description.$invalid && !CateForm.description.$pristine}">
+            <label for="description" class="col-sm-2 control-label">分类描述</label>
+            <div class="col-sm-10">
+                <input type="text" name="description" value="{$article_category.description}" ng-model="cate.description" ng-minlength="4" ng-maxlength="255" required class="form-control" id="description" placeholder="分类描述">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : CateForm.sort.$invalid && !CateForm.sort.$pristine}">
+            <label for="sort" class="col-sm-2 control-label">排序</label>
+            <div class="col-sm-10">
+                <input type="num" name="sort" value="{$article_category.sort}" ng-model="cate.sort" ng-pattern="/^[1-9]*[1-9][0-9]*$/" ng-minlength="1" ng-maxlength="10"  class="form-control" id="sort" placeholder="排序">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : CateForm.status.$invalid && !CateForm.status.$pristine}">
+            <label for="status" class="col-sm-2 control-label">分类状态</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="status" required ng-model="cate.status" ng-options="option.statusName for option in statusModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="CateForm.$invalid"><i class="icon-save"></i> 编辑日志分类</button>
+            </div>
+        </div>
+        
+
+    </form>
+</block>
+
+<block name="header_script">
+    <script type="text/javascript">
+        var CateModule = angular.module("baby", []);
+        CateModule.controller("CateEditController", function ($scope, $http) {
+            $scope.cate = {$json_article_category};
+            $scope.statusModel = [{
+                    id: 0,
+                    statusName: '禁用'
+                }, {
+                    id: 1,
+                    statusName: '正常'
+                }];
+            $scope.cate.status = $scope.statusModel["{$article_category.status}"];
+            $scope.submitForm = function () {
+                $http({
+                    method: "POST",
+                    url: "/Admin/ArticleCategory/edit",
+                    data: $.param($scope.cate),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/ArticleCategory/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

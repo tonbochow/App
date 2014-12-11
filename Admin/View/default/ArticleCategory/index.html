@@ -29,11 +29,11 @@
                         <div class="form-group">
                             <label for="status">状态</label>
                             <select class="form-control" name="status">
-                                <foreach name="roles_arr" item="role">
-                                    <if condition="$role_id eq $key">
-                                        <option value="{$key}" selected="selected">{$role}</option>
+                                <foreach name="status_arr" item="cate_status">
+                                    <if condition="$status heq $key">
+                                        <option value="{$key}" selected="selected">{$cate_status}</option>
                                         <else />
-                                        <option value="{$key}">{$role}</option>
+                                        <option value="{$key}">{$cate_status}</option>
                                     </if>
                                 </foreach>
                             </select>
@@ -46,7 +46,7 @@
             </div>
         </div>
     </div>
-    <if condition="$users neq ''">
+    <if condition="$articleCategory neq ''">
         <div class="table-responsive panel panel-primary" ng-controller="CateController">
             <div class="panel-heading">
                 <B>日志分类管理 | 分类列表</B>
@@ -67,22 +67,19 @@
                     <tr id="{$cate.id}">
                         <td>{$cate.id}</td>
                         <td>{$cate.cate_name}</td>
-                        <td>{$cate.key}</td>
+                        <td>{$cate.keyword}</td>
                         <td>{$cate.description}</td>
-                        <td>{$cate.order}</td>
-                        <td><?php echo \Admin\Model\UserModel::checkSuperUser($user['status']);?></td>
-                        <td><?php echo \Admin\Model\RoleModel::getBackendLogin($user['backend_login']);?></td>
+                        <td>{$cate.sort}</td>
+                        <td><?php echo \Admin\Model\ArticleCategoryModel::getStatus($cate['status']);?></td>
                     <if condition="$cate.create_time eq 0">
                         <td></td>
                         <else />
                         <td>{$cate.create_time|date="Y-m-d H:i:s",###}</td>
                     </if>
                     <td>
-                    <if condition="$user.is_superuser neq \Admin\Model\UserModel::$IS_SUPERUSER">
-                        <a href="/Admin/User/edit/id/{$user.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
-                        <a href="" ng-show="show({$user.status})"  ng-model="user.status" class="btn btn-danger" role="button"  ng-click="disable_user({$user.id})"><i class="icon-remove-circle"></i> 禁用</a>
-                        <a href="" ng-show="show(!{$user.status})"  ng-model="user.status" class="btn btn-success" role="button"  ng-click="enable_user({$user.id})"><i class="icon-ok"></i> 启用</a>
-                    </if>
+                        <a href="/Admin/ArticleCategory/edit/id/{$cate.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                        <a href="" ng-show="show({$cate.status})"  ng-model="cate.status" class="btn btn-danger" role="button"  ng-click="disable_cate({$cate.id})"><i class="icon-remove-circle"></i> 禁用</a>
+                        <a href="" ng-show="show(!{$cate.status})"  ng-model="cate.status" class="btn btn-success" role="button"  ng-click="enable_cate({$cate.id})"><i class="icon-ok"></i> 启用</a>
                     </td>
                     </tr>
                 </volist>
@@ -105,21 +102,21 @@
     <script type="text/javascript">
         var CateModule = angular.module("baby", []);
         CateModule.controller("CateController", function ($scope, $http) {
-            $scope.user_status = {};
-            $scope.show = function(user_status){
-                if(user_status == 1){
+            $scope.cate_status = {};
+            $scope.show = function(cate_status){
+                if(cate_status == 1){
                     return true;
                 }else{
                     return false;
                 }
             }
-            //禁用用户
-            $scope.disable_user = function(user_id){
-                $scope.user  = {'user_id':user_id};
+            //禁用日志分类
+            $scope.disable_cate = function(cate_id){
+                $scope.cate  = {'id':cate_id};
                 $http({
                     method:"POST",
-                    url:"/Admin/User/disable",
-                    data:$.param($scope.user),
+                    url:"/Admin/ArticleCategory/disable",
+                    data:$.param($scope.cate),
                     headers:{'Content-Type':'application/x-www-form-urlencoded'}
                 }).success(function(data){
                     if (data.status) {     
@@ -130,13 +127,13 @@
                     }
                 });
             }
-            //启用用用户
-            $scope.enable_user = function(user_id){
-                $scope.user  = {"user_id":user_id};
+            //启用日志分类
+            $scope.enable_cate = function(cate_id){
+                $scope.cate  = {"id":cate_id};
                 $http({
                     method:"POST",
-                    url:"/Admin/User/enable",
-                    data:$.param($scope.user),
+                    url:"/Admin/ArticleCategory/enable",
+                    data:$.param($scope.cate),
                     headers:{'Content-Type':'application/x-www-form-urlencoded'}
                 }).success(function(data){
                     if (data.status) {  

@@ -117,6 +117,7 @@ class ArticleController extends BaseController {
         if (empty($article)) {
             $this->error('编辑的日志不存在');
         }
+        $article['content'] = htmlspecialchars_decode(stripslashes($article['content']));
         $this->assign('article', $article);
         $this->assign('json_article', json_encode($article));
         $this->display('edit');

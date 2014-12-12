@@ -38,86 +38,87 @@ class ArticleController extends BaseController {
         $this->display('index');
     }
 
-    //禁用用户
+    //禁显示日志
     public function disable() {
-        $cate_id = I('post.id');
-        $CateModel = M('ArticleCategory');
-        $cate_data['status'] = \Admin\Model\ArticleCategoryModel::$UNAVAILABLE;
-        $cate_data['update_time'] = time();
-        $disable_res = $CateModel->where(array('id' => $cate_id))->save($cate_data);
+        $article_id = I('post.id');
+        $ArticleModel = M('Article');
+        $article_data['status'] = \Admin\Model\ArticleModel::$UNAVAILABLE;
+        $article_data['update_time'] = time();
+        $disable_res = $ArticleModel->where(array('id' => $article_id))->save($article_data);
         if ($disable_res) {
             $data['status'] = true;
-            $data['success'] = '禁用成功';
+            $data['success'] = '禁显示成功';
             $this->ajaxReturn($data);
         }
         $data['status'] = false;
-        $data['message'] = '禁用失败';
+        $data['message'] = '禁显示失败';
         $this->ajaxReturn($data);
     }
 
-    //启用用户
+    //显示日志
     public function enable() {
-        $cate_id = I('post.id');
-        $CateModel = M('ArticleCategory');
-        $cate_data['status'] = \Admin\Model\ArticleCategoryModel::$AVAILABLE;
-        $cate_data['update_time'] = time();
-        $enable_res = $CateModel->where(array('id' => $cate_id))->save($cate_data);
+        $article_id = I('post.id');
+        $ArticleModel = M('Article');
+        $article_data['status'] = \Admin\Model\ArticleModel::$AVAILABLE;
+        $article_data['update_time'] = time();
+        $enable_res = $ArticleModel->where(array('id' => $article_id))->save($article_data);
         if ($enable_res) {
             $data['status'] = true;
-            $data['success'] = '启用成功';
+            $data['success'] = '启用显示成功';
             $this->ajaxReturn($data);
         }
         $data['status'] = false;
-        $data['message'] = '启用失败';
+        $data['message'] = '启用显示失败';
         $this->ajaxReturn($data);
     }
 
-    //日志分类添加
+    //日志添加
     public function add() {
         if (IS_POST) {
-            $cate_data = I('post.');
-            $ArticleCategoryModel = D('ArticleCategory');
-            if ($ArticleCategoryModel->create($cate_data)) {
-                $cate_id = $ArticleCategoryModel->add();
-                if ($cate_id) {
+//            dump(I('post.'));exit;
+            $article_data = I('post.');
+            $ArticleModel = D('Article');
+            if ($ArticleModel->create($article_data)) {
+                $article_id = $ArticleModel->add();
+                if ($article_id) {
                     $data['status'] = true;
-                    $data['success'] = '日志分类添加成功';
+                    $data['success'] = '保存日志成功';
                     $this->ajaxReturn($data);
                 }
             }
             $data['status'] = false;
-            $data['message'] = $ArticleCategoryModel->getError();
+            $data['message'] = $ArticleModel->getError();
             $this->ajaxReturn($data);
         }
         $this->display('add');
     }
 
-    //用户编辑
+    //日志编辑
     public function edit() {
         if (IS_POST) {
-            $cate_data = I('post.');
-            $cate_data['status'] = I('post.status')['id'];
-            $ArticleCategoryModel = D('ArticleCategory');
-            if ($ArticleCategoryModel->create($cate_data)) {
-                $update_res = $ArticleCategoryModel->save();
+            $article_data = I('post.');
+            $article_data['status'] = I('post.status')['id'];
+            $ArticleModel = D('Article');
+            if ($ArticleModel->create($article_data)) {
+                $update_res = $ArticleModel->save();
                 if ($update_res) {
                     $data['status'] = true;
-                    $data['success'] = '编辑日志分类成功';
+                    $data['success'] = '编辑日志成功';
                     $this->ajaxReturn($data);
                 }
             }
             $data['status'] = false;
-            $data['message'] = $ArticleCategoryModel->getError();
+            $data['message'] = $ArticleModel->getError();
             $this->ajaxReturn($data);
         }
-        $cate_id = I('get.id');
-        $ArticleCategoryModel = M('ArticleCategory');
-        $article_category = $ArticleCategoryModel->where(array('id' => $cate_id))->find();
-        if (empty($article_category)) {
-            $this->error('编辑的日志分类不存在');
+        $article_id = I('get.id');
+        $ArticleModel = M('Article');
+        $article = $ArticleModel->where(array('id' => $article_id))->find();
+        if (empty($article)) {
+            $this->error('编辑的日志不存在');
         }
-        $this->assign('article_category', $article_category);
-        $this->assign('json_article_category', json_encode($article_category));
+        $this->assign('article', $article);
+        $this->assign('json_article', json_encode($article));
         $this->display('edit');
     }
 

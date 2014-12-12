@@ -16,7 +16,9 @@ Class ArticleModel extends CommonModel {
     public static $COMMENT_DENY = 0;
     
     protected $_validate = array(
-        array('title', '', '日志标题已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_BOTH),
+        array('title', 'require', '日志标题已经存在', self::MUST_VALIDATE, 'unique', self::MODEL_BOTH),
+        array('title','require','日志标题必须！',self::MUST_VALIDATE),
+        array('content','require','日志内容必须！',self::MUST_VALIDATE),
     );
     protected $_auto = array(
         array('create_time', 'time', self::MODEL_INSERT, 'function'),
@@ -26,8 +28,8 @@ Class ArticleModel extends CommonModel {
     //获取日志状态
     public static function getStatus($status = null) {
         $status_arr = array('' => '请选择');
-        $status_arr[self::$AVAILABLE] = '正常';
-        $status_arr[self::$UNAVAILABLE] = '禁用';
+        $status_arr[self::$AVAILABLE] = '显示';
+        $status_arr[self::$UNAVAILABLE] = '隐藏';
         if ($status !== null) {
             return $status_arr[$status];
         }

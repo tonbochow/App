@@ -3,81 +3,106 @@
 <block name="content">
     <ol class="breadcrumb">
         <li><a href="/Admin">后台首页</a></li>
-        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">日志分类管理</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">日志管理</a></li>
         <li class="active">{$Think.ACTION_NAME}</li>
     </ol>
-    <form class="form-horizontal" role="form" name="CateForm" ng-controller="CateAddController" ng-submit="submitForm()">
+    <form class="form-horizontal" role="form" name="ArticleForm" ng-controller="ArticleAddController" ng-submit="submitForm()">
         <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
         <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
-        <div class="form-group" ng-class="{'has-error' : CateForm.name.$invalid && !CateForm.name.$pristine}">
-            <label for="cate_name" class="col-sm-2 control-label">日志分类名</label>
+        <div class="form-group" ng-class="{'has-error' : ArticleForm.title.$invalid && !ArticleForm.title.$pristine}">
+            <label for="title" class="col-sm-2 control-label">日志标题</label>
             <div class="col-sm-10">
-                <input type="text" name="cate_name" ng-model="cate.cate_name"  ng-minlength="1" ng-maxlength="80" required class="form-control" id="cate_name" placeholder="分类名">
+                <input type="text" name="title" ng-model="article.title"  ng-minlength="1" ng-maxlength="60" required class="form-control" id="title" placeholder="日志标题">
             </div>
         </div>
-        
-        <div class="form-group" ng-class="{'has-error' : CateForm.keyword.$invalid && !CateForm.keyword.$pristine}">
-            <label for="keyword" class="col-sm-2 control-label">分类关键字</label>
+
+        <div class="form-group" ng-class="{'has-error' : ArticleForm.keyword.$invalid && !ArticleForm.keyword.$pristine}">
+            <label for="keyword" class="col-sm-2 control-label">日志关键字</label>
             <div class="col-sm-10">
-                <input type="text" name="keyword" ng-model="cate.keyword" ng-minlength="1" ng-maxlength="40"  class="form-control" id="keyword" placeholder="分类关键字">
+                <input type="text" name="keyword" ng-model="article.keyword" ng-minlength="1" ng-maxlength="20"  class="form-control" id="keyword" placeholder="日志关键字">
             </div>
         </div>
-        
-        <div class="form-group" ng-class="{'has-error' : CateForm.description.$invalid && !CateForm.email.$pristine}">
-            <label for="description" class="col-sm-2 control-label">分类描述</label>
+
+        <div class="form-group" ng-class="{'has-error' : ArticleForm.description.$invalid && !ArticleForm.description.$pristine}">
+            <label for="description" class="col-sm-2 control-label">日志描述</label>
             <div class="col-sm-10">
-                <input type="text" name="description" ng-model="cate.description" ng-minlength="4" ng-maxlength="255"   class="form-control" id="description" placeholder="分类描述">
+                <input type="text" name="description" ng-model="article.description" ng-minlength="4" ng-maxlength="255"   class="form-control" id="description" placeholder="日志描述">
             </div>
         </div>
-        
-        <div class="form-group" ng-class="{'has-error' : CateForm.sort.$invalid && !CateForm.sort.$pristine}">
-            <label for="sort" class="col-sm-2 control-label">排序</label>
+
+        <div class="form-group" ng-class="{'has-error' : ArticleForm.content.$invalid && !ArticleForm.content.$pristine}">
+            <label for="content" class="col-sm-2 control-label">内容</label>
             <div class="col-sm-10">
-                <input type="number" name="sort" ng-model="cate.sort" ng-minlength="1" ng-maxlength="10" required class="form-control" id="sort" placeholder="排序">
+<!--                <div id="container" name="content" type="text/plain" ng-model="article.content">
+
+                </div>-->
+                <div class="ueditor" config="config" ng-model="article.content"></div>
             </div>
         </div>
-        
-        <div class="form-group" ng-class="{'has-error' : CateForm.status.$invalid && !CateForm.status.$pristine}">
-            <label for="status" class="col-sm-2 control-label">分类状态</label>
+
+        <div class="form-group" ng-class="{'has-error' : ArticleForm.status.$invalid && !ArticleForm.status.$pristine}">
+            <label for="status" class="col-sm-2 control-label">日志状态</label>
             <div class="col-sm-10">
-                <select class="form-control" name="status" required ng-model="cate.status" ng-options="option.id as option.statusName for option in statusModel">
+                <select class="form-control" name="status" required ng-model="article.status" ng-options="option.id as option.statusName for option in statusModel">
                     <option value="">请选择</option>
                 </select>
             </div>
         </div>
-       
+
+        <div class="form-group" ng-class="{'has-error' : ArticleForm.allow_comment.$invalid && !ArticleForm.allow_comment.$pristine}">
+            <label for="allow_comment" class="col-sm-2 control-label">评论</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="allow_comment" required ng-model="article.allow_comment" ng-options="option.id as option.commentName for option in commentModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-success" ng-disabled="CateForm.$invalid"><i class="icon-plus-sign"></i> 添加分类</button>
+                <button type="submit" class="btn btn-success" ng-disabled="ArticleForm.$invalid"><i class="icon-plus-sign"></i> 保存日志</button>
             </div>
         </div>
-        
+
 
     </form>
 </block>
 
 <block name="header_script">
+    <link rel="stylesheet" type="text/css" href="__CSS__/menu.css" media="all">
+    <script type="text/javascript" src="__COMMON__/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" src="__COMMON__/ueditor/ueditor.all.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/ueditor/angular-ueditor.js"></script>
     <script type="text/javascript">
-        var CateModule = angular.module("baby", []);
-        CateModule.controller("CateAddController", function ($scope, $http) {
+        var ArticleModule = angular.module("baby", ['ng.ueditor']);
+        ArticleModule.controller("ArticleAddController", function ($scope, $http) {
+            $scope.config = {
+                 
+            }
             $scope.statusModel = [{
                     id: 1,
-                    statusName: '正常'
+                    statusName: '显示'
                 }, {
                     id: 0,
-                    statusName: '禁用'
+                    statusName: '隐藏'
+                }];
+            $scope.commentModel = [{
+                    id: 1,
+                    commentName: '允许'
+                }, {
+                    id: 0,
+                    commentName: '禁止'
                 }];
             $scope.submitForm = function () {
                 $http({
                     method: "POST",
-                    url: "/Admin/ArticleCategory/add",
-                    data: $.param($scope.cate),
+                    url: "/Admin/Article/add",
+                    data: $.param($scope.article),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).success(function (data) {
                     if (data.status) {
                         $scope.success = data.success;
-                        window.location.href = '/Admin/ArticleCategory/index';
+                        window.location.href = '/Admin/Article/index';
                     } else {
                         $scope.message = data.message;
                     }

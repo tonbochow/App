@@ -8,7 +8,6 @@ Class ArticleCategoryModel extends CommonModel {
 
     public static $AVAILABLE = 1;
     public static $UNAVAILABLE = 0;
-    
     protected $_validate = array(
         array('cate_name', '', '分类已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_BOTH),
         array('sort', '', '分类排序已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_BOTH),
@@ -29,6 +28,22 @@ Class ArticleCategoryModel extends CommonModel {
         return $status_arr;
     }
 
+    //获取所有日志分类
+    public static function getCategorys() {
+        $mod = M('ArticleCategory');
+        $article_category = $mod->field('id,cate_name')->select();
+        return $article_category;
+    }
+
+    //获取日志分类名
+    public static function getCategoryName($cate_id){
+        if(!$cate_id){
+            return ;
+        }
+        $mod = M('ArticleCategory');
+        $article_category = $mod->where(array('id'=>$cate_id))->field('cate_name')->find();
+        return $article_category['cate_name'];
+    }
 }
 
 ?>

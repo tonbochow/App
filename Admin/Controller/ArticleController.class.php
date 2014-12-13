@@ -72,10 +72,43 @@ class ArticleController extends BaseController {
         $this->ajaxReturn($data);
     }
 
+    //禁止评论
+    public function disableComment() {
+        $article_id = I('post.id');
+        $ArticleModel = M('Article');
+        $article_data['allow_comment'] = \Admin\Model\ArticleModel::$COMMENT_DENY;
+        $article_data['update_time'] = time();
+        $disable_res = $ArticleModel->where(array('id' => $article_id))->save($article_data);
+        if ($disable_res) {
+            $data['status'] = true;
+            $data['success'] = '禁评论成功';
+            $this->ajaxReturn($data);
+        }
+        $data['status'] = false;
+        $data['message'] = '禁评论失败';
+        $this->ajaxReturn($data);
+    }
+    
+    //允许评论
+    public function enableComment() {
+        $article_id = I('post.id');
+        $ArticleModel = M('Article');
+        $article_data['allow_comment'] = \Admin\Model\ArticleModel::$COMMENT_ALLOW;
+        $article_data['update_time'] = time();
+        $enable_res = $ArticleModel->where(array('id' => $article_id))->save($article_data);
+        if ($enable_res) {
+            $data['status'] = true;
+            $data['success'] = '允许评论成功';
+            $this->ajaxReturn($data);
+        }
+        $data['status'] = false;
+        $data['message'] = '允许评论失败';
+        $this->ajaxReturn($data);
+    }
+    
     //日志添加
     public function add() {
         if (IS_POST) {
-//            dump(I('post.'));exit;
             $article_data = I('post.');
             $ArticleModel = D('Article');
             if ($ArticleModel->create($article_data)) {
@@ -90,6 +123,8 @@ class ArticleController extends BaseController {
             $data['message'] = $ArticleModel->getError();
             $this->ajaxReturn($data);
         }
+        $article_categorys = \Admin\Model\ArticleCategoryModel::getCategorys();
+        $this->assign('article_categorys',  json_encode($article_categorys));
         $this->display('add');
     }
 
@@ -118,6 +153,8 @@ class ArticleController extends BaseController {
             $this->error('编辑的日志不存在');
         }
         $article['content'] = htmlspecialchars_decode(stripslashes($article['content']));
+        $article_categorys = \Admin\Model\ArticleCategoryModel::getCategorys();
+        $this->assign('article_categorys',  json_encode($article_categorys));
         $this->assign('article', $article);
         $this->assign('json_article', json_encode($article));
         $this->display('edit');

@@ -10,7 +10,7 @@
         <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
         <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
         <div class="form-group" ng-class="{'has-error' : ArticleForm.title.$invalid && !ArticleForm.title.$pristine}">
-            <label for="title" class="col-sm-2 control-label">分类名</label>
+            <label for="title" class="col-sm-2 control-label">日志标题(*)</label>
             <div class="col-sm-10">
                    <input type="text" name="title" value="{$article.title}" ng-model="article.title"  ng-minlength="1" ng-maxlength="60" required class="form-control" id="cate_name" placeholder="日志标题"> 
             </div>
@@ -32,14 +32,23 @@
        
         
         <div class="form-group" ng-class="{'has-error' : ArticleForm.content.$invalid && !ArticleForm.content.$pristine}">
-            <label for="content" class="col-sm-2 control-label">内容</label>
+            <label for="content" class="col-sm-2 control-label">内容(*)</label>
             <div class="col-sm-10">
-                <div class="ueditor" config="config" ng-model="article.content">{$article.content}</div>
+                <div class="ueditor" config="config" ng-model="article.content"></div>
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : ArticleForm.category_id.$invalid && !ArticleForm.category_id.$pristine}">
+            <label for="category_id" class="col-sm-2 control-label">所属分类(*)</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="category_id" required ng-model="article.category_id" ng-options="option.id as  option.cate_name for option in categoryModel">
+                    <option value="">请选择</option>
+                </select>
             </div>
         </div>
         
         <div class="form-group" ng-class="{'has-error' : ArticleForm.status.$invalid && !ArticleForm.status.$pristine}">
-            <label for="status" class="col-sm-2 control-label">日志状态</label>
+            <label for="status" class="col-sm-2 control-label">日志状态(*)</label>
             <div class="col-sm-10">
                 <select class="form-control" name="status" required ng-model="article.status" ng-options="option.statusName for option in statusModel">
                     <option value="">请选择</option>
@@ -48,7 +57,7 @@
         </div>
         
         <div class="form-group" ng-class="{'has-error' : ArticleForm.allow_comment.$invalid && !ArticleForm.allow_comment.$pristine}">
-            <label for="allow_comment" class="col-sm-2 control-label">评论</label>
+            <label for="allow_comment" class="col-sm-2 control-label">评论(*)</label>
             <div class="col-sm-10">
                 <select class="form-control" name="allow_comment" required ng-model="article.allow_comment" ng-options="option.commentName for option in commentModel">
                     <option value="">请选择</option>
@@ -78,6 +87,7 @@
         var ArticleModule = angular.module("baby", ['ng.ueditor']);
         ArticleModule.controller("ArticleEditController", function ($scope, $http) {
             $scope.article = {$json_article};
+            $scope.categoryModel = {$article_categorys};
             $scope.statusModel = [{
                     id: 0,
                     statusName: '隐藏'

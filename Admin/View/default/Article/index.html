@@ -83,8 +83,10 @@
                     
                     <td>
                         <a href="/Admin/Article/edit/id/{$article.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
-                        <a href="" ng-show="show({$article.status})"  ng-model="article.status" class="btn btn-danger" role="button"  ng-click="disable_article({$article.id})"><i class="icon-remove-circle"></i> 隐藏</a>
-                        <a href="" ng-show="show(!{$article.status})"  ng-model="article.status" class="btn btn-success" role="button"  ng-click="enable_article({$article.id})"><i class="icon-ok"></i> 显示</a>
+                        <a href="" ng-show="show({$article.status})"  ng-model="article.status" class="btn btn-danger" role="button"  ng-click="disable_article({$article.id})"><i class="icon-remove-circle"></i> 不公开</a>
+                        <a href="" ng-show="show(!{$article.status})"  ng-model="article.status" class="btn btn-success" role="button"  ng-click="enable_article({$article.id})"><i class="icon-ok"></i> 公开</a>
+                        <a href="" ng-show="comment({$article.allow_comment})"  ng-model="article.allow_comment" class="btn btn-danger" role="button"  ng-click="disable_comment({$article.id})"><i class="icon-remove-circle"></i> 禁评论</a>
+                        <a href="" ng-show="comment(!{$article.allow_comment})"  ng-model="article.allow_comment" class="btn btn-success" role="button"  ng-click="enable_comment({$article.id})"><i class="icon-ok"></i> 允许评论</a>
                     </td>
                     </tr>
                 </volist>
@@ -114,6 +116,47 @@
                 }else{
                     return false;
                 }
+            }
+            $scope.comment = function(allow_comment){
+                if(allow_comment == 1){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            //禁止评论
+            $scope.disable_comment = function(article_id){
+                $scope.article  = {'id':article_id};
+                $http({
+                    method:"POST",
+                    url:"/Admin/Article/disableComment",
+                    data:$.param($scope.article),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
+                    if (data.status) {     
+                        $scope.success = data.success;
+                        window.location.reload();
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+            //允许评论
+            $scope.enable_comment = function(article_id){
+                $scope.article  = {'id':article_id};
+                $http({
+                    method:"POST",
+                    url:"/Admin/Article/enableComment",
+                    data:$.param($scope.article),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
+                    if (data.status) {     
+                        $scope.success = data.success;
+                        window.location.reload();
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
             }
             //不显示日志
             $scope.disable_article = function(article_id){

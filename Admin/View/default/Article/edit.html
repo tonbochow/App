@@ -79,11 +79,11 @@
     <script type="text/javascript" src="__COMMON__/ueditor/ueditor.config.js"></script>
     <script type="text/javascript" src="__COMMON__/ueditor/ueditor.all.min.js"></script>
     <script type="text/javascript" src="__COMMON__/ueditor/angular-ueditor.js"></script>
-    <script type="text/javascript" src="__COMMON__/ueditor/ueditor.parse.min.js"></script>
+    <!--<script type="text/javascript" src="__COMMON__/ueditor/ueditor.parse.min.js"></script>-->
     <script type="text/javascript">
-        uParse('.ueditor', {
-           rootPath: '__COMMON__/ueditor/'
-       });
+//        uParse('.ueditor', {
+//           rootPath: '__COMMON__/ueditor/'
+//       });
         var ArticleModule = angular.module("baby", ['ng.ueditor']);
         ArticleModule.controller("ArticleEditController", function ($scope, $http) {
             $scope.article = {$json_article};

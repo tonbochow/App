@@ -20,6 +20,7 @@ Class ArticleModel extends CommonModel {
         array('title','require','日志标题必须！',self::MUST_VALIDATE),
         array('content','require','日志内容必须！',self::MUST_VALIDATE),
         array('category_id','require','日志所属分类必选！',self::MUST_VALIDATE,'',self::MODEL_BOTH),
+        array('category_id', 'checkCategoryId', '日志分类为必选项', self::MUST_VALIDATE, 'callback',self::MODEL_BOTH),
     );
     protected $_auto = array(
         array('create_time', 'time', self::MODEL_INSERT, 'function'),
@@ -46,6 +47,20 @@ Class ArticleModel extends CommonModel {
             return $status_arr[$status];
         }
         return $status_arr;
+    }
+    
+    //验证日志分类是否必选
+    public static function checkCategoryId($category_id){
+        $match = '/^[1-9]\d*$/';
+        $v = trim($category_id);
+        if (empty($v)) {
+            return false;
+        }
+        $matches = preg_match($match, $v);
+        if(empty($matches)){
+            return false;
+        }
+        return true;
     }
     
 }

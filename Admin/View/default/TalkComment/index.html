@@ -3,7 +3,7 @@
 <block name="content">
     <ol class="breadcrumb">
         <li><a href="/Admin">后台首页</a></li>
-        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">日志管理</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">说说评论管理</a></li>
         <li class="active">{$Think.ACTION_NAME}</li>
     </ol>
 
@@ -22,18 +22,18 @@
                 <div class="panel-body">
                     <form role="form" action="/Admin/{$Think.CONTROLLER_NAME}/{$Think.ACTION_NAME}" method="get">
                         <div class="form-group">
-                            <label for="title">日志标题</label>
-                            <input type="text" class="form-control" name="title" id="title" value="{$title}" placeholder="日志标题">
+                            <label for="content">说说评论内容</label>
+                            <input type="text" class="form-control" name="content" id="content" value="{$content}" placeholder="说说评论内容">
                         </div>
                         
                         <div class="form-group">
-                            <label for="status">状态</label>
+                            <label for="status">说说评论状态</label>
                             <select class="form-control" name="status">
-                                <foreach name="status_arr" item="article_status">
+                                <foreach name="status_arr" item="talk_status">
                                     <if condition="$status heq $key">
-                                        <option value="{$key}" selected="selected">{$article_status}</option>
+                                        <option value="{$key}" selected="selected">{$talk_status}</option>
                                         <else />
-                                        <option value="{$key}">{$article_status}</option>
+                                        <option value="{$key}">{$talk_status}</option>
                                     </if>
                                 </foreach>
                             </select>
@@ -46,47 +46,44 @@
             </div>
         </div>
     </div>
-    <if condition="$articles neq ''">
-        <div class="table-responsive panel panel-primary" ng-controller="ArticleController">
+    <if condition="$talkComments neq ''">
+        <div class="table-responsive panel panel-primary" ng-controller="TalkCommentController">
             <div class="panel-heading">
-                <B>日志管理 | 日志列表</B>
-                <a href="/Admin/Article/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 写日志</a>
+                <B>说说评论管理 | 说说评论列表</B>
             </div>
             <table class="table table-bordered table-hover table-striped">
                 <tr>
                     <th>ID</th>
-                    <th>日志标题</th>
-                    <th>日志关键字</th>
-                    <th>日志描述</th>
-                    <th>浏览次数</th>
+                    <th>说说ID</th>
+                    <th>评论内容</th>
+                    <th>用户ID</th>
+                    <th>用户名</th>
+                    <th>父评论ID</th>
                     <th>状态</th>
-                    <th>允许评论</th>
+                    <th>IP地址</th>
                     <th>创建时间</th>
                     <th>操作</th>
                 </tr>
-                <volist name="articles" id="article">
-                    <tr id="{$article.id}">
-                        <td>{$article.id}</td>
-                        <td>{$article.title}</td>
-                        <td>{$article.keyword}</td>
-                        <td>{$article.description}</td>
-                        <td>{$article.view_times}</td>
-                        <td><?php echo \Admin\Model\ArticleModel::getStatus($article['status']);?></td>
-                        <td>
-                        <?php echo \Admin\Model\ArticleModel::getCommentStatus($article['allow_comment']);?>
-                        </td>
-                    <if condition="$article.create_time eq 0">
+                <volist name="talkComments" id="comment">
+                    <tr id="{$comment.id}">
+                        <td>{$comment.id}</td>
+                        <td>{$comment.talk_id}</td>
+                        <td>{$comment.content|htmlspecialchars_decode|stripslashes}</td>
+                        <td>{$comment.user_id}</td>
+                        <td>{$comment.user_name}</td>
+                        <td>{$comment.parent_id}</td>
+                        <td><?php echo \Admin\Model\TalkCommentModel::getStatus($comment['status']);?></td>
+                        <td>{$comment.ip_address}</td>
+                    <if condition="$comment.create_time eq 0">
                         <td></td>
                         <else />
-                        <td>{$article.create_time|date="Y-m-d H:i:s",###}</td>
+                        <td>{$comment.create_time|date="Y-m-d H:i:s",###}</td>
                     </if>
                     
                     <td>
-                        <a href="/Admin/Article/edit/id/{$article.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
-                        <a href="" ng-show="show({$article.status})"  ng-model="article.status" class="btn btn-danger" role="button"  ng-click="disable_article({$article.id})"><i class="icon-remove-circle"></i> 不公开</a>
-                        <a href="" ng-show="show(!{$article.status})"  ng-model="article.status" class="btn btn-success" role="button"  ng-click="enable_article({$article.id})"><i class="icon-ok"></i> 公开</a>
-                        <a href="" ng-show="comment({$article.allow_comment})"  ng-model="article.allow_comment" class="btn btn-danger" role="button"  ng-click="disable_comment({$article.id})"><i class="icon-remove-circle"></i> 禁评论</a>
-                        <a href="" ng-show="comment(!{$article.allow_comment})"  ng-model="article.allow_comment" class="btn btn-success" role="button"  ng-click="enable_comment({$article.id})"><i class="icon-ok"></i> 允许评论</a>
+                        <a href="/Admin/TalkComment/edit/id/{$comment.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                        <a href="" ng-show="show({$comment.status})"  ng-model="comment.status" class="btn btn-danger" role="button"  ng-click="disable_talkComment({$comment.id})"><i class="icon-remove-circle"></i> 不公开</a>
+                        <a href="" ng-show="show(!{$comment.status})"  ng-model="comment.status" class="btn btn-success" role="button"  ng-click="enable_talkComment({$comment.id})"><i class="icon-ok"></i> 公开</a>
                     </td>
                     </tr>
                 </volist>
@@ -94,10 +91,9 @@
         </div>
         <?php echo $page;?>
         <else />
-        <div class="table-responsive panel panel-primary" ng-controller="ArticleController">
+        <div class="table-responsive panel panel-primary" ng-controller="TalkCommentController">
             <div class="panel-heading">
-                <B>日志管理 | 日志列表</B>
-                <a href="/Admin/Article/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 写日志</a>
+                <B>说说评论管理 | 说说评论列表</B>
             </div>
             <div class="panel-body">
                 未检索到数据
@@ -107,30 +103,23 @@
 </block>
 <block name="header_script">
     <script type="text/javascript">
-        var ArticleModule = angular.module("baby", []);
-        ArticleModule.controller("ArticleController", function ($scope, $http) {
-            $scope.article_status = {};
-            $scope.show = function(article_status){
-                if(article_status == 1){
+        var TalkCommentModule = angular.module("baby", []);
+        TalkCommentModule.controller("TalkCommentController", function ($scope, $http) {
+            $scope.talk_status = {};
+            $scope.show = function(comment_status){
+                if(comment_status == 1){
                     return true;
                 }else{
                     return false;
                 }
             }
-            $scope.comment = function(allow_comment){
-                if(allow_comment == 1){
-                    return true;
-                }else{
-                    return false;
-                }
-            }
-            //禁止评论
-            $scope.disable_comment = function(article_id){
-                $scope.article  = {'id':article_id};
+            //不显示说说评论
+            $scope.disable_talkComment = function(comment_id){
+                $scope.comment  = {'id':comment_id};
                 $http({
                     method:"POST",
-                    url:"/Admin/Article/disableComment",
-                    data:$.param($scope.article),
+                    url:"/Admin/TalkComment/disable",
+                    data:$.param($scope.comment),
                     headers:{'Content-Type':'application/x-www-form-urlencoded'}
                 }).success(function(data){
                     if (data.status) {     
@@ -141,47 +130,13 @@
                     }
                 });
             }
-            //允许评论
-            $scope.enable_comment = function(article_id){
-                $scope.article  = {'id':article_id};
+            //显示说说评论
+            $scope.enable_talkComment = function(comment_id){
+                $scope.comment  = {"id":comment_id};
                 $http({
                     method:"POST",
-                    url:"/Admin/Article/enableComment",
-                    data:$.param($scope.article),
-                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
-                }).success(function(data){
-                    if (data.status) {     
-                        $scope.success = data.success;
-                        window.location.reload();
-                    } else {
-                        $scope.message = data.message;
-                    }
-                });
-            }
-            //不显示日志
-            $scope.disable_article = function(article_id){
-                $scope.article  = {'id':article_id};
-                $http({
-                    method:"POST",
-                    url:"/Admin/Article/disable",
-                    data:$.param($scope.article),
-                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
-                }).success(function(data){
-                    if (data.status) {     
-                        $scope.success = data.success;
-                        window.location.reload();
-                    } else {
-                        $scope.message = data.message;
-                    }
-                });
-            }
-            //显示日志
-            $scope.enable_article = function(article_id){
-                $scope.article  = {"id":article_id};
-                $http({
-                    method:"POST",
-                    url:"/Admin/Article/enable",
-                    data:$.param($scope.article),
+                    url:"/Admin/TalkComment/enable",
+                    data:$.param($scope.comment),
                     headers:{'Content-Type':'application/x-www-form-urlencoded'}
                 }).success(function(data){
                     if (data.status) {  

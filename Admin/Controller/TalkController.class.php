@@ -61,28 +61,28 @@ class TalkController extends BaseController {
 
     //禁显示说说
     public function disable() {
-        $comment_id = I('post.id');
-        $ArticleCommentModel = M('ArticleComment');
-        $comment_data['status'] = \Admin\Model\ArticleCommentModel::$UNAVAILABLE;
-        $comment_data['update_time'] = time();
-        $disable_res = $ArticleCommentModel->where(array('id' => $comment_id))->save($comment_data);
+        $talk_id = I('post.id');
+        $TalkModel = M('Talk');
+        $talk_data['status'] = \Admin\Model\TalkModel::$UNAVAILABLE;
+        $talk_data['update_time'] = time();
+        $disable_res = $TalkModel->where(array('id' => $talk_id))->save($talk_data);
         if ($disable_res) {
             $data['status'] = true;
-            $data['success'] = '禁显示成功';
+            $data['success'] = '禁公开成功';
             $this->ajaxReturn($data);
         }
         $data['status'] = false;
-        $data['message'] = '禁显示失败';
+        $data['message'] = '禁公开失败';
         $this->ajaxReturn($data);
     }
 
     //显示说说
     public function enable() {
-        $comment_id = I('post.id');
-        $ArticleCommentModel = M('ArticleComment');
-        $comment_data['status'] = \Admin\Model\ArticleCommentModel::$AVAILABLE;
-        $comment_data['update_time'] = time();
-        $enable_res = $ArticleCommentModel->where(array('id' => $comment_id))->save($comment_data);
+        $talk_id = I('post.id');
+        $TalkModel = M('Talk');
+        $talk_data['status'] = \Admin\Model\TalkModel::$AVAILABLE;
+        $talk_data['update_time'] = time();
+        $enable_res = $TalkModel->where(array('id' => $talk_id))->save($talk_data);
         if ($enable_res) {
             $data['status'] = true;
             $data['success'] = '启用显示成功';
@@ -95,37 +95,67 @@ class TalkController extends BaseController {
     
     //禁止评论
     public function disableComment() {
-        $article_id = I('post.id');
-        $ArticleModel = M('Article');
-        $article_data['allow_comment'] = \Admin\Model\ArticleModel::$COMMENT_DENY;
-        $article_data['update_time'] = time();
-        $disable_res = $ArticleModel->where(array('id' => $article_id))->save($article_data);
+        $talk_id = I('post.id');
+        $TalkModel = M('Talk');
+        $talk_data['allow_comment'] = \Admin\Model\TalkModel::$COMMENT_DENY;
+        $talk_data['update_time'] = time();
+        $disable_res = $TalkModel->where(array('id' => $talk_id))->save($talk_data);
         if ($disable_res) {
             $data['status'] = true;
-            $data['success'] = '禁评论成功';
+            $data['success'] = '禁说说评论成功';
             $this->ajaxReturn($data);
         }
         $data['status'] = false;
-        $data['message'] = '禁评论失败';
+        $data['message'] = '禁说说评论失败';
         $this->ajaxReturn($data);
     }
     
     //允许评论
     public function enableComment() {
-        $article_id = I('post.id');
-        $ArticleModel = M('Article');
-        $article_data['allow_comment'] = \Admin\Model\ArticleModel::$COMMENT_ALLOW;
-        $article_data['update_time'] = time();
-        $enable_res = $ArticleModel->where(array('id' => $article_id))->save($article_data);
+        $talk_id = I('post.id');
+        $TalkModel = M('Talk');
+        $talk_data['allow_comment'] = \Admin\Model\TalkModel::$COMMENT_ALLOW;
+        $talk_data['update_time'] = time();
+        $enable_res = $TalkModel->where(array('id' => $talk_id))->save($talk_data);
         if ($enable_res) {
             $data['status'] = true;
-            $data['success'] = '允许评论成功';
+            $data['success'] = '允许说说评论成功';
             $this->ajaxReturn($data);
         }
         $data['status'] = false;
-        $data['message'] = '允许评论失败';
+        $data['message'] = '允许说说评论失败';
         $this->ajaxReturn($data);
     }
     
+    //说说编辑
+    public function edit() {
+        if (IS_POST) {
+            $talk_data = I('post.');
+            $talk_data['status'] = I('post.status')['id'];
+            $talk_data['allow_comment'] = I('post.allow_comment')['id'];
+            $talkModel = D('Talk');
+            if ($talkModel->create($talk_data)) {
+                $update_res = $talkModel->save();
+                if ($update_res) {
+                    $data['status'] = true;
+                    $data['success'] = '编辑说说成功';
+                    $this->ajaxReturn($data);
+                }
+            }
+            $data['status'] = false;
+            $data['message'] = $talkModel->getError();
+            $this->ajaxReturn($data);
+        }
+        $talk_id = I('get.id');
+        $talkModel = M('Talk');
+        $talk = $talkModel->where(array('id' => $talk_id))->find();
+        if (empty($talk)) {
+            $this->error('编辑的说说不存在');
+        }
+        $talk['content'] = htmlspecialchars_decode(stripslashes($talk['content']));
+        $this->assign('talk', $talk);
+        $this->assign('json_talk', json_encode($talk));
+        $this->display('edit');
+    }
 
 }

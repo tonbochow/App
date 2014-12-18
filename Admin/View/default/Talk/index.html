@@ -65,7 +65,7 @@
                 <volist name="talks" id="talk">
                     <tr id="{$talk.id}">
                         <td>{$talk.id}</td>
-                        <td>{$talk.content}</td>
+                        <td>{$talk.content|htmlspecialchars_decode|stripslashes}</td>
                         <td>{$talk.view_times}</td>
                         <td><?php echo \Admin\Model\TalkModel::getStatus($talk['status']);?></td>
                         <td><?php echo \Admin\Model\TalkModel::getCommentStatus($talk['allow_comment']);?></td>
@@ -151,7 +151,7 @@
                     }
                 });
             }
-            //不显示说说
+            //不公开说说
             $scope.disable_talk = function(talk_id){
                 $scope.talk  = {'id':talk_id};
                 $http({
@@ -168,7 +168,7 @@
                     }
                 });
             }
-            //显示说说
+            //公开说说
             $scope.enable_talk = function(talk_id){
                 $scope.talk  = {"id":talk_id};
                 $http({

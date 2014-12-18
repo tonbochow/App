@@ -1,0 +1,89 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">说说管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="TalkForm" ng-controller="TalkAddController" ng-submit="submitForm()">
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+
+        <div class="form-group" ng-class="{'has-error' : TalkForm.content.$invalid && !TalkForm.content.$pristine}">
+            <label for="content" class="col-sm-2 control-label">说说内容(*)</label>
+            <div class="col-sm-10">
+                <div class="ueditor" config="config" ng-model="talk.content" required></div>
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : TalkForm.status.$invalid && !TalkForm.status.$pristine}">
+            <label for="status" class="col-sm-2 control-label">说说状态(*)</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="status" required ng-model="talk.status" ng-options="option.id as option.statusName for option in statusModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : TalkForm.allow_comment.$invalid && !TalkForm.allow_comment.$pristine}">
+            <label for="allow_comment" class="col-sm-2 control-label">允许评论(*)</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="allow_comment" required ng-model="talk.allow_comment" ng-options="option.id as option.commentName for option in commentModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="TalkForm.$invalid"><i class="icon-plus-sign"></i> 保存说说</button>
+            </div>
+        </div>
+
+
+    </form>
+</block>
+
+<block name="header_script">
+    <script type="text/javascript" src="__COMMON__/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" src="__COMMON__/ueditor/ueditor.all.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/ueditor/angular-ueditor.js"></script>
+    <script type="text/javascript">
+        var TalkModule = angular.module("baby", ['ng.ueditor']);
+        TalkModule.controller("TalkAddController", function ($scope, $http) {
+            $scope.config = {
+                 
+            }
+            $scope.statusModel = [{
+                    id: 1,
+                    statusName: '公开'
+                }, {
+                    id: 0,
+                    statusName: '不公开'
+                }];
+            $scope.commentModel = [{
+                    id: 1,
+                    commentName: '允许'
+                }, {
+                    id: 0,
+                    commentName: '禁止'
+                }];
+            $scope.submitForm = function () {
+                $http({
+                    method: "POST",
+                    url: "/Admin/Talk/add",
+                    data: $.param($scope.talk),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/Talk/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

@@ -76,6 +76,14 @@
                     $('#userSetting').css('height','auto');
                 }
                 
+                if(controller_name == 'Talk' || controller_name == 'TalkComment'){
+                    $('#talk').attr('class','nav-header');
+                    $('#talk').attr('aria-expanded','true');
+                    $('#talkSetting').attr('class','nav nav-list secondmenu collapse in');
+                    $('#talkSetting').attr('aria-expanded','true');
+                    $('#talkSetting').css('height','auto');
+                }
+                
                 if(controller_name == 'ArticleCategory' || controller_name == 'Article' || controller_name == 'ArticleComment'){
                     $('#article').attr('class','nav-header');
                     $('#article').attr('aria-expanded','true');

@@ -1,0 +1,83 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">音乐管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="MusicForm" ng-controller="MusicEditController" ng-submit="submitForm()" novalidate>
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+       
+        <div class="form-group" ng-class="{'has-error' : MusicForm.music_name.$invalid && !MusicForm.music_name.$pristine}">
+            <label for="music_name" class="col-sm-2 control-label">*音乐名:</label>
+            <div class="col-sm-10">
+                <input type="text" name="music_name" value="{$music.music_name}" ng-model="music.music_name" ng-minlength="1" ng-maxlength="80" required class="form-control" id="music_name" placeholder="音乐名">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : MusicForm.description.$invalid && !MusicForm.description.$pristine}">
+            <label for="description" class="col-sm-2 control-label">*音乐描述:</label>
+            <div class="col-sm-10">
+                <input type="text" name="description" value="{$music.description}" ng-model="music.description" ng-minlength="1" ng-maxlength="255" required class="form-control" id="description" placeholder="音乐描述">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : MusicForm.list_order.$invalid && !MusicForm.list_order.$pristine}">
+            <label for="list_order" class="col-sm-2 control-label">*播放顺序:</label>
+            <div class="col-sm-10">
+                <input type="text" name="list_order" value="{$music.list_order}" ng-model="music.list_order"  ng-pattern="/^[1-9]*[1-9][0-9]*$/" ng-minlength="1" ng-maxlength="10" required class="form-control" id="list_order" placeholder="播放顺序">
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : MusicForm.status.$invalid && !MusicForm.status.$pristine}">
+            <label for="status" class="col-sm-2 control-label">音乐状态(*)</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="status" required ng-model="music.status" ng-options="option.statusName for option in statusModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+       
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="MusicForm.$invalid"><i class="icon-save"></i> 保存编辑音乐</button>
+            </div>
+        </div>
+        
+
+    </form>
+</block>
+
+<block name="header_script">
+    <script type="text/javascript">
+        var MusicModule = angular.module("baby", []);
+        MusicModule.controller("MusicEditController", function ($scope, $http) {
+            $scope.music = {$json_music};
+            $scope.statusModel = [{
+                    id: 0,
+                    statusName: '不公开'
+                },{
+                    id: 1,
+                    statusName: '公开'
+                }];
+            $scope.music.status = $scope.statusModel["{$music.status}"];
+            $scope.submitForm = function () {
+                $http({
+                    method: "POST",
+                    url: "/Admin/Music/edit",
+                    data: $.param($scope.music),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/Music/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

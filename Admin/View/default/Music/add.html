@@ -1,0 +1,117 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">音乐管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="MusicForm" ng-controller="MusicAddController" ng-submit="submitForm()">
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+
+        <div class="form-group" ng-class="{'has-error' : MusicForm.music_name.$invalid && !MusicForm.music_name.$pristine}">
+            <label for="music_name" class="col-sm-2 control-label">*音乐名:</label>
+            <div class="col-sm-10">
+                <input type="text" name="music_name" value="" ng-model="music.music_name" ng-minlength="1" ng-maxlength="80" required class="form-control" id="music_name" placeholder="音乐名">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : MusicForm.description.$invalid && !MusicForm.description.$pristine}">
+            <label for="description" class="col-sm-2 control-label">*音乐描述:</label>
+            <div class="col-sm-10">
+                <input type="text" name="description" value="" ng-model="music.description" ng-minlength="1" ng-maxlength="255" required class="form-control" id="description" placeholder="音乐描述">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : MusicForm.list_order.$invalid && !MusicForm.list_order.$pristine}">
+            <label for="list_order" class="col-sm-2 control-label">*播放顺序:</label>
+            <div class="col-sm-10">
+                <input type="number" name="list_order" value="" ng-model="music.list_order"  ng-pattern="/^[1-9]*[1-9][0-9]*$/" ng-minlength="1" ng-maxlength="10" required class="form-control" id="list_order" placeholder="播放顺序">
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : MusicForm.status.$invalid && !MusicForm.status.$pristine}">
+            <label for="status" class="col-sm-2 control-label">音乐状态(*)</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="status" required ng-model="music.status" ng-options="option.id as option.statusName for option in statusModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : MusicForm.music_url.$invalid && MusicForm.music_url.$dirty}">
+            <label for="music_url" class="col-sm-2 control-label">*音乐:</label>
+            <div class="col-sm-10">
+                <div id="queue"></div>
+                <input id="file_upload" name="music_url" type="file"  multiple="true">
+                <input type="hidden" name="music_url" id="music_url" value="{{music.music_url}}" ng-model="music.music_url" />
+                <input type="hidden" name="exttype" id="exttype" value="{{music.exttype}}" ng-model="music.exttype" />
+                <input type="hidden" name="extfield" id="extfield" value="{{music.extfield}}" ng-model="music.extfield" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="MusicForm.$invalid"><i class="icon-plus-sign"></i> 添加音乐</button>
+            </div>
+        </div>
+
+
+    </form>
+</block>
+
+<block name="header_script">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/uploadify/uploadify.css" media="all">
+    <script type="text/javascript" src="__COMMON__/uploadify/jquery.uploadify.min.js"></script>
+    <script type="text/javascript">
+        var MusicModule = angular.module("baby", []);
+        MusicModule.controller("MusicAddController", function ($scope, $http) {
+            $(function() {
+                $('#file_upload').uploadify({
+                    'formData'     : {
+                        'timestamp' : '<?php echo $timestamp;?>',
+                        'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
+                    },
+                    'fileExt': '*.mp3,*.mp4,*.aac,*.wav,*.ogg',
+                    'buttonText':'选择音乐',
+                    'swf'      : '__COMMON__/uploadify/uploadify.swf',
+                    'onUploadSuccess' : function(file, data, response) {
+                        var obj = eval('('+data+')');
+                        if(obj.status){
+                            $scope.music.music_url = obj.music_url;
+                            $scope.music.exttype = obj.exttype;
+                            $scope.music.extfield = obj.extfield;
+                        }else{
+                            alert(obj.info);
+                        }
+                        
+                   },
+                   'uploader' : '/Admin/Music/upload'
+                });
+            });
+            $scope.statusModel = [{
+                    id: 1,
+                    statusName: '公开'
+                }, {
+                    id: 0,
+                    statusName: '不公开'
+                }];
+            $scope.submitForm = function () {
+                $http({
+                    method: "POST",
+                    url: "/Admin/Music/add",
+                    data: $.param($scope.music),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/Music/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

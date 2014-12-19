@@ -84,6 +84,14 @@
                     $('#talkSetting').css('height','auto');
                 }
                 
+                if(controller_name == 'Music'){
+                    $('#music').attr('class','nav-header');
+                    $('#music').attr('aria-expanded','true');
+                    $('#musicSetting').attr('class','nav nav-list secondmenu collapse in');
+                    $('#musicSetting').attr('aria-expanded','true');
+                    $('#musicSetting').css('height','auto');
+                }
+                
                 if(controller_name == 'ArticleCategory' || controller_name == 'Article' || controller_name == 'ArticleComment'){
                     $('#article').attr('class','nav-header');
                     $('#article').attr('aria-expanded','true');

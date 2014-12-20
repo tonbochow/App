@@ -1,0 +1,159 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">相册管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+        <div class="panel panel-info">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        <i class="icon-search"></i> 检索条件
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" aria-expanded="false">
+                <div class="panel-body">
+                    <form role="form" action="/Admin/{$Think.CONTROLLER_NAME}/{$Think.ACTION_NAME}" method="get">
+                        <div class="form-group">
+                            <label for="title">相册标题</label>
+                            <input type="text" class="form-control" name="title" id="title" value="{$title}" placeholder="相册标题">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status">状态</label>
+                            <select class="form-control" name="status">
+                                <foreach name="status_arr" item="album_status">
+                                    <if condition="$status heq $key">
+                                        <option value="{$key}" selected="selected">{$album_status}</option>
+                                        <else />
+                                        <option value="{$key}">{$album_status}</option>
+                                    </if>
+                                </foreach>
+                            </select>
+                        </div>
+                        <div class="form-group" style="text-align: center;">
+                            <button  type="submit" class="btn btn-success">检索</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <if condition="$albums neq ''">
+        <div class="table-responsive panel panel-primary" ng-controller="AlbumController">
+            <div class="panel-heading">
+                <B>相册管理 | 相册列表</B>
+                <a href="/Admin/Album/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 创建相册</a>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                <volist name="albums" id="album">
+                        <div class="col-sm-6 col-md-4" style="height: 400px;">
+                            <div class="thumbnail">
+                                <a href="/Admin/Album/list/id/{$album.id}"><img src="{$album.thumb_url}" data-src="{$album.thumb_url}" alt="{$album.title}"></a>
+                                <div class="caption">
+                                    <p><b>相册:</b>{$album.title}</p>
+                                    <p><b>简介:</b>{$album.description|mb_substr=0,30}</p>
+                                    <p><b>创建时间:</b>{$album.create_time|date="Y-m-d H:i:s",###}</p>
+                                    <p style="text-align: center;">
+                                        <a href="/Admin/Album/addPhoto" class="btn btn-success" role="button">添相</a>
+                                        <a href="/Admin/Album/list/id/{$album.id}" class="btn btn-primary" role="button">查看</a>
+                                    </p>
+                                    <p style="text-align: center;">
+                                        <a href="/Admin/Album/edit/id/{$album.id}" class="btn btn-warning" role="button">编辑</a>
+                                        <a href="/Admin/Album/delete/id/{$album.id}" class="btn btn-danger" role="button">删除</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                </volist>
+                </div>
+            </div>
+        </div>
+        <?php echo $page;?>
+        <else />
+        <div class="table-responsive panel panel-primary" ng-controller="AlbumController">
+            <div class="panel-heading">
+                <B>相册管理 | 相册列表</B>
+                <a href="/Admin/Album/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 创建相册</a>
+            </div>
+            <div class="panel-body">
+                未检索到相册
+            </div>
+        </div>
+    </if>
+</block>
+<block name="header_script">
+    <script type="text/javascript">
+        var AlbumModule = angular.module("baby", []);
+        AlbumModule.controller("AlbumController", function ($scope, $http) {
+            $scope.show = function (status) {
+                if (status == 1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            //删除相册
+            $scope.del = function (album_id) {
+                $scope.album = {'id': album_id};
+                $http({
+                    method: "POST",
+                    url: "/Admin/Album/delete",
+                    data: $.param($scope.album),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+
+            //不公开相册
+            $scope.disable_music = function (album_id) {
+                $scope.album = {'id': album_id};
+                $http({
+                    method: "POST",
+                    url: "/Admin/Album/disable",
+                    data: $.param($scope.album),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.reload();
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+            //公开相册
+            $scope.enable_music = function (album_id) {
+                $scope.album = {"id": album_id};
+                $http({
+                    method: "POST",
+                    url: "/Admin/Album/enable",
+                    data: $.param($scope.album),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.reload();
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+        });
+    </script>
+</block>

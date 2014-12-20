@@ -92,6 +92,14 @@
                     $('#musicSetting').css('height','auto');
                 }
                 
+                if(controller_name == 'Album' || controller_name == 'PhotoComment'){
+                    $('#photo').attr('class','nav-header');
+                    $('#photo').attr('aria-expanded','true');
+                    $('#photoSetting').attr('class','nav nav-list secondmenu collapse in');
+                    $('#photoSetting').attr('aria-expanded','true');
+                    $('#photoSetting').css('height','auto');
+                }
+                
                 if(controller_name == 'ArticleCategory' || controller_name == 'Article' || controller_name == 'ArticleComment'){
                     $('#article').attr('class','nav-header');
                     $('#article').attr('aria-expanded','true');

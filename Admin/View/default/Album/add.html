@@ -1,0 +1,117 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">相册管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="AlbumForm" ng-controller="AlbumAddController" ng-submit="submitForm()">
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+
+        <div class="form-group" ng-class="{'has-error' : AlbumForm.title.$invalid && !AlbumForm.title.$pristine}">
+            <label for="title" class="col-sm-2 control-label">*相册标题:</label>
+            <div class="col-sm-10">
+                <input type="text" name="title" value="" ng-model="album.title" ng-minlength="1" ng-maxlength="80" required class="form-control" id="title" placeholder="相册标题">
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : AlbumForm.description.$invalid && !AlbumForm.description.$pristine}">
+            <label for="description" class="col-sm-2 control-label">相册描述:</label>
+            <div class="col-sm-10">
+                <input type="text" name="description" value="" ng-model="album.description" ng-minlength="1" ng-maxlength="255" required class="form-control" id="description" placeholder="相册描述">
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : AlbumForm.list_order.$invalid && !AlbumForm.list_order.$pristine}">
+            <label for="list_order" class="col-sm-2 control-label">*展示顺序:</label>
+            <div class="col-sm-10">
+                <input type="number" name="list_order" value="" ng-model="album.list_order"  ng-pattern="/^[1-9]*[1-9][0-9]*$/" ng-minlength="1" ng-maxlength="10" required class="form-control" id="list_order" placeholder="展示顺序">
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : AlbumForm.status.$invalid && !AlbumForm.status.$pristine}">
+            <label for="status" class="col-sm-2 control-label">相册状态(*)</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="status" required ng-model="album.status" ng-options="option.id as option.statusName for option in statusModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : AlbumForm.thumb_url.$invalid && AlbumForm.thumb_url.$dirty}">
+            <label for="thumb_url" class="col-sm-2 control-label">*相册封面:</label>
+            <div class="col-sm-10">
+                <div id="queue"></div>
+                <div class="thumbnail">
+                    <img id="previmg" src="" data-src="" alt="">
+                </div>
+                <input id="file_upload" name="thumb_url" type="file"  multiple="true">
+                <input type="hidden" name="thumb_url" id="thumb_url" value="{{album.thumb_url}}" ng-model="album.thumb_url" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="AlbumForm.$invalid"><i class="icon-plus-sign"></i> 创建相册</button>
+            </div>
+        </div>
+
+
+    </form>
+</block>
+
+<block name="header_script">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/uploadify/uploadify.css" media="all">
+    <script type="text/javascript" src="__COMMON__/uploadify/jquery.uploadify.min.js"></script>
+    <script type="text/javascript">
+        var AlbumModule = angular.module("baby", []);
+        AlbumModule.controller("AlbumAddController", function($scope, $http) {
+            $(function() {
+                $('#file_upload').uploadify({
+                    'formData': {
+                        'timestamp': '<?php echo $timestamp;?>',
+                        'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
+                    },
+                    'buttonText': '选择相册封面图片',
+                    'swf': '__COMMON__/uploadify/uploadify.swf',
+                    'onUploadSuccess': function(file, data, response) {
+                        var obj = eval('(' + data + ')');
+                        if (obj.status) {
+                            $scope.album.thumb_url = obj.thumb_url;
+                            $('#previmg').attr('src',obj.thumb_url);
+                        } else {
+                            alert(obj.info);
+                        }
+
+                    },
+                    'uploader': '/Admin/Album/upload'
+                });
+            });
+            $scope.statusModel = [{
+                    id: 1,
+                    statusName: '公开'
+                }, {
+                    id: 0,
+                    statusName: '不公开'
+                }];
+            $scope.submitForm = function() {
+                $http({
+                    method: "POST",
+                    url: "/Admin/Album/add",
+                    data: $.param($scope.album),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function(data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/Album/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+
+    </script>
+</block>

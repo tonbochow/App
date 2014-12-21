@@ -1,8 +1,10 @@
 <?php
+
 /**
  * 后台相册功能
  * @author 周东宝 2014-12-20
  */
+
 namespace Admin\Controller;
 
 use Think\Controller;
@@ -39,7 +41,7 @@ class AlbumController extends BaseController {
         $this->display('index');
     }
 
-     //相册添加
+    //相册添加
     public function add() {
         if (IS_POST) {
             $album_data = I('post.');
@@ -58,17 +60,20 @@ class AlbumController extends BaseController {
         }
         $this->display('add');
     }
-    
-    
+
     //相册编辑
     public function edit() {
         if (IS_POST) {
             $album_data = I('post.');
             $album_data['status'] = I('post.status')['id'];
+            $album_id = $album_data['id'];
+            $album = M('Album')->where(array('id'=>$album_id))->find();
+            $thumb_url = $album['thumb_url'];
             $albumModel = D('Album');
             if ($albumModel->create($album_data)) {
                 $update_res = $albumModel->save();
                 if ($update_res) {
+                    @unlink(C('ROOT_PATH').$thumb_url);
                     $data['status'] = true;
                     $data['success'] = '编辑相册成功';
                     $this->ajaxReturn($data);
@@ -88,21 +93,21 @@ class AlbumController extends BaseController {
         $this->assign('json_album', json_encode($album));
         $this->display('edit');
     }
-    
+
     //删除相册
-    public function delete(){
-        if(IS_POST){
+    public function delete() {
+        if (IS_POST) {
             $music_id = I('post.id');
             $musicModel = M('Music');
-            $music = $musicModel->where(array('id'=>$music_id))->find();
-            if(empty($music)){
+            $music = $musicModel->where(array('id' => $music_id))->find();
+            if (empty($music)) {
                 $this->error('要删除的音乐不存在');
             }
             $music_url = $music['music_url'];
-            $del_res = $musicModel->where(array('id'=>$music_id))->delete();
-            if($del_res){
-                @unlink(C('ROOT_PATH').$music_url);
-            }else{
+            $del_res = $musicModel->where(array('id' => $music_id))->delete();
+            if ($del_res) {
+                @unlink(C('ROOT_PATH') . $music_url);
+            } else {
                 $data['status'] = false;
                 $data['message'] = $musicModel->getError();
                 $this->ajaxReturn($data);
@@ -112,7 +117,7 @@ class AlbumController extends BaseController {
             $this->ajaxReturn($data);
         }
     }
-    
+
     //禁公开相册
     public function disable() {
         $music_id = I('post.id');
@@ -156,7 +161,7 @@ class AlbumController extends BaseController {
             'rootPath' => 'upload',
             'savePath' => $targetFolder, //保存路径
             'saveName' => array('uniqid', ''),
-            'exts' => array('jpg', 'jpeg', 'png','gif','bmp'),
+            'exts' => array('jpg', 'jpeg', 'png', 'gif', 'bmp'),
             'autoSub' => false,
             'replace' => true, //存在同名是否覆盖
         );
@@ -164,14 +169,21 @@ class AlbumController extends BaseController {
             $upload = new \Think\Upload($config);
             $res = $upload->upload($_FILES);
             if ($res !== false) {
+                $pathname = '/upload' . $targetFolder . $res['Filedata']['savename'];
+                $image = new \Think\Image();
+                $image->open(C('ROOT_PATH').$pathname);
+                @unlink(C('ROOT_PATH').$pathname);
+                $image->thumb(250, 150, \Think\Image::IMAGE_THUMB_SCALE)->save(C('ROOT_PATH').$pathname);
                 $data['status'] = true;
-                $data['thumb_url'] = '/upload' . $targetFolder . $res['Filedata']['savename'];
+                $data['thumb_url'] = $pathname;
                 echo json_encode($data);
                 exit;
             }
         }
         $data['status'] = false;
         $data['info'] = '上传失败';
-        echo json_encode($data);exit;
+        echo json_encode($data);
+        exit;
     }
+
 }

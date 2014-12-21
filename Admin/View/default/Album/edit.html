@@ -44,8 +44,10 @@
         <label for="thumb_url" class="col-sm-2 control-label">相册封面:</label>
             <div class="col-sm-10">
                 <div class="thumbnail">
-                    <img src="{$album.thumb_url}" data-src="{$album.thumb_url}" alt="{$album.title}">
+                    <img  id="previmg" src="{$album.thumb_url}" data-src="{$album.thumb_url}" alt="{$album.title}">
                 </div>
+                 <input id="file_upload" name="thumb_url" type="file"  multiple="true">
+                <input type="hidden" name="thumb_url" id="thumb_url" value="{{album.thumb_url}}" ng-model="album.thumb_url" />
             </div>
         </div>
         
@@ -60,9 +62,32 @@
 </block>
 
 <block name="header_script">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/uploadify/uploadify.css" media="all">
+    <script type="text/javascript" src="__COMMON__/uploadify/jquery.uploadify.min.js"></script>
     <script type="text/javascript">
         var AlbumModule = angular.module("baby", []);
         AlbumModule.controller("AlbumEditController", function ($scope, $http) {
+            $(function() {
+                $('#file_upload').uploadify({
+                    'formData': {
+                        'timestamp': '<?php echo $timestamp;?>',
+                        'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
+                    },
+                    'buttonText': '选择相册封面图片',
+                    'swf': '__COMMON__/uploadify/uploadify.swf',
+                    'onUploadSuccess': function(file, data, response) {
+                        var obj = eval('(' + data + ')');
+                        if (obj.status) {
+                            $scope.album.thumb_url = obj.thumb_url;
+                            $('#previmg').attr('src',obj.thumb_url);
+                        } else {
+                            alert(obj.info);
+                        }
+
+                    },
+                    'uploader': '/Admin/Album/upload'
+                });
+            });
             $scope.album = {$json_album};
             $scope.statusModel = [{
                     id: 0,

@@ -58,18 +58,18 @@
                 <volist name="albums" id="album">
                         <div class="col-sm-6 col-md-4" style="height: 400px;">
                             <div class="thumbnail">
-                                <a href="/Admin/Album/list/id/{$album.id}"><img src="{$album.thumb_url}" data-src="{$album.thumb_url}" alt="{$album.title}"></a>
+                                <a href="/Admin/Album/show/id/{$album.id}"><img src="{$album.thumb_url}" data-src="{$album.thumb_url}" alt="{$album.title}"></a>
                                 <div class="caption">
                                     <p><b>相册:</b>{$album.title}</p>
                                     <p><b>简介:</b>{$album.description|mb_substr=0,30}</p>
                                     <p><b>创建时间:</b>{$album.create_time|date="Y-m-d H:i:s",###}</p>
                                     <p style="text-align: center;">
-                                        <a href="/Admin/Album/addPhoto" class="btn btn-success" role="button">添相</a>
-                                        <a href="/Admin/Album/list/id/{$album.id}" class="btn btn-primary" role="button">查看</a>
+                                        <a href="/Admin/Album/addPhoto/id/{$album.id}" class="btn btn-success" role="button">添相</a>
+                                        <a href="/Admin/Album/show/id/{$album.id}" class="btn btn-primary" role="button">查看</a>
                                     </p>
                                     <p style="text-align: center;">
                                         <a href="/Admin/Album/edit/id/{$album.id}" class="btn btn-warning" role="button">编辑</a>
-                                        <a href="/Admin/Album/delete/id/{$album.id}" class="btn btn-danger" role="button">删除</a>
+                                        <a href="" ng-click="del({$album.id})" class="btn btn-danger" role="button">删除</a>
                                     </p>
                                 </div>
                             </div>

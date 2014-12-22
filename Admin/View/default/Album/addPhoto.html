@@ -1,0 +1,139 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">相册管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="PhotoForm" ng-controller="PhotoAddController" ng-submit="submitForm()">
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+
+        <div class="form-group" ng-class="{'has-error' : PhotoForm.photo_name.$invalid && !PhotoForm.photo_name.$pristine}">
+            <label for="photo_name" class="col-sm-2 control-label">*相片名:</label>
+            <div class="col-sm-10">
+                <input type="text" name="photo_name" value="" ng-model="photo.photo_name" ng-minlength="1" ng-maxlength="80" required class="form-control" id="title" placeholder="相片名">
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : PhotoForm.description.$invalid && !PhotoForm.description.$pristine}">
+            <label for="description" class="col-sm-2 control-label">相片描述:</label>
+            <div class="col-sm-10">
+                <input type="text" name="description" value="" ng-model="photo.description" ng-minlength="1" ng-maxlength="255" required class="form-control" id="description" placeholder="相片描述">
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : PhotoForm.list_order.$invalid && !PhotoForm.list_order.$pristine}">
+            <label for="list_order" class="col-sm-2 control-label">*展示顺序:</label>
+            <div class="col-sm-10">
+                <input type="number" name="list_order" value="" ng-model="photo.list_order"  ng-pattern="/^[1-9]*[1-9][0-9]*$/" ng-minlength="1" ng-maxlength="10" required class="form-control" id="list_order" placeholder="展示顺序">
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : PhotoForm.status.$invalid && !PhotoForm.status.$pristine}">
+            <label for="status" class="col-sm-2 control-label">相片状态(*)</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="status" required ng-model="photo.status" ng-options="option.id as option.statusName for option in statusModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : PhotoForm.allow_comment.$invalid && !PhotoForm.allow_comment.$pristine}">
+            <label for="allow_comment" class="col-sm-2 control-label">评论(*)</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="allow_comment" required ng-model="photo.allow_comment" ng-options="option.id as option.commentName for option in commentModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="photo_url" class="col-sm-2 control-label">*选择相片:</label>
+            <div class="col-sm-10">
+                <div class="thumbnail">
+                    <img id="previmg" src="" data-src="" alt="">
+                </div>
+                <input id="file_upload" name="photo_url" type="file"  multiple="true">
+                <input type="hidden" name="photo_url" id="thumb_url" value="{{photo.photo_url}}" ng-model="photo.photo_url" />
+                <input type="hidden" name="exttype" id="exttype" value="{{photo.exttype}}" ng-model="photo.exttype" />
+                <input type="hidden" name="extfield" id="extfield" value="{{photo.extfield}}" ng-model="photo.extfield" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input type="hidden" name="album_id" id="album_id" value="{{photo.album_id}}" ng-model="photo.album_id" />
+                <button type="submit" class="btn btn-success" ng-disabled="PhotoForm.$invalid"><i class="icon-plus-sign"></i> 保存上传相片</button>
+            </div>
+        </div>
+
+
+    </form>
+</block>
+
+<block name="header_script">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/uploadify/uploadify.css" media="all">
+    <script type="text/javascript" src="__COMMON__/uploadify/jquery.uploadify.min.js"></script>
+    <script type="text/javascript">
+        var PhotoModule = angular.module("baby", []);
+        PhotoModule.controller("PhotoAddController", function ($scope, $http) {
+            $(function () {
+                $('#file_upload').uploadify({
+                    'formData': {
+                        'timestamp': '<?php echo $timestamp;?>',
+                        'token'     : '<?php echo md5('unique_salt' . $timestamp);?>',
+                        'album_id' : '<?php echo $album_id;?>'
+                    },
+                    'buttonText': '选择上传相片',
+                    'swf': '__COMMON__/uploadify/uploadify.swf',
+                    'onUploadSuccess': function (file, data, response) {
+                        var obj = eval('(' + data + ')');
+                        if (obj.status) {
+                            $scope.photo.photo_url = obj.photo_url;
+                            $scope.photo.exttype = obj.exttype;
+                            $scope.photo.extfield = obj.extfield;
+                            $('#previmg').attr('src', obj.photo_url);
+                        } else {
+                            alert(obj.info);
+                        }
+
+                    },
+                    'uploader': '/Admin/Album/photoUpload'
+                });
+            });
+            
+            $scope.statusModel = [{
+                    id: 1,
+                    statusName: '公开'
+                }, {
+                    id: 0,
+                    statusName: '不公开'
+                }];
+            $scope.commentModel = [{
+                    id: 1,
+                    commentName: '允许'
+                }, {
+                    id: 0,
+                    commentName: '禁止'
+                }];
+            $scope.submitForm = function () {
+                $scope.photo.album_id = {$album_id};
+                $http({
+                    method: "POST",
+                    url: "/Admin/Album/addPhoto",
+                    data: $.param($scope.photo),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.reload();
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

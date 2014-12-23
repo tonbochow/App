@@ -56,7 +56,7 @@
             <div class="panel-body">
                 <div class="row">
                 <volist name="albums" id="album">
-                        <div class="col-sm-6 col-md-4" style="height: 400px;">
+                        <div class="col-sm-6 col-md-4" style="height: 400px;" id="{$album.id}">
                             <div class="thumbnail">
                                 <a href="/Admin/Album/show/id/{$album.id}"><img src="{$album.thumb_url}" data-src="{$album.thumb_url}" alt="{$album.title}"></a>
                                 <div class="caption">
@@ -114,6 +114,7 @@
                 }).success(function (data) {
                     if (data.status) {
                         $scope.success = data.success;
+                        $('#'+album_id).css('display','none');
                     } else {
                         $scope.message = data.message;
                     }

@@ -1,0 +1,55 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">相册管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="PhotoForm" ng-controller="PhotoDetailController" ng-submit="submitForm()" novalidate>
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+
+        <div class="row">
+            <div class="col-sm-6 col-md-12">
+                <div class="thumbnail">
+                    <img src="{$high_photoUrl}" data-src="" alt="">
+                    <div class="caption">
+                        <h3>相片名:{$photo.photo_name}</h3>
+                        <p>所属相册:<?php echo \Admin\Model\AlbumModel::getName($photo['album_id']);?></p>
+                        <p>描述:{$photo.description}</p>
+                        <p>状态:<?php echo \Admin\Model\AlbumModel::getStatus($photo['status']);?></p>
+                        <p>浏览次数:{$photo.view_times}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">评论</h3>
+        </div>
+        <if condition="$comments eq ''">
+            无评论
+            <else />
+            <ul class="list-group">
+                <volist name="comments" id="comment">
+                    <li class="list-group-item">{$key+1} 用户:{$comment.user_name}  内容:{$comment.content}<br></li>
+                </volist>
+            </ul>
+        </if>          
+    </div>
+    <?php echo $page;?>
+</block>
+
+<block name="header_script">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/uploadify/uploadify.css" media="all">
+    <script type="text/javascript" src="__COMMON__/uploadify/jquery.uploadify.min.js"></script>
+    <script type="text/javascript">
+            var PhotoModule = angular.module("baby", []);
+            PhotoModule.controller("PhotoDetailController", function ($scope, $http) {
+
+            });
+    </script>
+</block>

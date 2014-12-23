@@ -127,27 +127,22 @@ class AlbumController extends BaseController {
                 }
             }
             //删除相片所有评论
-            if (!empty($photo_ids)) {
-                $comment_cond['photo_id'] = array('in' => $photo_ids);
-                $photoComments = M('PhotoComment')->where($comment_cond)->select();
-                if (!empty($photoComments)) {
-                    $photoComment_del = M('PhotoComment')->where($comment_cond)->delete();
-                    if ($photoComment_del === false) {
-                        $albumModel->rollback();
-                        $data['status'] = true;
-                        $data['success'] = '相片所有评论删除失败';
-                        $this->ajaxReturn($data);
-                    }
+            $photoComments = M('PhotoComment')->where(array('album_id' => $album_id))->select();
+            if (!empty($photoComments)) {
+                $photoComment_del = M('PhotoComment')->where(array('album_id'=>$album_id))->delete();
+                if ($photoComment_del === false) {
+                    $albumModel->rollback();
+                    $data['status'] = true;
+                    $data['success'] = '相片所有评论删除失败';
+                    $this->ajaxReturn($data);
                 }
             }
             //删除相册封面图片
             @unlink(C('ROOT_PATH') . $album['thumb_url']);
             //删除所有相片
-            if (!empty($photo_urls)) {
-                foreach ($photo_urls as $photo_url) {
-                    @unlink(C('ROOT_PATH') . $photo_url);
-                }
-            }
+            $album_dirname = C('ROOT_PATH') . "/upload/album/$album_id";
+            delFileUnderDir($album_dirname);
+            rmdir(C('ROOT_PATH') . "/upload/album/$album_id");
             $albumModel->commit();
             $data['status'] = true;
             $data['success'] = '删除成功';
@@ -314,6 +309,31 @@ class AlbumController extends BaseController {
 
     //相片明细
     public function photoDetail() {
+        $photo_id = I('get.id');
+        $photoModel = M('Photo');
+        $photo = $photoModel->where(array('id' => $photo_id))->find();
+        if (empty($photo)) {
+            $this->error('查看的相片不存在');
+        }
+        //检索相片评论
+        $commentModel = M('PhotoComment');
+        $comment_count = $commentModel->where(array('photo_id' => $photo_id))->order('create_time desc')->count();
+        import('Common.Extends.Page.BootstrapPage');
+        $Page = new \BootstrapPage($comment_count, 10);
+        $comments = $commentModel->limit($Page->firstRow . ',' . $Page->listRows)->where(array('photo_id' => $photo_id))->order('create_time desc')->select();
+        $show = $Page->show(); // 分页显示输出
+        if (!empty($photo)) {
+            $photoUrl_arr = explode('/', $photo['photo_url']);
+            $high_photo = 'high_' . end($photoUrl_arr);
+            array_pop($photoUrl_arr);
+            array_push($photoUrl_arr, $high_photo);
+            $high_photoUrl = implode('/', $photoUrl_arr);
+        }
+
+        $this->assign('page', $show);
+        $this->assign('comments', $comments);
+        $this->assign('high_photoUrl', $high_photoUrl);
+        $this->assign('photo', $photo);
         $this->display('photoDetail');
     }
 
@@ -361,7 +381,30 @@ class AlbumController extends BaseController {
 
     //相片删除
     public function photoDelete() {
-        
+        $photo_id = I('post.id');
+        $photoModel = M('Photo');
+        $photo = $photoModel->where(array('id' => $photo_id))->find();
+        if (empty($photo)) {
+            $data['status'] = false;
+            $data['message'] = $photoModel->getError();
+            $this->ajaxReturn($data);
+        }
+        $del_res = $photoModel->where(array('id' => $photo_id))->delete();
+        if ($del_res === false) {
+            $data['status'] = false;
+            $data['message'] = '相片删除失败';
+            $this->ajaxReturn($data);
+        }
+        $photoUrl_arr = explode('/', $photo['photo_url']);
+        $high_photo = 'high_' . end($photoUrl_arr);
+        array_pop($photoUrl_arr);
+        array_push($photoUrl_arr, $high_photo);
+        $new_photUrl = implode('/', $photoUrl_arr);
+        @unlink(C('ROOT_PATH') . $photo['photo_url']);
+        @unlink(C('ROOT_PATH') . $new_photUrl);
+        $data['status'] = true;
+        $data['success'] = '相片删除成功';
+        $this->ajaxReturn($data);
     }
 
 }

@@ -33,6 +33,14 @@ Class AlbumModel extends CommonModel {
         return $status_arr;
     }
     
+    //获取相册名
+    public static  function getName($album_id){
+        if(empty($album_id)){
+            return ;
+        }
+        $album = M('Album')->where(array('id'=>$album_id))->find();
+        return $album['title'];
+    }
 }
 
 ?>

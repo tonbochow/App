@@ -13,7 +13,7 @@
 
         <div class="row">
             <volist name="photos" id="photo">
-                <div class="col-sm-6 col-md-4" style="height: 250px;">
+                <div class="col-sm-6 col-md-4" style="height: 250px;" id="{$photo.id}">
                     <div class="thumbnail">
                         <a href="{$photo.high_photo_url}" data-lightbox="photo" data-title="{$photo.photo_name}"><img src="{$photo.photo_url}" data-src="" alt=""></a>
                         <div class="caption">
@@ -38,7 +38,7 @@
             var AlbumModule = angular.module("baby", []);
             AlbumModule.controller("AlbumController", function ($scope, $http) {
                 $scope.del = function (photo_id) {
-                    $scope.photo.id = photo_id;
+                    $scope.photo ={'id':photo_id};
                     $http({
                         method: "POST",
                         url: "/Admin/Album/photoDelete",
@@ -47,6 +47,7 @@
                     }).success(function (data) {
                         if (data.status) {
                             $scope.success = data.success;
+                            $('#'+photo_id).css('display','none');
                         } else {
                             $scope.message = data.message;
                         }

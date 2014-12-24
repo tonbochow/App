@@ -65,10 +65,14 @@ class VideoController extends BaseController {
         if (IS_POST) {
             $video_data = I('post.');
             $video_data['status'] = I('post.status')['id'];
+            $video = M('Video')->where(array('id'=>$video_data['id']))->find();
             $videoModel = D('Video');
             if ($videoModel->create($video_data)) {
                 $update_res = $videoModel->save();
                 if ($update_res) {
+                    if($video['video_url'] != $video_data['video_url']){//删除原视频
+                        @unlink(C('ROOT_PATH').$video['video_url']);
+                    }
                     $data['status'] = true;
                     $data['success'] = '编辑视频成功';
                     $this->ajaxReturn($data);
@@ -149,6 +153,7 @@ class VideoController extends BaseController {
 
     //视频上传
     public function upload() {
+        set_time_limit(0); 
         $targetFolder = '/video/';
         $verifyToken = md5('unique_salt' . I('post.timestamp'));
         $config = array(
@@ -156,7 +161,7 @@ class VideoController extends BaseController {
             'rootPath' => 'upload',
             'savePath' => $targetFolder, //保存路径
             'saveName' => array('uniqid', ''),
-            'exts' => array('mp4', '3gp','flv','rtmp'),
+            'exts' => array('mp4','flv','rtmp'),
             'autoSub' => false,
             'replace' => true, //存在同名是否覆盖
         );

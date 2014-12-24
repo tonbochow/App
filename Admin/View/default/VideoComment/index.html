@@ -1,0 +1,169 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">视频评论管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+        <div class="panel panel-info">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="icon-search"></i> 检索条件
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <form role="form" action="/Admin/{$Think.CONTROLLER_NAME}/{$Think.ACTION_NAME}" method="get">
+                        <div class="form-group">
+                            <label for="content">评论内容</label>
+                            <input type="text" class="form-control" name="content" id="content" value="{$content}" placeholder="评论内容">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="status">状态</label>
+                            <select class="form-control" name="status">
+                                <foreach name="status_arr" item="comment_status">
+                                    <if condition="$status heq $key">
+                                        <option value="{$key}" selected="selected">{$comment_status}</option>
+                                        <else />
+                                        <option value="{$key}">{$comment_status}</option>
+                                    </if>
+                                </foreach>
+                            </select>
+                        </div>
+                        <div class="form-group" style="text-align: center;">
+                            <button  type="submit" class="btn btn-success">检索</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <if condition="$comments neq ''">
+        <div class="table-responsive panel panel-primary" ng-controller="VideoCommentController">
+            <div class="panel-heading">
+                <B>视频评论管理 | 评论列表</B>
+            </div>
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <th>ID</th>
+                    <th>视频名</th>
+                    <th>评论内容</th>
+                    <th>评论用户</th>
+                    <th>父评论ID</th>
+                    <th>IP地址</th>
+                    <th>状态</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+                <volist name="comments" id="comment">
+                    <tr id="{$comment.id}">
+                        <td>{$comment.id}</td>
+                        <td><?php echo \Admin\Model\VideoModel::getName($comment['video_id']);?></td>
+                        <td>{$comment.content|htmlspecialchars_decode|stripslashes}</td>
+                        <td>{$comment.user_name}</td>
+                        <td>{$comment.parent_id}</td>
+                        <td>{$comment.ip_address}</td>
+                        <td><?php echo \Admin\Model\PhotoCommentModel::getStatus($comment['status']);?></td>
+                    <if condition="$comment.create_time eq 0">
+                        <td></td>
+                        <else />
+                        <td>{$comment.create_time|date="Y-m-d H:i:s",###}</td>
+                    </if>
+                    
+                    <td>
+                        <a href="/Admin/VideoComment/edit/id/{$comment.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                        <a href="" ng-show="show({$comment.status})"  ng-model="comment.status" class="btn btn-danger" role="button"  ng-click="disable_comment({$comment.id})"><i class="icon-remove-circle"></i> 不公开</a>
+                        <a href="" ng-show="show(!{$comment.status})"  ng-model="comment.status" class="btn btn-success" role="button"  ng-click="enable_comment({$comment.id})"><i class="icon-ok"></i> 公开</a>
+                        <a href="" class="btn btn-danger" ng-click="del({$comment.id})" role="button"><i class="icon-trash"></i> 删除</a>
+                    </td>
+                    </tr>
+                </volist>
+            </table>
+        </div>
+        <?php echo $page;?>
+        <else />
+        <div class="table-responsive panel panel-primary" ng-controller="VideoCommentController">
+            <div class="panel-heading">
+                <B>视频评论管理 | 评论列表</B>
+            </div>
+            <div class="panel-body">
+                未检索到数据
+            </div>
+        </div>
+    </if>
+</block>
+<block name="header_script">
+    <script type="text/javascript">
+        var VideoCommentModule = angular.module("baby", []);
+        VideoCommentModule.controller("VideoCommentController", function ($scope, $http) {
+            $scope.show = function(status){
+                if(status == 1){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            
+            //删除评论
+            $scope.del = function(comment_id){
+                $scope.comment  = {'id':comment_id};
+                $http({
+                    method:"POST",
+                    url:"/Admin/VideoComment/delete",
+                    data:$.param($scope.comment),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
+                    if (data.status) {     
+                        $scope.success = data.success;
+                        $('#'+comment_id).css('display','none');
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+
+            //不公开评论
+            $scope.disable_comment = function(comment_id){
+                $scope.comment  = {'id':comment_id};
+                $http({
+                    method:"POST",
+                    url:"/Admin/VideoComment/disable",
+                    data:$.param($scope.comment),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
+                    if (data.status) {     
+                        $scope.success = data.success;
+                        window.location.reload();
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+            //公开评论
+            $scope.enable_comment = function(comment_id){
+                $scope.comment  = {"id":comment_id};
+                $http({
+                    method:"POST",
+                    url:"/Admin/VideoComment/enable",
+                    data:$.param($scope.comment),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
+                    if (data.status) {  
+                        $scope.success = data.success;
+                        window.location.reload();
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+        });
+    </script>
+</block>

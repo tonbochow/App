@@ -33,6 +33,14 @@ Class VideoModel extends CommonModel {
         return $status_arr;
     }
     
+    //获取视频名
+    public static  function getName($video_id){
+        if(empty($video_id)){
+            return ;
+        }
+        $video = M('Video')->where(array('id'=>$video_id))->find();
+        return $video['video_name'];
+    }
 }
 
 ?>

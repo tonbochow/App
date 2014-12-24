@@ -82,8 +82,15 @@
                         </div>
                     </div>
                 </div><br>
+                
+                <input id="file_upload" name="video_url" type="file"  multiple="true">
+                <input type="hidden" name="video_url" id="video_url" value="{{video.video_url}}" ng-model="video.video_url" />
+                <input type="hidden" name="exttype" id="exttype" value="{{video.exttype}}" ng-model="video.exttype" />
+                <input type="hidden" name="extfield" id="extfield" value="{{video.extfield}}" ng-model="video.extfield" />
             </div>
         </div>
+        
+        
        
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
@@ -96,8 +103,10 @@
 </block>
 
 <block name="header_script">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/uploadify/uploadify.css" media="all">
     <link rel="stylesheet" type="text/css" href="__COMMON__/jplayer/dist/skin/blue.monday/css/jplayer.blue.monday.min.css" media="all">
     <script type="text/javascript" src="__COMMON__/jplayer/dist/jplayer/jquery.jplayer.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/uploadify/jquery.uploadify.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $("#jquery_jplayer_1").jPlayer({
@@ -116,6 +125,32 @@
         });
         var VideoModule = angular.module("baby", []);
         VideoModule.controller("VideoEditController", function ($scope, $http) {
+            $(function() {
+                $('#file_upload').uploadify({
+                    'formData': {
+                        'timestamp': '<?php echo $timestamp;?>',
+                        'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
+                    },
+                    'fileExt': '*.mp4,*.3gp,*.flv,*.rtmp',
+                    'buttonText': '选择视频',
+                    'swf': '__COMMON__/uploadify/uploadify.swf',
+                    'onUploadSuccess': function(file, data, response) {
+                        var obj = eval('(' + data + ')');
+                        if (obj.status) {
+                            $("#jquery_jplayer_1").jPlayer("setMedia", { 
+                                webmv: obj.video_url
+                            });
+                            $scope.video.video_url = obj.video_url;
+                            $scope.video.exttype = obj.exttype;
+                            $scope.video.extfield = obj.extfield;
+                        } else {
+                            alert(obj.info);
+                        }
+
+                    },
+                    'uploader': '/Admin/Video/upload'
+                });
+            });
             $scope.video = {$json_video};
             $scope.statusModel = [{
                     id: 0,

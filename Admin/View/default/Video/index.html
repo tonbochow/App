@@ -1,0 +1,171 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">视频管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+        <div class="panel panel-info">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="icon-search"></i> 检索条件
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <form role="form" action="/Admin/{$Think.CONTROLLER_NAME}/{$Think.ACTION_NAME}" method="get">
+                        <div class="form-group">
+                            <label for="video_name">视频名</label>
+                            <input type="text" class="form-control" name="video_name" id="video_name" value="{$video_name}" placeholder="视频名">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="status">状态</label>
+                            <select class="form-control" name="status">
+                                <foreach name="status_arr" item="video_status">
+                                    <if condition="$status heq $key">
+                                        <option value="{$key}" selected="selected">{$video_status}</option>
+                                        <else />
+                                        <option value="{$key}">{$video_status}</option>
+                                    </if>
+                                </foreach>
+                            </select>
+                        </div>
+                        <div class="form-group" style="text-align: center;">
+                            <button  type="submit" class="btn btn-success">检索</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <if condition="$videos neq ''">
+        <div class="table-responsive panel panel-primary" ng-controller="VideoController">
+            <div class="panel-heading">
+                <B>视频管理 | 视频列表</B>
+                <a href="/Admin/Video/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加视频</a>
+            </div>
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <th>ID</th>
+                    <th>视频名</th>
+                    <th>视频url</th>
+                    <th>视频类型</th>
+                    <th>视频描述</th>
+                    <th>播放顺序</th>
+                    <th>状态</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+                <volist name="videos" id="video">
+                    <tr id="{$video.id}">
+                        <td>{$video.id}</td>
+                        <td>{$video.video_name}</td>
+                        <td>{$video.video_url}</td>
+                        <td>{$video.exttype}</td>
+                        <td>{$video.description}</td>
+                        <td>{$video.list_order}</td>
+                        <td><?php echo \Admin\Model\VideoModel::getStatus($video['status']);?></td>
+                    <if condition="$video.create_time eq 0">
+                        <td></td>
+                        <else />
+                        <td>{$video.create_time|date="Y-m-d H:i:s",###}</td>
+                    </if>
+                    
+                    <td>
+                        <a href="/Admin/Video/edit/id/{$video.id}" class="btn btn-warning" role="button"><i class="icon-pencil"></i> 编辑</a>
+                        <a href="" ng-show="show({$video.status})"  ng-model="video.status" class="btn btn-danger" role="button"  ng-click="disable_video({$video.id})"><i class="icon-remove-circle"></i> 不公开</a>
+                        <a href="" ng-show="show(!{$video.status})"  ng-model="video.status" class="btn btn-success" role="button"  ng-click="enable_video({$video.id})"><i class="icon-ok"></i> 公开</a>
+                        <a href="" class="btn btn-danger" ng-click="del({$video.id})" role="button"><i class="icon-trash"></i> 删除</a>
+                    </td>
+                    </tr>
+                </volist>
+            </table>
+        </div>
+        <?php echo $page;?>
+        <else />
+        <div class="table-responsive panel panel-primary" ng-controller="VideoController">
+            <div class="panel-heading">
+                <B>视频管理 | 视频列表</B>
+                <a href="/Admin/Video/add" class="btn btn-success" role="button"><i class="icon-plus"></i> 添加视频</a>
+            </div>
+            <div class="panel-body">
+                未检索到数据
+            </div>
+        </div>
+    </if>
+</block>
+<block name="header_script">
+    <script type="text/javascript">
+        var VideoModule = angular.module("baby", []);
+        VideoModule.controller("VideoController", function ($scope, $http) {
+            $scope.show = function(status){
+                if(status == 1){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            
+            //删除视频
+            $scope.del = function(video_id){
+                $scope.video  = {'id':video_id};
+                $http({
+                    method:"POST",
+                    url:"/Admin/Video/delete",
+                    data:$.param($scope.video),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
+                    if (data.status) {     
+                        $scope.success = data.success;
+                        $('#'+video_id).css('display','none');
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+
+            //不公开视频
+            $scope.disable_video = function(video_id){
+                $scope.video  = {'id':video_id};
+                $http({
+                    method:"POST",
+                    url:"/Admin/Video/disable",
+                    data:$.param($scope.video),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
+                    if (data.status) {     
+                        $scope.success = data.success;
+                        window.location.reload();
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+            //公开视频
+            $scope.enable_video = function(video_id){
+                $scope.video  = {"id":video_id};
+                $http({
+                    method:"POST",
+                    url:"/Admin/Video/enable",
+                    data:$.param($scope.video),
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+                }).success(function(data){
+                    if (data.status) {  
+                        $scope.success = data.success;
+                        window.location.reload();
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            }
+        });
+    </script>
+</block>

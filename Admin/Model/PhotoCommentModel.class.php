@@ -13,8 +13,9 @@ Class PhotoCommentModel extends CommonModel {
     public static $UNAVAILABLE = 0;
     
     protected $_validate = array(
-        array('music_name','require','音乐文件名必须！',self::MUST_VALIDATE),
-        array('music_url','require','音乐文件url必须！',self::MUST_VALIDATE),
+        array('album_id','require','评论相片所属相册ID必须！',self::MUST_VALIDATE),
+        array('photo_id','require','评论相片ID必须！',self::MUST_VALIDATE),
+        array('content','require','相片评论内容必须！',self::MUST_VALIDATE),
         array('list_order', '', '排序已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_BOTH),
     );
     protected $_auto = array(
@@ -22,7 +23,7 @@ Class PhotoCommentModel extends CommonModel {
         array('update_time', 'time', self::MODEL_UPDATE, 'function'),
     );
 
-    //获取音乐状态
+    //获取相片评论状态
     public static function getStatus($status = null) {
         $status_arr = array('' => '请选择');
         $status_arr[self::$AVAILABLE] = '公开';

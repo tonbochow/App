@@ -34,6 +34,14 @@ Class PhotoModel extends CommonModel {
         return $status_arr;
     }
     
+    //获取相片名
+    public static  function getName($photo_id){
+        if(empty($photo_id)){
+            return ;
+        }
+        $photo = M('Photo')->where(array('id'=>$photo_id))->find();
+        return $photo['photo_name'];
+    }
 }
 
 ?>

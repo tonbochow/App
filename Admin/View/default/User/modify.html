@@ -1,0 +1,65 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">用户管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="UserForm" ng-controller="UserModifyController" ng-submit="submitForm()" novalidate>
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+        
+        <div class="form-group" ng-class="{'has-error' : UserForm.nickname.$invalid && !UserForm.nickname.$pristine}">
+            <label for="nickname" class="col-sm-2 control-label">昵称</label>
+            <div class="col-sm-10">
+                <input type="text" name="nickname" value="{$user.nickname}" ng-model="user.nickname" ng-minlength="4" ng-maxlength="30" required class="form-control" id="nickname" placeholder="昵称">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : UserForm.qq.$invalid && !UserForm.qq.$pristine}">
+            <label for="qq" class="col-sm-2 control-label">QQ</label>
+            <div class="col-sm-10">
+                <input type="num" name="qq" value="{$user.qq}" ng-model="user.qq" ng-pattern="/^[1-9]*[1-9][0-9]*$/" ng-minlength="1" ng-maxlength="15"  class="form-control" id="qq" placeholder="QQ">
+            </div>
+        </div>
+       
+        <div class="form-group" ng-class="{'has-error' : UserForm.mobile.$invalid && !UserForm.mobile.$pristine}">
+            <label for="mobile" class="col-sm-2 control-label">手机</label>
+            <div class="col-sm-10">
+                <input type="text" name="mobile" ng-model="user.mobile"  ng-pattern="/^(13\d{9})|(15\d{9})|(18\d{9})|(17\d{9})$/" ng-minlength="11" ng-maxlength="11"  class="form-control" id="mobile" placeholder="手机">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="UserForm.$invalid"><i class="icon-save"></i> 编辑信息</button>
+            </div>
+        </div>
+        
+
+    </form>
+</block>
+
+<block name="header_script">
+    <script type="text/javascript">
+        var UserModule = angular.module("baby", []);
+        UserModule.controller("UserModifyController", function ($scope, $http) {
+            $scope.user = {$json_user};
+            $scope.submitForm = function () {
+                $http({
+                    method: "POST",
+                    url: "/Admin/User/modify",
+                    data: $.param($scope.user),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

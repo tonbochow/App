@@ -184,4 +184,30 @@ class UserController extends BaseController {
         $this->display('edit');
     }
 
+    //后台登陆用户信息修改
+    public function modify(){
+        if(IS_POST){
+            $user_data = I('post.');
+            $userModel = D('User');
+//            dump($user_data);exit;
+            if($userModel->create($user_data)){
+                $update_res = $userModel->save();
+                if($update_res){
+                    $data['status'] = true;
+                    $data['success'] = '编辑信息成功';
+                    $this->ajaxReturn($data);
+                }
+            }
+            $data['status'] = false;
+            $data['message'] = $userModel->getError();
+            $this->ajaxReturn($data);
+        }
+        $user_id = session(C('USER_AUTH_KEY'));
+        $userModel = M('User');
+        $user = $userModel->where(array('id'=>$user_id))->find();
+        
+        $this->assign('json_user', json_encode($user));
+        $this->assign('user',$user);
+        $this->display('modify');
+    }
 }

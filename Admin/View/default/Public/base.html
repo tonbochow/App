@@ -52,6 +52,7 @@
         <script type="text/javascript">
             $(function(){
                 var controller_name = '<?php echo CONTROLLER_NAME;?>';
+                var action_name = '<?php echo ACTION_NAME;?>';
                 if(controller_name == 'Role' || controller_name == 'App' || controller_name == 'RoleApp' || controller_name == 'RoleUser'){
                     $('#power').attr('class','nav-header');
                     $('#power').attr('aria-expanded','true');
@@ -60,7 +61,7 @@
                     $('#powerSetting').css('height','auto');
                 }
                 
-                if(controller_name == 'Master'){
+                if(controller_name == 'Master' || (controller_name == 'User' && action_name == 'modify')){
                     $('#system').attr('class','nav-header');
                     $('#system').attr('aria-expanded','true');
                     $('#systemSetting').attr('class','nav nav-list secondmenu collapse in');

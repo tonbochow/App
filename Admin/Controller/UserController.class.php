@@ -185,14 +185,14 @@ class UserController extends BaseController {
     }
 
     //后台登陆用户信息修改
-    public function modify(){
-        if(IS_POST){
+    public function modify() {
+        if (IS_POST) {
             $user_data = I('post.');
             $userModel = D('User');
 //            dump($user_data);exit;
-            if($userModel->create($user_data)){
+            if ($userModel->create($user_data)) {
                 $update_res = $userModel->save();
-                if($update_res){
+                if ($update_res) {
                     $data['status'] = true;
                     $data['success'] = '编辑信息成功';
                     $this->ajaxReturn($data);
@@ -204,10 +204,46 @@ class UserController extends BaseController {
         }
         $user_id = session(C('USER_AUTH_KEY'));
         $userModel = M('User');
-        $user = $userModel->where(array('id'=>$user_id))->find();
-        
+        $user = $userModel->where(array('id' => $user_id))->find();
+
         $this->assign('json_user', json_encode($user));
-        $this->assign('user',$user);
+        $this->assign('user', $user);
         $this->display('modify');
     }
+
+    //后台登录用户修改密码
+    public function password() {
+        if (IS_POST) {
+            $user_id = session(C('USER_AUTH_KEY'));
+            $password = I('post.password');
+            $newpassword = I('post.newpassword');
+            $repassword = I('post.repassword');
+            $userModel = M('User');
+            if ($repassword != $newpassword) {
+                $data['status'] = false;
+                $data['message'] = '新密码和确认新密码不一致';
+                $this->ajaxReturn($data);
+            }
+            $user = $userModel->where(array('id' => $user_id))->find();
+            if (md5($password) != $user['password']) {
+                $data['status'] = false;
+                $data['message'] = '输入的原密码不正确';
+                $this->ajaxReturn($data);
+            }
+            $user_data['password'] = md5($newpassword);
+            $user_data['update_time'] = time();
+            $update_res = $userModel->where(array('id'=>$user_id))->save($user_data);
+            if ($update_res) {
+                $data['status'] = true;
+                $data['success'] = '密码修改成功';
+                $this->ajaxReturn($data);
+            }
+            $data['status'] = false;
+            $data['message'] = $userModel->getError();
+            $this->ajaxReturn($data);
+        }
+
+        $this->display('password');
+    }
+
 }

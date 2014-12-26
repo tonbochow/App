@@ -61,7 +61,7 @@
                     $('#powerSetting').css('height','auto');
                 }
                 
-                if(controller_name == 'Master' || (controller_name == 'User' && action_name == 'modify')){
+                if(controller_name == 'Master' || (controller_name == 'User' && action_name == 'modify') || controller_name =='System'){
                     $('#system').attr('class','nav-header');
                     $('#system').attr('aria-expanded','true');
                     $('#systemSetting').attr('class','nav nav-list secondmenu collapse in');

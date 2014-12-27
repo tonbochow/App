@@ -49,4 +49,10 @@ class SystemController extends BaseController {
         }
     }
 
+    //网站内容配置
+    public  function config(){
+        if(IS_POST){
+            
+        }
+    }
 }

@@ -3,7 +3,7 @@
 <block name="content">
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a href="#website" role="tab" data-toggle="tab">网站信息</a></li>
-        <li role="presentation"><a href="#seo" role="tab" data-toggle="tab">SEO设置</a></li>
+        <li role="presentation"><a href="#seo" role="tab" data-toggle="tab">内容配置</a></li>
     </ul>
 
     <div class="tab-content">
@@ -71,9 +71,32 @@
             </form>
         </div>
         <div role="tabpanel" class="tab-pane" id="seo">
-            <!--            <form class="form-horizontal" role="form" name="SeoForm" ng-controller="SeoController" ng-submit="submitSeo()">
-            
-                        </form>-->
+            <form class="form-horizontal" role="form" name="ConfigForm" ng-controller="ConfigController" ng-submit="submitConfig()">
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+                    <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+                </div>
+
+                <div class="form-group" ng-class="{'has-error' : ConfigForm.back_page_num.$invalid && !ConfigForm.back_page_num.$pristine}">
+                    <label for="back_page_num" class="col-sm-2 control-label">后台分页数:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="back_page_num" ng-model="config.back_page_num" ng-pattern="/^[1-9]*[1-9][0-9]*$/"  ng-minlength="1" ng-maxlength="10" required class="form-control" id="back_page_num" placeholder="后台分页数">
+                    </div>
+                </div>
+
+                <div class="form-group" ng-class="{'has-error' : ConfigForm.front_comment_num.$invalid && !ConfigForm.front_comment_num.$pristine}">
+                    <label for="front_comment_num" class="col-sm-2 control-label">前台评论分页数:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="front_comment_num" ng-model="config.front_comment_num" ng-pattern="/^[1-9]*[1-9][0-9]*$/"  ng-minlength="1" ng-maxlength="10" required class="form-control" id="front_comment_num" placeholder="前台评论分页数">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-success" ng-disabled="ConfigForm.$invalid"><i class="icon-plus-sign"></i> 保存配置信息</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </block>
@@ -84,9 +107,25 @@
             $scope.website = {$website_json};
             $scope.submitWebsite = function () {
                 $http({
-                    method: "POST",
-                    url: "/Admin/System/website",
-                    data: $.param($scope.website),
+                        method: "POST",
+                        url: "/Admin/System/website",
+                        data: $.param($scope.website),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                        if (data.status) {
+                            $scope.success = data.success;
+                        } else {
+                            $scope.message = data.message;
+                        }
+                });
+            };
+        });
+        WebsiteModule.controller("ConfigController", function ($scope, $http) {
+            $scope.submitConfig = function () {
+                $http({
+                     method: "POST",
+                    url: "/Admin/System/config",
+                    data: $.param($scope.config),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).success(function (data) {
                     if (data.status) {

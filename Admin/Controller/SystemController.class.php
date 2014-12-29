@@ -16,6 +16,17 @@ class SystemController extends BaseController {
         $websiteModel = M('Website');
         $website = $websiteModel->find();
         
+        $configModel = M('Config');
+        $config = $configModel->select();
+        if(!empty($config)){
+            foreach($config as $key=>$value){
+                $new_config[$value['name']] = $value['value'];
+            }
+        }
+        dump($new_config);
+        
+        $this->assign('config',$new_config);
+        $this->assign('json_config',  json_encode($new_config));
         $this->assign('website_json',  json_encode($website));
         $this->display('setting');
     }
@@ -52,7 +63,25 @@ class SystemController extends BaseController {
     //网站内容配置
     public  function config(){
         if(IS_POST){
-            
+            $post_data = I('post.');
+            if(!empty($post_data)){
+                foreach($post_data as $name=>$value){
+                    $config_name = strtoupper($name);
+                    $configModel = M('Config');
+                    $config = $configModel->where(array('name'=>$config_name))->find();
+                    if(empty($config)){
+                        $add_data['name'] = $config_name;
+                        $add_data['value'] = $value;
+                        $add_data['create_time'] = time();
+                        $add_res = $configModel->add($add_data);
+                    }else{
+                        $save_data['name'] = $config_name;
+                        $save_data['value'] = $value;
+                        $save_data['update_time'] = time();
+                        $save_res = $configModel->where(array('name'=>$config_name))->save($save_data);
+                    }
+                }
+            }
         }
     }
 }

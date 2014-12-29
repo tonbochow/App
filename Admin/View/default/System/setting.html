@@ -80,14 +80,14 @@
                 <div class="form-group" ng-class="{'has-error' : ConfigForm.back_page_num.$invalid && !ConfigForm.back_page_num.$pristine}">
                     <label for="back_page_num" class="col-sm-2 control-label">后台分页数:</label>
                     <div class="col-sm-10">
-                        <input type="text" name="back_page_num" ng-model="config.back_page_num" ng-pattern="/^[1-9]*[1-9][0-9]*$/"  ng-minlength="1" ng-maxlength="10" required class="form-control" id="back_page_num" placeholder="后台分页数">
+                        <input type="text" value="{$config.BACK_PAGE_NUM}" name="BACK_PAGE_NUM" ng-model="config.BACK_PAGE_NUM" ng-pattern="/^[1-9]*[1-9][0-9]*$/"  ng-minlength="1" ng-maxlength="10" required class="form-control" id="back_page_num" placeholder="后台分页数">
                     </div>
                 </div>
 
                 <div class="form-group" ng-class="{'has-error' : ConfigForm.front_comment_num.$invalid && !ConfigForm.front_comment_num.$pristine}">
                     <label for="front_comment_num" class="col-sm-2 control-label">前台评论分页数:</label>
                     <div class="col-sm-10">
-                        <input type="text" name="front_comment_num" ng-model="config.front_comment_num" ng-pattern="/^[1-9]*[1-9][0-9]*$/"  ng-minlength="1" ng-maxlength="10" required class="form-control" id="front_comment_num" placeholder="前台评论分页数">
+                        <input type="text" value="{$config.FRONT_COMMENT_NUM}" name="FRONT_COMMENT_NUM" ng-model="config.FRONT_COMMENT_NUM" ng-pattern="/^[1-9]*[1-9][0-9]*$/"  ng-minlength="1" ng-maxlength="10" required class="form-control" id="front_comment_num" placeholder="前台评论分页数">
                     </div>
                 </div>
 
@@ -105,6 +105,7 @@
         var WebsiteModule = angular.module("baby", []);
         WebsiteModule.controller("WebsiteController", function ($scope, $http) {
             $scope.website = {$website_json};
+            $scope.config = {$json_config};
             $scope.submitWebsite = function () {
                 $http({
                         method: "POST",
@@ -122,6 +123,7 @@
         });
         WebsiteModule.controller("ConfigController", function ($scope, $http) {
             $scope.submitConfig = function () {
+                $scope.config = {$json_config};
                 $http({
                      method: "POST",
                     url: "/Admin/System/config",

@@ -1,0 +1,44 @@
+<extend name="Public:base" />
+
+<block name="content">
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="website">
+            <form class="form-horizontal" role="form" name="WebsiteForm" ng-controller="WebsiteController" ng-submit="submitWebsite()">
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+                    <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-success" ng-disabled="WebsiteForm.$invalid"><i class="icon-magic"></i> 清除缓存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</block>
+<block name="header_script">
+    <script type="text/javascript">
+        var WebsiteModule = angular.module("baby", []);
+        WebsiteModule.controller("WebsiteController", function($scope, $http) {
+            $scope.submitWebsite = function() {
+                $scope.website ={'clear':true};
+                $http({
+                    method: "POST",
+                    url: "/Admin/System/clear",
+                    data: $.param($scope.website),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function(data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

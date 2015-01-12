@@ -25,7 +25,7 @@ class AlbumController extends BaseController {
         }
         $album_count = $AlbumModel->where($album_cond)->order('list_order asc,create_time desc')->count();
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($album_count, 10);
+        $Page = new \BootstrapPage($album_count, C('PER_PAGE_NUM'));
         $albums = $AlbumModel->limit($Page->firstRow . ',' . $Page->listRows)->where($album_cond)->order('list_order asc,create_time desc')->select();
         $show = $Page->show(); // 分页显示输出
         if ($status !== '') {

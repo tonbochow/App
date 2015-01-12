@@ -28,7 +28,7 @@ class UserController extends BaseController {
         }
         $user_count = $userModel->where($user_cond)->count();
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($user_count, 1);
+        $Page = new \BootstrapPage($user_count, C('PER_PAGE_NUM'));
         $users = $userModel->limit($Page->firstRow . ',' . $Page->listRows)->where($user_cond)->select();
         $show = $Page->show(); // 分页显示输出
         $this->assign('superuser_arr', $superuser_arr);

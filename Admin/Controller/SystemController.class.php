@@ -84,4 +84,20 @@ class SystemController extends BaseController {
             }
         }
     }
+    
+    //清空缓存
+    public function clear(){
+        if(IS_POST){
+            $clear_cache = I('post.clear');
+            if($clear_cache){
+                $del_res = delFileUnderDir(RUNTIME_PATH);
+                if($del_res){
+                    $data['status'] = true;
+                    $data['success'] = '清除缓存成功';
+                    $this->ajaxReturn($data);
+                }
+            }
+        }
+        $this->display('clear');
+    }
 }

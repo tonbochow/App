@@ -23,7 +23,7 @@ class TalkController extends BaseController {
         }
         $talk_count = $talkModel->where($talk_cond)->order('create_time desc')->count();
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($talk_count, 1);
+        $Page = new \BootstrapPage($talk_count, C('PER_PAGE_NUM'));
         $talks = $talkModel->limit($Page->firstRow . ',' . $Page->listRows)->where($talk_cond)->order('create_time desc')->select();
         $show = $Page->show(); // 分页显示输出
         if ($status !== '') {

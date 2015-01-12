@@ -19,7 +19,7 @@ class RoleAppController extends BaseController {
             $role_app_count = $roleAppModel->count();
         }
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($role_app_count, 1);
+        $Page = new \BootstrapPage($role_app_count, C('PER_PAGE_NUM'));
         if (!empty($role_id)) {
             $role_app = $roleAppModel->limit($Page->firstRow . ',' . $Page->listRows)->where(array('role_id'=>$role_id))->select();
         } else {

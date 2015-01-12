@@ -12,6 +12,7 @@ function delFileUnderDir($dirName, $keep_file = null) {
             if ($item != "." && $item != "..") {
                 if (is_dir("$dirName/$item")) {
                     delFileUnderDir("$dirName/$item");
+                    rmdir("$dirName/$item");
                 } else {
                     if ($keep_file !== null) {
                         if ($keep_file != "$dirName/$item") {

@@ -23,7 +23,7 @@ class TalkCommentController extends BaseController {
         }
         $talk_comment_count = $talkCommentModel->where($talk_cond)->order('create_time desc')->count();
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($talk_comment_count, 1);
+        $Page = new \BootstrapPage($talk_comment_count, C('PER_PAGE_NUM'));
         $talkComments = $talkCommentModel->limit($Page->firstRow . ',' . $Page->listRows)->where($talk_cond)->order('create_time desc')->select();
         $show = $Page->show(); // 分页显示输出
         if ($status !== '') {

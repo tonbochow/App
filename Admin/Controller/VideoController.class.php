@@ -23,7 +23,7 @@ class VideoController extends BaseController {
         }
         $video_count = $videoModel->where($video_cond)->order('create_time desc')->count();
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($video_count, 1);
+        $Page = new \BootstrapPage($video_count, C('PER_PAGE_NUM'));
         $videos = $videoModel->limit($Page->firstRow . ',' . $Page->listRows)->where($video_cond)->order('create_time desc')->select();
         $show = $Page->show(); // 分页显示输出
         if ($status !== '') {

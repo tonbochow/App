@@ -9,4 +9,5 @@ return array(
         '__CSS__' => __ROOT__ . '/Public/' . MODULE_NAME . '/css',
         '__JS__' => __ROOT__ . '/Public/' . MODULE_NAME . '/js',
     ),
+    'PER_PAGE_NUM' => 20,//后台应用每页显示数量
 );

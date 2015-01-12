@@ -19,7 +19,7 @@ class AppController extends BaseController {
             $app_count = $appModel->where($cond)->count();
         }
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($app_count, 1);
+        $Page = new \BootstrapPage($app_count, C('PER_PAGE_NUM'));
         if (!empty($name)) {
             $apps = $appModel->limit($Page->firstRow . ',' . $Page->listRows)->where($cond)->select();
         } else {

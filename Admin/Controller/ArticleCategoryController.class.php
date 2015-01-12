@@ -19,7 +19,7 @@ class ArticleCategoryController extends BaseController {
         }
         $articleCategory_count = $articleCategoryModel->where($articleCategory_cond)->order('sort asc')->count();
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($articleCategory_count, 1);
+        $Page = new \BootstrapPage($articleCategory_count, C('PER_PAGE_NUM'));
         $articleCategory = $articleCategoryModel->limit($Page->firstRow . ',' . $Page->listRows)->where($articleCategory_cond)->order('sort asc')->select();
         $show = $Page->show(); // 分页显示输出
         if ($status !== '') {

@@ -23,7 +23,7 @@ class MusicController extends BaseController {
         }
         $music_count = $musicModel->where($music_cond)->order('create_time desc')->count();
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($music_count, 1);
+        $Page = new \BootstrapPage($music_count, C('PER_PAGE_NUM'));
         $musics = $musicModel->limit($Page->firstRow . ',' . $Page->listRows)->where($music_cond)->order('create_time desc')->select();
         $show = $Page->show(); // 分页显示输出
         if ($status !== '') {

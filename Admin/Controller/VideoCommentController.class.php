@@ -23,7 +23,7 @@ class VideoCommentController extends BaseController {
         }
         $comment_count = $videoCommentModel->where($comment_cond)->order('create_time desc')->count();
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($comment_count, 1);
+        $Page = new \BootstrapPage($comment_count, C('PER_PAGE_NUM'));
         $comments = $videoCommentModel->limit($Page->firstRow . ',' . $Page->listRows)->where($comment_cond)->order('create_time desc')->select();
         $show = $Page->show(); // 分页显示输出
         if ($status !== '') {

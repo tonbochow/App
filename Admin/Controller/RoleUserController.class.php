@@ -20,7 +20,7 @@ class RoleUserController extends BaseController {
         }
 
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($user_count, 1);
+        $Page = new \BootstrapPage($user_count, C('PER_PAGE_NUM'));
         if (!empty($name)) {
             $users = $userModel->limit($Page->firstRow . ',' . $Page->listRows)->where(array('name' => $name))->select();
         } else {

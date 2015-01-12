@@ -22,7 +22,7 @@ class ArticleController extends BaseController {
         }
         $article_count = $articleModel->where($article_cond)->order('create_time desc')->count();
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($article_count, 1);
+        $Page = new \BootstrapPage($article_count, C('PER_PAGE_NUM'));
         $articles = $articleModel->limit($Page->firstRow . ',' . $Page->listRows)->where($article_cond)->order('create_time desc')->select();
         $show = $Page->show(); // 分页显示输出
         if ($status !== '') {

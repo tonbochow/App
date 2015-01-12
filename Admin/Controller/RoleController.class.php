@@ -19,7 +19,7 @@ class RoleController extends BaseController {
             $role_count = $roleModel->count();
         }
         import('Common.Extends.Page.BootstrapPage');
-        $Page = new \BootstrapPage($role_count, 1);
+        $Page = new \BootstrapPage($role_count, C('PER_PAGE_NUM'));
         if (!empty($role_id)) {
             $roles = $roleModel->limit($Page->firstRow . ',' . $Page->listRows)->where(array('id' => $role_id))->select();
         } else {

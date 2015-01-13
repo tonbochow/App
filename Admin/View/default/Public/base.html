@@ -109,6 +109,14 @@
                     $('#videoSetting').css('height','auto');
                 }
                 
+                if(controller_name == 'Message'){
+                    $('#message').attr('class','nav-header');
+                    $('#message').attr('aria-expanded','true');
+                    $('#messageSetting').attr('class','nav nav-list secondmenu collapse in');
+                    $('#messageSetting').attr('aria-expanded','true');
+                    $('#messageSetting').css('height','auto');
+                }
+                
                 if(controller_name == 'ArticleCategory' || controller_name == 'Article' || controller_name == 'ArticleComment'){
                     $('#article').attr('class','nav-header');
                     $('#article').attr('aria-expanded','true');

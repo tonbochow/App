@@ -1,0 +1,180 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">视频管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="VideoForm" ng-controller="VideoEditController" ng-submit="submitForm()" novalidate>
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+       
+        <div class="form-group" ng-class="{'has-error' : VideoForm.video_name.$invalid && !VideoForm.video_name.$pristine}">
+            <label for="video_name" class="col-sm-2 control-label">*音乐名:</label>
+            <div class="col-sm-10">
+                <input type="text" name="video_name" value="{$video.video_name}" ng-model="video.video_name" ng-minlength="1" ng-maxlength="80" required class="form-control" id="video_name" placeholder="视频名">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : VideoForm.description.$invalid && !VideoForm.description.$pristine}">
+            <label for="description" class="col-sm-2 control-label">*视频描述:</label>
+            <div class="col-sm-10">
+                <input type="text" name="description" value="{$video.description}" ng-model="video.description" ng-minlength="1" ng-maxlength="255" required class="form-control" id="description" placeholder="视频描述">
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : VideoForm.list_order.$invalid && !VideoForm.list_order.$pristine}">
+            <label for="list_order" class="col-sm-2 control-label">*播放顺序:</label>
+            <div class="col-sm-10">
+                <input type="text" name="list_order" value="{$video.list_order}" ng-model="video.list_order"  ng-pattern="/^[1-9]*[1-9][0-9]*$/" ng-minlength="1" ng-maxlength="10" required class="form-control" id="list_order" placeholder="播放顺序">
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error' : VideoForm.status.$invalid && !VideoForm.status.$pristine}">
+            <label for="status" class="col-sm-2 control-label">视频状态(*)</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="status" required ng-model="video.status" ng-options="option.statusName for option in statusModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="listen" class="col-sm-2 control-label">播放:</label>
+            <div class="col-sm-10">
+                <div id="queue"></div>
+
+                <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+                <div id="jp_container_1" class="jp-audio" role="application" aria-label="media player">
+                    <div class="jp-type-single">
+                        <div class="jp-gui jp-interface">
+                            <div class="jp-controls">
+                                <button class="jp-play" role="button" tabindex="0">play</button>
+                                <button class="jp-stop" role="button" tabindex="0">stop</button>
+                            </div>
+                            <div class="jp-progress">
+                                <div class="jp-seek-bar">
+                                    <div class="jp-play-bar"></div>
+                                </div>
+                            </div>
+                            <div class="jp-volume-controls">
+                                <button class="jp-mute" role="button" tabindex="0">mute</button>
+                                <button class="jp-volume-max" role="button" tabindex="0">max volume</button>
+                                <div class="jp-volume-bar">
+                                    <div class="jp-volume-bar-value"></div>
+                                </div>
+                            </div>
+                            <div class="jp-time-holder">
+                                <div class="jp-current-time" role="timer" aria-label="time">&nbsp;</div>
+                                <div class="jp-duration" role="timer" aria-label="duration">&nbsp;</div>
+                                <div class="jp-toggles">
+                                    <button class="jp-repeat" role="button" tabindex="0">repeat</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="jp-details">
+                            <div class="jp-title" aria-label="title">&nbsp;</div>
+                        </div>
+                        <div class="jp-no-solution">
+                            <span>需要更新</span>
+                            点击后面链接更新flash <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+                        </div>
+                    </div>
+                </div><br>
+                
+                <input id="file_upload" name="video_url" type="file"  multiple="true">
+                <input type="hidden" name="video_url" id="video_url" value="{{video.video_url}}" ng-model="video.video_url" />
+                <input type="hidden" name="exttype" id="exttype" value="{{video.exttype}}" ng-model="video.exttype" />
+                <input type="hidden" name="extfield" id="extfield" value="{{video.extfield}}" ng-model="video.extfield" />
+            </div>
+        </div>
+        
+        
+       
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="VideoForm.$invalid"><i class="icon-save"></i> 保存编辑视频</button>
+            </div>
+        </div>
+        
+
+    </form>
+</block>
+
+<block name="header_script">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/uploadify/uploadify.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/jplayer/dist/skin/blue.monday/css/jplayer.blue.monday.min.css" media="all">
+    <script type="text/javascript" src="__COMMON__/jplayer/dist/jplayer/jquery.jplayer.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/uploadify/jquery.uploadify.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#jquery_jplayer_1").jPlayer({
+                ready: function(event) {
+                    $(this).jPlayer("setMedia", {
+                        title: "视频播放",
+                        webmv:"{$video.video_url}"
+                    });
+                },
+                solution: 'html, flash',
+                supplied: 'webmv, ogv, m4v,mp4,3gp',
+                preload: 'metadata',
+                muted: false,
+                swfPath: "__COMMON__/jplayer/dist/jplayer",
+            });
+        });
+        var VideoModule = angular.module("baby", []);
+        VideoModule.controller("VideoEditController", function ($scope, $http) {
+            $(function() {
+                $('#file_upload').uploadify({
+                    'formData': {
+                        'timestamp': '<?php echo $timestamp;?>',
+                        'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
+                    },
+                    'fileExt': '*.mp4,*.3gp,*.flv,*.rtmp',
+                    'buttonText': '选择视频',
+                    'swf': '__COMMON__/uploadify/uploadify.swf',
+                    'onUploadSuccess': function(file, data, response) {
+                        var obj = eval('(' + data + ')');
+                        if (obj.status) {
+                            $("#jquery_jplayer_1").jPlayer("setMedia", { 
+                                webmv: obj.video_url
+                            });
+                            $scope.video.video_url = obj.video_url;
+                            $scope.video.exttype = obj.exttype;
+                            $scope.video.extfield = obj.extfield;
+                        } else {
+                            alert(obj.info);
+                        }
+
+                    },
+                    'uploader': '/Admin/Video/upload'
+                });
+            });
+            $scope.video = {$json_video};
+            $scope.statusModel = [{
+                    id: 0,
+                    statusName: '不公开'
+                },{
+                    id: 1,
+                    statusName: '公开'
+                }];
+            $scope.video.status = $scope.statusModel["{$video.status}"];
+            $scope.submitForm = function () {
+                $http({
+                    method: "POST",
+                    url: "/Admin/Video/edit",
+                    data: $.param($scope.video),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/Video/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

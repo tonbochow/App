@@ -1,0 +1,64 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">留言管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="MessageForm" ng-controller="MessageReplyController" ng-submit="submitForm()" novalidate>
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+
+        <div class="form-group">
+            <label for="content" class="col-sm-2 control-label">留言内容:</label>
+            <div class="col-sm-10">
+                {$message.content}
+            </div>
+        </div>
+        
+        <div class="form-group" ng-class="{'has-error' : MessageForm.content.$invalid && !MessageForm.content.$pristine}">
+            <label for="content" class="col-sm-2 control-label">*回复内容:</label>
+            <div class="col-sm-10">
+                <!--<input type="text" name="content" value="" ng-model="message_reply.content" ng-minlength="1" ng-maxlength="255" required class="form-control" id="content" placeholder="回复内容">-->
+                <div class="ueditor" config="config" ng-model="message_reply.content"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="MessageForm.$invalid"><i class="icon-save"></i> 保存留言回复</button>
+            </div>
+        </div>
+
+
+    </form>
+</block>
+
+<block name="header_script">
+    <script type="text/javascript" src="__COMMON__/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" src="__COMMON__/ueditor/ueditor.all.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/ueditor/angular-ueditor.js"></script>
+    <script type="text/javascript">
+        var MessageModule = angular.module("baby", ['ng.ueditor']);
+        MessageModule.controller("MessageReplyController", function ($scope, $http) {
+            $scope.messageInfo = {$json_message};
+            $scope.submitForm = function () {
+                $scope.message_reply.message_id = {$message.id};
+                $http({
+                    method: "POST",
+                    url: "/Admin/Message/reply",
+                    data: $.param($scope.message_reply),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/Message/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

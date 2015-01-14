@@ -1,0 +1,73 @@
+<extend name="Public:base" />
+
+<block name="content">
+    <ol class="breadcrumb">
+        <li><a href="/Admin">后台首页</a></li>
+        <li><a href="/Admin/{$Think.CONTROLLER_NAME}">留言回复管理</a></li>
+        <li class="active">{$Think.ACTION_NAME}</li>
+    </ol>
+    <form class="form-horizontal" role="form" name="MessageForm" ng-controller="MessageReplyController" ng-submit="submitForm()" novalidate>
+        <div class="alert alert-danger" role="alert" ng-show="message"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{message}}</div>
+        <div class="alert alert-success" role="alert" ng-show="success"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>{{success}}</div>
+        
+        <div class="form-group" ng-class="{'has-error' : MessageForm.content.$invalid && !MessageForm.content.$pristine}">
+            <label for="content" class="col-sm-2 control-label">*回复内容:</label>
+            <div class="col-sm-10">
+                <!--<input type="text" name="content" value="{$messageReply.content}" ng-model="messageReply.content" ng-minlength="1" ng-maxlength="255" required class="form-control" id="content" placeholder="回复内容">-->
+                <div class="ueditor" config="config" ng-model="messageReply.content"></div>
+            </div>
+        </div>
+         
+        <div class="form-group" ng-class="{'has-error' : MessageForm.status.$invalid && !MessageForm.status.$pristine}">
+            <label for="status" class="col-sm-2 control-label">留言回复状态(*)</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="status" required ng-model="messageReply.status" ng-options="option.statusName for option in statusModel">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success" ng-disabled="MessageForm.$invalid"><i class="icon-save"></i> 保存留言回复</button>
+            </div>
+        </div>
+
+
+    </form>
+</block>
+
+<block name="header_script">
+    <script type="text/javascript" src="__COMMON__/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" src="__COMMON__/ueditor/ueditor.all.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/ueditor/angular-ueditor.js"></script>
+    <script type="text/javascript">
+        var MessageReplyModule = angular.module("baby", ['ng.ueditor']);
+        MessageReplyModule.controller("MessageReplyController", function ($scope, $http) {
+            $scope.messageReply = {$json_messageReply};
+            $scope.statusModel = [{
+                    id: 0,
+                    statusName: '不公开'
+                },{
+                    id: 1,
+                    statusName: '公开'
+                }];
+            $scope.messageReply.status = $scope.statusModel["{$messageReply.status}"];
+            $scope.submitForm = function () {
+                $http({
+                    method: "POST",
+                    url: "/Admin/MessageReply/edit",
+                    data: $.param($scope.messageReply),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/MessageReply/index';
+                    } else {
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

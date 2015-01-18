@@ -1,8 +1,10 @@
 <?php
+
 /**
  * 后台说说功能
  * @author 周东宝 2014-12-18
  */
+
 namespace Admin\Controller;
 
 use Think\Controller;
@@ -38,17 +40,35 @@ class TalkController extends BaseController {
         $this->assign('talks', $talks);
         $this->display('index');
     }
-    
+
     //说说添加
     public function add() {
         if (IS_POST) {
             $talk_data = I('post.');
             $TalkModel = D('Talk');
+            $TalkModel->startTrans();
             if ($TalkModel->create($talk_data)) {
                 $talk_id = $TalkModel->add();
                 if ($talk_id) {
+                    //将说说同时保存如content表
+                    $contentModel = D('Content');
+                    $content_data['tapv_id'] = $talk_id;
+                    $content_data['title'] = $talk_data['content'];
+                    $content_data['type'] = \Admin\Model\ContentModel::$TYPE_TALK;
+                    $content_data['content'] = $talk_data['content'];
+                    $content_data['status`'] = \Admin\Model\ContentModel::$AVAILABLE;
+                    if ($contentModel->create($content_data)) {
+                        $content_id = $contentModel->add();
+                        if ($content_id === false) {
+                            $TalkModel->rollback();
+                            $data['status'] = false;
+                            $data['message'] = $contentModel->getError();
+                            $this->ajaxReturn($data);
+                        }
+                    }
                     $data['status'] = true;
                     $data['success'] = '保存说说成功';
+                    $TalkModel->commit();
                     $this->ajaxReturn($data);
                 }
             }
@@ -92,7 +112,7 @@ class TalkController extends BaseController {
         $data['message'] = '启用显示失败';
         $this->ajaxReturn($data);
     }
-    
+
     //禁止评论
     public function disableComment() {
         $talk_id = I('post.id');
@@ -109,7 +129,7 @@ class TalkController extends BaseController {
         $data['message'] = '禁说说评论失败';
         $this->ajaxReturn($data);
     }
-    
+
     //允许评论
     public function enableComment() {
         $talk_id = I('post.id');
@@ -126,7 +146,7 @@ class TalkController extends BaseController {
         $data['message'] = '允许说说评论失败';
         $this->ajaxReturn($data);
     }
-    
+
     //说说编辑
     public function edit() {
         if (IS_POST) {

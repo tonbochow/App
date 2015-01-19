@@ -1,0 +1,117 @@
+<!doctype html>
+<html xmlns:ng="http://angularjs.org" lang="zh-CN" id="ng-app"  ng-app="baby">
+    <head>
+        <meta charset="UTF-8">
+        <title>{:C('WEB_SITE_TITLE')}</title>
+        <meta name="keywords" content="baby" />
+        <meta name="description" content="baby" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="renderer" content="webkit">
+        <!--[if lt IE 9]>
+        <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        <!--[if lte IE 8]>
+                <script>
+                  document.createElement('ng-include');
+                  document.createElement('ng-pluralize');
+                  document.createElement('ng-view');
+        
+                  // Optionally these for CSS
+                  document.createElement('ng:include');
+                  document.createElement('ng:pluralize');
+                  document.createElement('ng:view');
+                </script>
+         <![endif]-->
+        <!--[if lte IE 7]>
+        <script type="text/javascript" src="__COMMON__/json2.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+    <block name="content">
+
+    </block>
+    <link rel="stylesheet" type="text/css" href="__COMMON__/jquery_ui/jquery-ui.min.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/bootstrap/css/bootstrap.min.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/bootstrap/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__COMMON__/bootstrap/css/bootstrap-theme.min.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__CSS__/menu.css" media="all">
+    <script type="text/javascript" src="__COMMON__/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/jquery_ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/angularjs/angular.min.js"></script>
+    <script type="text/javascript" src="__COMMON__/common.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var controller_name = '<?php echo CONTROLLER_NAME;?>';
+            if (controller_name == 'Role' || controller_name == 'App' || controller_name == 'RoleApp' || controller_name == 'RoleUser') {
+                $('#power').attr('class', 'nav-header');
+                $('#power').attr('aria-expanded', 'true');
+                $('#powerSetting').attr('class', 'nav nav-list secondmenu collapse in');
+                $('#powerSetting').attr('aria-expanded', 'true');
+                $('#powerSetting').css('height', 'auto');
+            }
+
+            if (controller_name == 'Master') {
+                $('#system').attr('class', 'nav-header');
+                $('#system').attr('aria-expanded', 'true');
+                $('#systemSetting').attr('class', 'nav nav-list secondmenu collapse in');
+                $('#systemSetting').attr('aria-expanded', 'true');
+                $('#systemSetting').css('height', 'auto');
+            }
+
+            if (controller_name == 'User') {
+                $('#user').attr('class', 'nav-header');
+                $('#user').attr('aria-expanded', 'true');
+                $('#userSetting').attr('class', 'nav nav-list secondmenu collapse in');
+                $('#userSetting').attr('aria-expanded', 'true');
+                $('#userSetting').css('height', 'auto');
+            }
+
+            if (controller_name == 'Talk' || controller_name == 'TalkComment') {
+                $('#talk').attr('class', 'nav-header');
+                $('#talk').attr('aria-expanded', 'true');
+                $('#talkSetting').attr('class', 'nav nav-list secondmenu collapse in');
+                $('#talkSetting').attr('aria-expanded', 'true');
+                $('#talkSetting').css('height', 'auto');
+            }
+
+            if (controller_name == 'Music') {
+                $('#music').attr('class', 'nav-header');
+                $('#music').attr('aria-expanded', 'true');
+                $('#musicSetting').attr('class', 'nav nav-list secondmenu collapse in');
+                $('#musicSetting').attr('aria-expanded', 'true');
+                $('#musicSetting').css('height', 'auto');
+            }
+
+            if (controller_name == 'Album' || controller_name == 'PhotoComment') {
+                $('#photo').attr('class', 'nav-header');
+                $('#photo').attr('aria-expanded', 'true');
+                $('#photoSetting').attr('class', 'nav nav-list secondmenu collapse in');
+                $('#photoSetting').attr('aria-expanded', 'true');
+                $('#photoSetting').css('height', 'auto');
+            }
+
+            if (controller_name == 'Video' || controller_name == 'VideoComment') {
+                $('#video').attr('class', 'nav-header');
+                $('#video').attr('aria-expanded', 'true');
+                $('#videoSetting').attr('class', 'nav nav-list secondmenu collapse in');
+                $('#videoSetting').attr('aria-expanded', 'true');
+                $('#videoSetting').css('height', 'auto');
+            }
+
+            if (controller_name == 'ArticleCategory' || controller_name == 'Article' || controller_name == 'ArticleComment') {
+                $('#article').attr('class', 'nav-header');
+                $('#article').attr('aria-expanded', 'true');
+                $('#articleSetting').attr('class', 'nav nav-list secondmenu collapse in');
+                $('#articleSetting').attr('aria-expanded', 'true');
+                $('#articleSetting').css('height', 'auto');
+            }
+
+        });
+    </script>
+    <block name="header_script">
+
+    </block>
+</body>
+</html>

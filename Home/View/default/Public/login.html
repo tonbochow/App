@@ -1,0 +1,93 @@
+<extend name="Public:login_base" />
+
+<block name="content">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="page-header">
+            <h1 style="text-align: center;"><span class="glyphicon glyphicon-tower">baby后台管理系统</span></h1>
+        </div>
+
+        <form class="form-signin" role="form" name="loginForm" ng-controller="loginController" ng-submit="submitForm()" style="width: 330px;margin: 0 auto;">
+            <div class="alert alert-danger" role="alert" ng-show="message">{{message}}</div>
+            <div class="alert alert-success" role="alert" ng-show="success">{{success}}</div>
+            <div class="form-group">
+                <label>用户名</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-addon btn-success"><span class="glyphicon glyphicon-user btn-success"></span></span>
+                    <input type="text" name="name" class="form-control" placeholder="用户名" ng-model="user.name" ng-minlength="1" ng-maxlength="30" required>
+                    <span style="color:red" ng-show="loginForm.name.$dirty && loginForm.user.$invalid">
+                </div>
+                <div class="has-error">
+                    <span class="help-block" ng-show="errorName">{{errorName}}</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>密码</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-addon btn-success"><span class="icon-key btn-success"></span></span>
+                    <input type="password" name="password" class="form-control" placeholder="密码" ng-model="user.password" ng-minlength="1" ng-maxlength="30" required>
+                    <span style="color:red" ng-show="loginForm.password.$dirty && loginForm.password.$invalid">
+                </div>
+                <div class="has-error">
+                    <span class="help-block" ng-show="errorPassword">{{errorPassword}}</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>验证码</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-addon btn-success"><span class="glyphicon glyphicon-font btn-success"></span></span>
+                    <input type="text" name="verifycode" class="form-control" ng-model="user.verifycode" placeholder="请输入验证码" ng-minlength="5" ng-maxlength="5" required>
+                    <span style="color:red" ng-show="loginForm.verifycode.$dirty && loginForm.verifycode.$invalid">
+                </div>
+                <div class="has-error">
+                    <span class="help-block" ng-show="errorVerifycode">{{errorVerifycode}}</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-group input-group-lg">
+                    <img width="330px;" id="verifycode" onclick="this.src = this.src + '?' + Math.random()" src="{:U('/Admin/Public/createVerify')}" class="img-responsive" alt="点击切换验证码"> 
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" value="1" name="remember"> 记住登录 (点击图片切换 验证码不分大小写)
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn btn-lg btn-success btn-block" ng-disabled="loginForm.$invalid" type="submit"><span class="glyphicon glyphicon-flash"></span>登录</button>
+
+        </form>
+    </div>
+</block>
+
+<block name="header_script">
+    <script type="text/javascript">
+        var loginModule = angular.module("baby", []);
+        loginModule.controller("loginController", function ($scope, $http) {
+            $scope.submitForm = function () {
+                $http({
+                    method: "POST",
+                    url: "/Admin/Public/Login",
+                    data: $.param($scope.user),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).success(function (data) {
+                    if (data.status) {
+                        $scope.success = data.success;
+                        window.location.href = '/Admin/Index/index';
+                    } else {
+                        $('#verifycode').attr('src', '/Admin/Public/createVerify' + '?' + Math.random());
+                        $scope.errorVerifycode = data.errorVerifycode;
+                        $scope.errorName = data.errorName;
+                        $scope.errorPassword = data.errorPassword;
+                        $scope.message = data.message;
+                    }
+                });
+            };
+        });
+    </script>
+</block>

@@ -65,6 +65,11 @@ class TalkController extends BaseController {
                             $data['message'] = $contentModel->getError();
                             $this->ajaxReturn($data);
                         }
+                    } else {
+                        $TalkModel->rollback();
+                        $data['status'] = false;
+                        $data['message'] = $contentModel->getError();
+                        $this->ajaxReturn($data);
                     }
                     $data['status'] = true;
                     $data['success'] = '保存说说成功';
@@ -83,12 +88,24 @@ class TalkController extends BaseController {
     public function disable() {
         $talk_id = I('post.id');
         $TalkModel = M('Talk');
+        $TalkModel->startTrans();
         $talk_data['status'] = \Admin\Model\TalkModel::$UNAVAILABLE;
         $talk_data['update_time'] = time();
         $disable_res = $TalkModel->where(array('id' => $talk_id))->save($talk_data);
         if ($disable_res) {
+            $contentModel = M('Content');
+            $content_data['status'] = \Admin\Model\ContentModel::$UNAVAILABLE;
+            $content_data['update_time'] = time();
+            $content_save = $contentModel->where(array('tapv_id' => $talk_id,'type'=>  \Admin\Model\ContentModel::$TYPE_TALK))->save($content_data);
+            if (!$content_save) {
+                $data['status'] = false;
+                $data['message'] = '禁内容公开失败';
+                $TalkModel->rollback();
+                $this->ajaxReturn($data);
+            }
             $data['status'] = true;
             $data['success'] = '禁公开成功';
+            $TalkModel->commit();
             $this->ajaxReturn($data);
         }
         $data['status'] = false;
@@ -100,12 +117,24 @@ class TalkController extends BaseController {
     public function enable() {
         $talk_id = I('post.id');
         $TalkModel = M('Talk');
+        $TalkModel->startTrans();
         $talk_data['status'] = \Admin\Model\TalkModel::$AVAILABLE;
         $talk_data['update_time'] = time();
         $enable_res = $TalkModel->where(array('id' => $talk_id))->save($talk_data);
         if ($enable_res) {
+            $contentModel = M('Content');
+            $content_data['status'] = \Admin\Model\ContentModel::$AVAILABLE;
+            $content_data['update_time'] = time();
+            $content_save = $contentModel->where(array('tapv_id' => $talk_id,'type'=>  \Admin\Model\ContentModel::$TYPE_TALK))->save($content_data);
+            if (!$content_save) {
+                $data['status'] = false;
+                $data['message'] = '内容公开失败';
+                $TalkModel->rollback();
+                $this->ajaxReturn($data);
+            }
             $data['status'] = true;
             $data['success'] = '启用显示成功';
+            $TalkModel->commit();
             $this->ajaxReturn($data);
         }
         $data['status'] = false;
@@ -154,11 +183,34 @@ class TalkController extends BaseController {
             $talk_data['status'] = I('post.status')['id'];
             $talk_data['allow_comment'] = I('post.allow_comment')['id'];
             $talkModel = D('Talk');
+            $talkModel->startTrans();
             if ($talkModel->create($talk_data)) {
                 $update_res = $talkModel->save();
                 if ($update_res) {
+                    //将说说同时保存如content表
+                    $contentModel = D('Content');
+                    $content_data['tapv_id'] = $talk_data['id'];
+                    $content_data['title'] = $talk_data['content'];
+                    $content_data['type'] = \Admin\Model\ContentModel::$TYPE_TALK;
+                    $content_data['content'] = $talk_data['content'];
+                    $content_data['status'] = $talk_data['status'];
+                    if ($contentModel->create($content_data)) {
+                        $content_save = $contentModel->where(array('tapv_id'=>$talk_data['id'],'type'=>  \Admin\Model\ContentModel::$TYPE_TALK))->save();
+                        if ($content_save === false) {
+                            $talkModel->rollback();
+                            $data['status'] = false;
+                            $data['message'] = $contentModel->getError();
+                            $this->ajaxReturn($data);
+                        }
+                    } else {
+                        $talkModel->rollback();
+                        $data['status'] = false;
+                        $data['message'] = $contentModel->getError();
+                        $this->ajaxReturn($data);
+                    }
                     $data['status'] = true;
                     $data['success'] = '编辑说说成功';
+                    $talkModel->commit();
                     $this->ajaxReturn($data);
                 }
             }

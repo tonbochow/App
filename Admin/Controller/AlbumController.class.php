@@ -46,11 +46,35 @@ class AlbumController extends BaseController {
         if (IS_POST) {
             $album_data = I('post.');
             $albumModel = D('Album');
+            $albumModel->startTrans();
             if ($albumModel->create($album_data)) {
                 $album_id = $albumModel->add();
                 if ($album_id) {
+                    //将说说同时保存如content表
+                    $contentModel = D('Content');
+                    $content_data['tapv_id'] = $album_id;
+                    $content_data['title'] = $album_data['title'];
+                    $content_data['type'] = \Admin\Model\ContentModel::$TYPE_ALBUM;
+                    $content_data['content'] = $album_data['title'];
+                    $content_data['album_url'] = $album_data['thumb_url'];
+                    $content_data['status`'] = \Admin\Model\ContentModel::$AVAILABLE;
+                    if ($contentModel->create($content_data)) {
+                        $content_id = $contentModel->add();
+                        if ($content_id === false) {
+                            $albumModel->rollback();
+                            $data['status'] = false;
+                            $data['message'] = $contentModel->getError();
+                            $this->ajaxReturn($data);
+                        }
+                    } else {
+                        $albumModel->rollback();
+                        $data['status'] = false;
+                        $data['message'] = $contentModel->getError();
+                        $this->ajaxReturn($data);
+                    }
                     $data['status'] = true;
                     $data['success'] = '创建相册成功';
+                    $albumModel->commit();
                     $this->ajaxReturn($data);
                 }
             }
@@ -70,12 +94,36 @@ class AlbumController extends BaseController {
             $album = M('Album')->where(array('id' => $album_id))->find();
             $thumb_url = $album['thumb_url'];
             $albumModel = D('Album');
+            $albumModel->startTrans();
             if ($albumModel->create($album_data)) {
                 $update_res = $albumModel->save();
                 if ($update_res) {
+                    //将说说同时保存如content表
+                    $contentModel = D('Content');
+                    $content_data['tapv_id'] = $album_data['id'];
+                    $content_data['title'] = $album_data['title'];
+                    $content_data['type'] = \Admin\Model\ContentModel::$TYPE_ALBUM;
+                    $content_data['content'] = $album_data['title'];
+                    $content_data['album_url'] = $album_data['thumb_url'];
+                    $content_data['status'] = $album_data['status'];
+                    if ($contentModel->create($content_data)) {
+                        $content_save = $contentModel->where(array('tapv_id' => $album_data['id'], 'type' => \Admin\Model\ContentModel::$TYPE_ALBUM))->save();
+                        if ($content_save === false) {
+                            $albumModel->rollback();
+                            $data['status'] = false;
+                            $data['message'] = $contentModel->getError();
+                            $this->ajaxReturn($data);
+                        }
+                    } else {
+                        $albumModel->rollback();
+                        $data['status'] = false;
+                        $data['message'] = $contentModel->getError();
+                        $this->ajaxReturn($data);
+                    }
                     @unlink(C('ROOT_PATH') . $thumb_url);
                     $data['status'] = true;
                     $data['success'] = '编辑相册成功';
+                    $albumModel->commit();
                     $this->ajaxReturn($data);
                 }
             }
@@ -129,13 +177,21 @@ class AlbumController extends BaseController {
             //删除相片所有评论
             $photoComments = M('PhotoComment')->where(array('album_id' => $album_id))->select();
             if (!empty($photoComments)) {
-                $photoComment_del = M('PhotoComment')->where(array('album_id'=>$album_id))->delete();
+                $photoComment_del = M('PhotoComment')->where(array('album_id' => $album_id))->delete();
                 if ($photoComment_del === false) {
                     $albumModel->rollback();
                     $data['status'] = true;
                     $data['success'] = '相片所有评论删除失败';
                     $this->ajaxReturn($data);
                 }
+            }
+            //删除content表内容
+            $content_del = M('Content')->where(array('tapv_id' => $album_id, 'type' => \Admin\Model\ContentModel::$TYPE_ALBUM))->delete();
+            if ($content_del === false) {
+                $albumModel->rollback();
+                $data['status'] = true;
+                $data['success'] = '相片content表删除失败';
+                $this->ajaxReturn($data);
             }
             //删除相册封面图片
             @unlink(C('ROOT_PATH') . $album['thumb_url']);
@@ -148,40 +204,6 @@ class AlbumController extends BaseController {
             $data['success'] = '删除成功';
             $this->ajaxReturn($data);
         }
-    }
-
-    //禁公开相册
-    public function disable() {
-        $music_id = I('post.id');
-        $musicModel = M('Music');
-        $music_data['status'] = \Admin\Model\MusicModel::$UNAVAILABLE;
-        $music_data['update_time'] = time();
-        $disable_res = $musicModel->where(array('id' => $music_id))->save($music_data);
-        if ($disable_res) {
-            $data['status'] = true;
-            $data['success'] = '禁公开成功';
-            $this->ajaxReturn($data);
-        }
-        $data['status'] = false;
-        $data['message'] = '禁公开失败';
-        $this->ajaxReturn($data);
-    }
-
-    //公开相册
-    public function enable() {
-        $music_id = I('post.id');
-        $musicModel = M('Music');
-        $music_data['status'] = \Admin\Model\MusicModel::$AVAILABLE;
-        $music_data['update_time'] = time();
-        $enable_res = $musicModel->where(array('id' => $music_id))->save($music_data);
-        if ($enable_res) {
-            $data['status'] = true;
-            $data['success'] = '启用公开成功';
-            $this->ajaxReturn($data);
-        }
-        $data['status'] = false;
-        $data['message'] = '启用公开失败';
-        $this->ajaxReturn($data);
     }
 
     //相册封面上传

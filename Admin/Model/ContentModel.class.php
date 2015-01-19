@@ -18,7 +18,7 @@ Class ContentModel extends CommonModel {
     public static $TYPE_VIDEO = 4;//视频类型
     
     protected $_validate = array(
-        array('tapy_id','require','内容必须！',self::MUST_VALIDATE),
+        array('tapv_id','require','tapv_id必须！',self::MUST_VALIDATE),
         array('type','require','内容类型必须！',self::MUST_VALIDATE),
         array('title','require','内容标题必须！',self::MUST_VALIDATE),
         array('content','require','内容必须！',self::MUST_VALIDATE),

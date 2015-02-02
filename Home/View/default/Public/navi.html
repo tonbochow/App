@@ -9,17 +9,17 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/" style="padding:0px;">
-                <img src="{$master.photo}" width="50px" height="50px" style="border-radius: 4px;">
+                <img src="{$master.photo}" style="max-height:50px;max-width: 50px;border-radius: 4px;">
             </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <!--<li class="active"><a href="#">Home</a></li>-->
-                <li><a href="/talk">说说</a></li>
-                <li><a href="/article">日志</a></li>
-                <li><a href="/album">相册</a></li>
-                <li><a href="/video">视频</a></li>
-                <li><a href="/message">留言板</a></li>
+                <li><a data-target="#" href="/talk"  aria-haspopup="true" aria-expanded="false">说说</a></li>
+                <li><a href="/talk">日志</a></li>
+                <li><a href="/talk">相册</a></li>
+                <li><a href="/talk">视频</a></li>
+                <li><a href="/talk">留言板</a></li>
             </ul>
             <form class="navbar-form navbar-left" role="search">
                 <div class="form-group">
@@ -46,7 +46,7 @@
                     }else{
                 ?>
                 <li class="dropdown">
-                    <a href="/home/public/login" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                    <a href="/home/public/login" class="dropdown-toggle"  role="button" aria-expanded="false">
                         <span class="icon-user"> 登录</span>
                     </a>
                 </li>

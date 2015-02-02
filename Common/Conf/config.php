@@ -34,5 +34,5 @@ return array(
     'DEFAULT_THEME' => 'default',//模版主题
     'ROOT_PATH' => $_SERVER['DOCUMENT_ROOT'],
     //加载其他配置文件　
-    'LOAD_EXT_CONFIG' => 'config.upload', //加载扩展配置文件
+    'LOAD_EXT_CONFIG' => 'config.upload,config.system,config.master', //加载扩展配置文件
 );

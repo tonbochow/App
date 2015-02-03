@@ -22,6 +22,9 @@ class MasterController extends BaseController {
                         if (!empty($master_data['photo'])) {
                             delFileUnderDir(C('ROOT_PATH') . '/upload/master', C('ROOT_PATH') . $master_data['photo']);
                         }
+                        unset($master_data['create_time']);
+                        unset($master_data['update_time']);
+                        writeConfig(APP_PATH . 'Common/Conf/config.master.php', $master_data, 'MASTER');
                         $data['status'] = true;
                         $data['success'] = "保存站长信息成功";
                         $this->ajaxReturn($data);
@@ -35,6 +38,9 @@ class MasterController extends BaseController {
                         if (!empty($master_data['photo'])) {
                             delFileUnderDir(C('ROOT_PATH') . '/upload/master', C('ROOT_PATH') . $master_data['photo']);
                         }
+                        unset($master_data['create_time']);
+                        unset($master_data['update_time']);
+                        writeConfig(APP_PATH . 'Common/Conf/config.master.php', $master_data, 'MASTER');
                         $data['status'] = true;
                         $data['success'] = "保存站长信息成功";
                         $this->ajaxReturn($data);

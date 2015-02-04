@@ -18,10 +18,10 @@ return array(
     'USER_AUTH_MODEL' => 'User', // 默认验证数据表模型
     'AUTH_PWD_ENCODER' => 'md5', // 用户认证密码加密方式
 //    'USER_AUTH_GATEWAY' => '/Public/login', // 默认认证网关 在前后台配置文件分别设置
-    'NOT_AUTH_MODULE' => '', // 默认无需认证模块
-    'REQUIRE_AUTH_MODULE' => '', // 默认需要认证模块
-    'NOT_AUTH_ACTION' => '', // 默认无需认证操作
-    'REQUIRE_AUTH_ACTION' => '', // 默认需要认证操作
+    'NOT_AUTH_MODULE' => 'Index,Public', // 默认无需认证模块(控制器)
+    'REQUIRE_AUTH_MODULE' => '', // 默认需要认证模块(控制器)
+    'NOT_AUTH_ACTION' => '', // 默认无需认证操作(方法)
+    'REQUIRE_AUTH_ACTION' => '', // 默认需要认证操作(方法)
     'GUEST_AUTH_ON' => false, // 是否开启游客授权访问
     'GUEST_AUTH_ID' => 0, // 游客的用户ID
     'RBAC_ROLE_TABLE' => 'role',

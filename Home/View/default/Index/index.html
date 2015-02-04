@@ -1,1 +1,24 @@
 <extend name="Public:base" />
+
+<block name="content">
+    <if condition="$contents neq ''">
+        <volist name="contents" id="content">
+            <div class="blog-post">
+                <h4 class="blog-post-title">
+                    <if condition="$content.type eq 1">
+                        <i class='icon-comment'></i>
+                        <elseif condition="$content.type eq 2" />
+                        <i class='icon-book'></i>
+                        <elseif condition="$content.type eq 3" />
+                        <i class='icon-camera'></i>
+                        <else condition="$content.type eq 4" />
+                        <i class='icon-video'></i>
+                    </if>
+                    {$content.title}
+                </h4>
+                <p class="blog-post-meta">{$content.create_time|date='Y-m-d H:i:s',###} by <a href="#">王梓</a></p>
+                <p>{$content.content|htmlspecialchars_decode|stripslashes}</p>
+            </div>
+        </volist>
+    </if>
+</block>

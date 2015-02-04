@@ -13,7 +13,7 @@
 	'city'=>'130600',
 	'town'=>'130602',
 	'address'=>'东风西路',
-	'photo'=>'/upload/master/54bf61834ebe9.jpg',
+	'photo'=>'/upload/master/54d196222b39d.jpg',
 	'remark'=>'测试',
 	'show_flag'=>'1',
 ),

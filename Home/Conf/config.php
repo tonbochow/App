@@ -9,4 +9,8 @@ return array(
         '__CSS__' => __ROOT__ . '/Public/' . MODULE_NAME . '/css',
         '__JS__' => __ROOT__ . '/Public/' . MODULE_NAME . '/js',
     ),
+    'NOT_AUTH_MODULE' => 'Index,Public,Talk,Article,Album,Video,Message', // 默认无需认证模块(控制器)
+    'REQUIRE_AUTH_MODULE' => '', // 默认需要认证模块(控制器)
+    'NOT_AUTH_ACTION' => '', // 默认无需认证操作(方法)
+    'REQUIRE_AUTH_ACTION' => '', // 默认需要认证操作(方法)
 );

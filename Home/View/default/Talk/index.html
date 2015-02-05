@@ -1,1 +1,26 @@
 <extend name="Public:base" />
+
+<block name="master"> <!-- 孩子详细信息模块 -->
+    <include file="Public/master"/>
+</block>
+
+<block name="statistics"> <!-- 网站统计模块 -->
+    <include file="Public/statistics"/>
+</block>
+
+
+<block name="content"> <!-- 页面主体内容模块 -->
+    <if condition="$talks neq ''">
+        <volist name="talks" id="talk">
+            <div class="blog-post">              
+                <p>{$talk.content|htmlspecialchars_decode|stripslashes}</p>
+                <p class="blog-post-meta">
+                    <i class='icon-calendar'></i>{$talk.create_time|date='Y-m-d H:i:s',###} 
+                    <a href="#">王梓</a> 
+                    <i class='icon-eye-open'></i>浏览({$talk.view_times})
+                    <i class='icon-comment'></i>评论({$talk.comment_times})
+                </p>
+            </div>
+        </volist>
+    </if>
+</block>
